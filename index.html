@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samsmarana — संस्मरण | Bhawna Mishra</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fdf8f2;--surface:#ffffff;--card:#ffffff;--border:#e0c9a8;
+  --ink:#1a0f00;--muted:#5a4020;--accent:#7a2800;--gold:#9a6800;
+  --light-accent:#faebd7;--green:#1a5c38;--red:#8b0000;
+  --sidebar-bg:#5c2a0a;--sidebar-text:#fdf0e0;--sidebar-muted:#e0b87a;
+}
+body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-height:100vh;overflow-x:hidden}
+.deva{font-family:'Tiro Devanagari Sanskrit',serif}
+.serif{font-family:'EB Garamond',serif}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none}
+#overlay.open{display:block}
+#sidebar{position:fixed;left:-290px;top:0;width:290px;height:100%;background:#5c2a0a;z-index:50;transition:left .3s ease;overflow-y:auto;display:flex;flex-direction:column}
+#sidebar.open{left:0}
+.sidebar-brand{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-deva{font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:var(--gold);display:block}
+.brand-name{font-family:'EB Garamond',serif;font-size:20px;color:#fdf0e0;margin-top:4px;letter-spacing:.5px}
+.brand-tag{font-size:11px;color:var(--sidebar-muted);margin-top:4px;font-style:italic;font-family:'EB Garamond',serif}
+.sidebar-section{padding:18px 20px 6px;font-size:9px;color:#c8a87a;text-transform:uppercase;letter-spacing:2px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-size:13px;color:var(--sidebar-muted);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{color:#f0e8d8;background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(200,134,10,.08)}
+.nav-icon{font-size:14px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600}
+.sidebar-footer{margin-top:auto;padding:18px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-footer p{font-size:12px;color:#d4b896;font-style:italic;font-family:'EB Garamond',serif;line-height:1.6;margin-bottom:12px}
+.btn-outline{width:100%;background:transparent;border:1px solid rgba(200,134,10,.4);color:var(--gold);border-radius:6px;padding:9px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+#topbar{position:sticky;top:0;z-index:30;background:#7a3010;display:flex;align-items:center;gap:10px;padding:13px 16px}
+#menu-btn{background:none;border:none;color:#ffffff;font-size:22px;cursor:pointer;line-height:1;padding:0 2px}
+#back-btn{background:none;border:none;color:#fdf0e0;font-size:14px;cursor:pointer;line-height:1;padding:0 2px;display:none;align-items:center;gap:4px;font-family:'EB Garamond',serif}
+#back-btn svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#topbar-title{font-family:'EB Garamond',serif;font-size:17px;color:#ffffff;flex:1;letter-spacing:.3px;font-weight:500}
+.topbar-key{font-size:18px;cursor:pointer;color:#ffffff}
+#key-modal{display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:20px}
+#key-modal.open{display:flex}
+.key-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6)}
+.key-box{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:26px;width:100%;max-width:360px}
+.key-box h3{font-family:'EB Garamond',serif;font-size:20px;margin-bottom:6px}
+.key-box p{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.7}
+.key-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:11px 12px;color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:12px}
+.key-input:focus{outline:none;border-color:var(--accent)}
+.btn-primary{width:100%;background:var(--accent);color:white;border:none;border-radius:6px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.page{display:none;padding:20px 18px 60px;background:#fdf8f2;}
+.page.active{display:block}
+.pill{display:inline-block;background:#f0d0b0;color:#5a1000;border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase;border:1px solid #c89060}
+.page-heading{font-family:'EB Garamond',serif;font-size:26px;font-weight:600;color:#1a0f00;margin-bottom:6px}
+.page-desc{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:#3a2a18;line-height:1.7;margin-bottom:20px}
+.card{background:#ffffff;border:1px solid #c8b090;border-radius:10px;padding:18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#6a1a00;margin-bottom:6px}
+.card-desc{font-size:12px;color:#2a1a08;line-height:1.7;margin-bottom:10px;font-weight:500}
+.home-hero{text-align:center;padding:36px 16px 28px;border-bottom:1px solid #e0c9a8;margin-bottom:24px;background:#ffffff;border-radius:12px;margin:0 0 20px 0}
+.hero-deva{font-family:'Tiro Devanagari Sanskrit',serif;font-size:52px;color:#7a2800;display:block}
+.hero-name{font-family:'EB Garamond',serif;font-size:32px;color:#1a0f00;margin-top:8px;letter-spacing:1px;font-weight:600}
+.hero-tagline{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:#3a2010;margin-top:8px;line-height:1.6}
+.shloka-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px 20px;margin-bottom:20px;position:relative;overflow:hidden}
+.shloka-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold))}
+.shloka-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px;font-weight:500}
+.shloka-text{font-family:'Tiro Devanagari Sanskrit',serif;font-size:19px;color:#4a1000;line-height:2.1;text-align:center;margin-bottom:14px;white-space:pre-line}
+.shloka-source{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--gold);text-align:center;margin-bottom:14px}
+.shloka-meaning{font-family:'EB Garamond',serif;font-size:16px;color:#1a0f00;line-height:1.8;border-top:1px solid #e0c9a8;padding-top:14px;margin-bottom:10px;font-weight:500}
+.shloka-life{background:#faebd7;border-radius:6px;padding:12px 14px;font-size:13px;color:#2a1a08;line-height:1.7;font-style:italic;font-family:'EB Garamond',serif;border:1px solid #e0c8a0}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.quick-card{background:#ffffff;border:1.5px solid #e0c9a8;border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
+.quick-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(139,69,19,.08);transform:translateY(-1px)}
+.qc-icon{font-size:22px;margin-bottom:8px}
+.qc-title{font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00}
+.qc-sub{font-size:11px;color:#5a4020;margin-top:2px;font-weight:500}
+.grammar-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+.grammar-table th{background:#f0d9c0;color:#5a1a00;padding:9px 7px;text-align:center;font-weight:600;border:1px solid #c8b090;font-family:'EB Garamond',serif;font-size:13px}
+.grammar-table td{padding:8px 7px;text-align:center;border:1px solid #d6c4a8;color:#1a0f00}
+.grammar-table tr:nth-child(even) td{background:#fdf3e8}
+.grammar-table td.dv{font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:#6a2000;font-weight:500}
+.vib-label{font-size:9px;color:#5a4a32;display:block;margin-bottom:1px;font-weight:500}
+.info-box{background:#e8f4f0;border:1px solid #8abfb0;border-radius:6px;padding:12px 14px;font-size:14px;color:#0f3d2e;line-height:1.8;margin-top:12px;font-family:'EB Garamond',serif;font-style:italic;font-weight:500}
+.sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.sub-tab{padding:7px 16px;border-radius:4px;font-size:12px;border:1px solid #c8b090;color:#3a2a18;cursor:pointer;background:#ffffff;font-family:'DM Sans',sans-serif;transition:all .15s;font-weight:500}
+.sub-tab.active{background:var(--accent);color:white;border-color:var(--accent)}
+.letter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.letter-card{background:#ffffff;border:1.5px solid #c8b090;border-radius:8px;padding:12px 6px;text-align:center;transition:border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.letter-card:hover{border-color:var(--accent)}
+.lc-deva{font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:var(--accent)}
+.lc-roman{font-size:11px;color:#3a2a18;margin-top:4px;font-style:italic;font-weight:500}
+.fc-wrap{perspective:900px;margin:0 auto 18px;max-width:340px}
+.fc{width:100%;height:200px;position:relative;transform-style:preserve-3d;transition:transform .5s;cursor:pointer}
+.fc.flipped{transform:rotateY(180deg)}
+.fc-front,.fc-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border)}
+.fc-front{background:var(--surface)}
+.fc-deva-xl{font-family:'Tiro Devanagari Sanskrit',serif;font-size:54px;color:var(--accent)}
+.fc-hint{font-size:11px;color:#3a2a18;font-style:italic;font-weight:500}
+.fc-back{background:#5c2a0a;transform:rotateY(180deg);border-color:var(--gold)}
+.fc-meaning{font-family:'EB Garamond',serif;font-size:18px;color:#f0e8d8;text-align:center;padding:0 18px;line-height:1.5}
+.fc-roman{font-size:13px;color:var(--gold);font-style:italic}
+.fc-controls{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.fc-btn{padding:10px 22px;border-radius:6px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;background:var(--surface);color:var(--ink)}
+.btn-wrong{border-color:#c0392b;color:#c0392b;background:#fdf2f2}
+.btn-right{border-color:#2d6a4f;color:#2d6a4f;background:#f2faf6}
+.score-row{display:flex;justify-content:space-between;font-size:12px;color:#2a1a08;margin-bottom:10px;font-weight:500}
+.prog-wrap{background:var(--border);border-radius:2px;height:3px;margin-bottom:16px}
+.prog-bar{height:3px;border-radius:2px;background:var(--accent);transition:width .3s}
+#chat-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;height:360px;overflow-y:auto;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:86%;padding:12px 15px;border-radius:10px;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.msg.user{background:var(--accent);color:white;align-self:flex-end;border-bottom-right-radius:3px}
+.msg.ai{background:#faebd7;color:#1a0f00;align-self:flex-start;border-bottom-left-radius:3px;border:1px solid #c8b090;font-family:'EB Garamond',serif;font-size:15px}
+.msg.typing{color:var(--muted);font-style:italic;background:none;border:none;font-size:12px;align-self:flex-start}
+.chat-row{display:flex;gap:8px}
+#chat-input{flex:1;background:#ffffff;border:1.5px solid #c8b090;border-radius:6px;padding:11px 13px;color:#1a0f00;font-size:13px;font-family:'DM Sans',sans-serif}
+#chat-input:focus{outline:none;border-color:var(--accent)}
+#send-btn{background:var(--accent);color:white;border:none;border-radius:6px;padding:11px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+#send-btn:disabled{opacity:.4;cursor:not-allowed}
+.sugs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.sug{background:#ffffff;border:1px solid #c8b090;border-radius:4px;padding:6px 12px;font-size:12px;color:#2a1a08;cursor:pointer;font-family:'EB Garamond',serif;font-style:italic;transition:all .15s;font-weight:500}
+.sug:hover{border-color:var(--accent);color:var(--accent)}
+.no-key-msg{font-size:12px;color:var(--red);margin-top:8px;display:none;font-style:italic;font-family:'EB Garamond',serif}
+.divider{text-align:center;margin:20px 0;color:var(--border);font-size:16px;letter-spacing:8px}
+</style>
+</head>
+<body>
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<div id="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-deva">संस्मरण</span>
+    <div class="brand-name">Samsmarana</div>
+    <div class="brand-tag">Rediscover the Sanskrit you once knew</div>
+  </div>
+  <div class="sidebar-section">Begin Here</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">☀</span> Today's Shloka</div>
+  <div class="nav-item" onclick="nav('tutor',this)"><span class="nav-icon">◎</span> Ask Guru Ji <span class="nav-badge">AI</span></div>
+  <div class="sidebar-section">Grammar (व्याकरण)</div>
+  <div class="nav-item" onclick="nav('shabdroop',this)"><span class="nav-icon">—</span> Shabd Roop</div>
+  <div class="nav-item" onclick="nav('dhaturoop',this)"><span class="nav-icon">↻</span> Dhatu Roop</div>
+  <div class="nav-item" onclick="nav('sandhi',this)"><span class="nav-icon">∞</span> Sandhi</div>
+  <div class="nav-item" onclick="nav('samas',this)"><span class="nav-icon">⊕</span> Samas</div>
+  <div class="nav-item" onclick="nav('karaka',this)"><span class="nav-icon">△</span> Karaka & Vibhakti</div>
+  <div class="sidebar-section">Script & Practice</div>
+  <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
+  <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
+  <div class="nav-item" onclick="nav('sentences',this)"><span class="nav-icon">✎</span> Sentence Practice</div>
+  <div class="sidebar-footer">
+    <p>"That which is remembered<br>is never truly forgotten."</p>
+    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-bottom:14px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#4a3a28;margin-bottom:4px">Created by</div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;color:#c8a87a;letter-spacing:.5px">Bhawna Mishra</div>
+    </div>
+    <button class="btn-outline" onclick="openKey();closeSidebar()">🔑 Set Gemini API Key</button>
+  </div>
+</div>
+
+<div id="key-modal">
+  <div class="key-backdrop" onclick="closeKey()"></div>
+  <div class="key-box">
+    <h3>Set Your Gemini API Key</h3>
+    <p>Your key stays only on this device and powers Guru Ji. It is never shared or stored anywhere else.</p>
+    <input class="key-input" type="password" id="key-input" placeholder="Paste your Gemini API key here..."/>
+    <button class="btn-primary" onclick="saveKey()">Save & Begin</button>
+    <div id="key-msg" style="font-size:12px;margin-top:10px;color:var(--green);text-align:center;font-style:italic"></div>
+  </div>
+</div>
+
+<div id="topbar">
+  <button id="menu-btn" onclick="toggleSidebar()">☰</button>
+  <button id="back-btn" onclick="goBack()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </button>
+  <div id="topbar-title">Samsmarana</div>
+  <span class="topbar-key" onclick="openKey()">🔑</span>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <span class="deva hero-deva">संस्मरण</span>
+    <div class="hero-name">Samsmarana</div>
+    <div class="hero-tagline">You once read these words in school.<br>Now you are ready to understand them.</div>
+    <div style="margin-top:20px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Created by <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.5px;text-transform:none;color:var(--accent)">Bhawna Mishra</span></div>
+  </div>
+  <div class="shloka-card">
+    <div class="shloka-label">☀ Shloka of the Day</div>
+    <div class="shloka-text deva" id="shloka-text"></div>
+    <div class="shloka-source serif" id="shloka-source"></div>
+    <div class="shloka-meaning" id="shloka-meaning"></div>
+    <div class="shloka-life" id="shloka-life"></div>
+  </div>
+  <div class="divider">· · ·</div>
+  <div class="quick-grid">
+    <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
+    <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
+    <div class="quick-card" onclick="nav('sandhi',getNav('sandhi'))"><div class="qc-icon">🔗</div><div class="qc-title">Sandhi</div><div class="qc-sub">Sound unions</div></div>
+    <div class="quick-card" onclick="nav('samas',getNav('samas'))"><div class="qc-icon">🧩</div><div class="qc-title">Samas</div><div class="qc-sub">Compound words</div></div>
+    <div class="quick-card" onclick="nav('flashcards',getNav('flashcards'))"><div class="qc-icon">🃏</div><div class="qc-title">Vocabulary</div><div class="qc-sub">Words with meaning</div></div>
+    <div class="quick-card" onclick="nav('tutor',getNav('tutor'))"><div class="qc-icon">◎</div><div class="qc-title">Ask Guru Ji</div><div class="qc-sub">AI powered</div></div>
+  </div>
+</div>
+
+<!-- SHABD ROOP -->
+<div class="page" id="page-shabdroop">
+  <div class="pill">व्याकरण</div>
+  <div class="page-heading">Shabd Roop — शब्द रूप</div>
+  <div class="page-desc">In Sanskrit, a noun changes its ending to show its role. What English does with prepositions — "of", "by", "for" — Sanskrit does by transforming the word itself.</div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="showShabd('baalak',this)">बालक (m)</button>
+    <button class="sub-tab" onclick="showShabd('lata',this)">लता (f)</button>
+    <button class="sub-tab" onclick="showShabd('fal',this)">फल (n)</button>
+  </div>
+  <div id="shabd-baalak">
+    <div class="card">
+      <div class="card-title">बालक — Boy (Masculine · अकारान्त)</div>
+      <div class="card-desc">Nouns like राम, देव, छात्र, गुरु all follow this pattern.</div>
+      <table class="grammar-table">
+        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
+        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">बालकः</td><td class="dv">बालकौ</td><td class="dv">बालकाः</td></tr>
+        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">बालकम्</td><td class="dv">बालकौ</td><td class="dv">बालकान्</td></tr>
+        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">बालकेन</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकैः</td></tr>
+        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">बालकाय</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकेभ्यः</td></tr>
+        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">बालकात्</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकेभ्यः</td></tr>
+        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">बालकस्य</td><td class="dv">बालकयोः</td><td class="dv">बालकानाम्</td></tr>
+        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">बालके</td><td class="dv">बालकयोः</td><td class="dv">बालकेषु</td></tr>
+        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे बालक!</td><td class="dv">हे बालकौ!</td><td class="dv">हे बालकाः!</td></tr>
+      </table>
+    </div>
+  </div>
+  <div id="shabd-lata" style="display:none">
+    <div class="card">
+      <div class="card-title">लता — Vine (Feminine · आकारान्त)</div>
+      <div class="card-desc">Nouns like सीता, रमा, माला, विद्या all follow this pattern.</div>
+      <table class="grammar-table">
+        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
+        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">लता</td><td class="dv">लते</td><td class="dv">लताः</td></tr>
+        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">लताम्</td><td class="dv">लते</td><td class="dv">लताः</td></tr>
+        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">लतया</td><td class="dv">लताभ्याम्</td><td class="dv">लताभिः</td></tr>
+        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">लतायै</td><td class="dv">लताभ्याम्</td><td class="dv">लताभ्यः</td></tr>
+        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">लतायाः</td><td class="dv">लताभ्याम्</td><td class="dv">लताभ्यः</td></tr>
+        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">लतायाः</td><td class="dv">लतयोः</td><td class="dv">लतानाम्</td></tr>
+        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">लतायाम्</td><td class="dv">लतयोः</td><td class="dv">लतासु</td></tr>
+        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे लते!</td><td class="dv">हे लते!</td><td class="dv">हे लताः!</td></tr>
+      </table>
+    </div>
+  </div>
+  <div id="shabd-fal" style="display:none">
+    <div class="card">
+      <div class="card-title">फल — Fruit (Neuter · अकारान्त नपुंसक)</div>
+      <div class="card-desc">Nouns like ज्ञान, जल, वन, धन, कर्म all follow this pattern.</div>
+      <table class="grammar-table">
+        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
+        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">फलम्</td><td class="dv">फले</td><td class="dv">फलानि</td></tr>
+        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">फलम्</td><td class="dv">फले</td><td class="dv">फलानि</td></tr>
+        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">फलेन</td><td class="dv">फलाभ्याम्</td><td class="dv">फलैः</td></tr>
+        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">फलाय</td><td class="dv">फलाभ्याम्</td><td class="dv">फलेभ्यः</td></tr>
+        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">फलात्</td><td class="dv">फलाभ्याम्</td><td class="dv">फलेभ्यः</td></tr>
+        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">फलस्य</td><td class="dv">फलयोः</td><td class="dv">फलानाम्</td></tr>
+        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">फले</td><td class="dv">फलयोः</td><td class="dv">फलेषु</td></tr>
+        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे फल!</td><td class="dv">हे फले!</td><td class="dv">हे फलानि!</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="info-box">The word Karma (कर्म) is itself a neuter noun — a Shabd Roop of the root kar. When the Gita says "Karmanyevadhikaraste" — your right is to karma alone — it uses the 7th Vibhakti. The action is the location you inhabit.</div>
+</div>
+
+<!-- DHATU ROOP -->
+<div class="page" id="page-dhaturoop">
+  <div class="pill">व्याकरण</div>
+  <div class="page-heading">Dhatu Roop — धातु रूप</div>
+  <div class="page-desc">Dhatu is the root of every verb. From one seed, an entire forest of meanings grows — across time, mood, and person.</div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="showDhatu('lat',this)">लट् Present</button>
+    <button class="sub-tab" onclick="showDhatu('lrit',this)">लृट् Future</button>
+    <button class="sub-tab" onclick="showDhatu('lang',this)">लङ् Past</button>
+    <button class="sub-tab" onclick="showDhatu('lot',this)">लोट् Command</button>
+    <button class="sub-tab" onclick="showDhatu('vidhiling',this)">विधि Should</button>
+  </div>
+  <div id="dhatu-content"></div>
+  <div class="info-box">The Gita's most quoted verse uses Lot Lakar — "Arise! Fight!" (उत्तिष्ठ, अर्जुन). Commands in Sanskrit are not harsh — they carry the weight of love and duty combined.</div>
+</div>
+
+<!-- SANDHI -->
+<div class="page" id="page-sandhi">
+  <div class="pill">व्याकरण</div>
+  <div class="page-heading">Sandhi — सन्धि</div>
+  <div class="page-desc">Sandhi means union — the blending of sounds at word boundaries. Sanskrit does not tolerate awkward gaps. Like rivers joining the sea, sounds merge into something seamless.</div>
+  <div class="card">
+    <div class="card-title">1. Swar Sandhi — Vowel Union</div>
+    <table class="grammar-table">
+      <tr><th>Type</th><th>Rule</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td>दीर्घ</td><td>a+a=ā</td><td class="dv">राम+अयन=रामायण</td><td>Ramayana</td></tr>
+      <tr><td>गुण</td><td>a+i=e</td><td class="dv">देव+इन्द्र=देवेन्द्र</td><td>King of Gods</td></tr>
+      <tr><td>गुण</td><td>a+u=o</td><td class="dv">गङ्गा+उदक=गङ्गोदक</td><td>Ganga water</td></tr>
+      <tr><td>यण्</td><td>i+a=ya</td><td class="dv">इति+आदि=इत्यादि</td><td>And so on</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">2. Vyanjan Sandhi — Consonant Union</div>
+    <table class="grammar-table">
+      <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td>t+vowel→d</td><td class="dv">जगत्+ईश=जगदीश</td><td>Lord of Universe</td></tr>
+      <tr><td>s→ṣ after i/u/r</td><td class="dv">अभि+सेक=अभिषेक</td><td>Coronation</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">3. Visarga Sandhi — The Breath</div>
+    <table class="grammar-table">
+      <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td>aḥ+vowel→o'</td><td class="dv">रामः+अस्ति=रामोऽस्ति</td><td>Ram exists</td></tr>
+      <tr><td>aḥ+voiced→o</td><td class="dv">बालकः+गच्छति=बालको गच्छति</td><td>Boy goes</td></tr>
+    </table>
+  </div>
+  <div class="info-box">Namaste is itself a Sandhi — namas + te. "I bow to you." Two words, spoken millions of times daily, that most people don't know are grammatically fused. Sandhi is everywhere once you see it.</div>
+</div>
+
+<!-- SAMAS -->
+<div class="page" id="page-samas">
+  <div class="pill">व्याकरण</div>
+  <div class="page-heading">Samas — समास</div>
+  <div class="page-desc">The art of compression. Two words becoming one, carrying the weight of both. Sanskrit says in one word what English takes a sentence to express.</div>
+  <div class="card">
+    <div class="card-title">1. Tatpurusha — तत्पुरुष</div>
+    <div class="card-desc">Second word dominates. First qualifies it.</div>
+    <table class="grammar-table">
+      <tr><th>Compound</th><th>Split</th><th>Meaning</th></tr>
+      <tr><td class="dv">राजपुत्रः</td><td class="dv">राज्ञः पुत्रः</td><td>Son of the king</td></tr>
+      <tr><td class="dv">विद्यालयः</td><td class="dv">विद्यायाः आलयः</td><td>Home of knowledge</td></tr>
+      <tr><td class="dv">देवालयः</td><td class="dv">देवस्य आलयः</td><td>Temple</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">2. Dvandva — द्वन्द्व</div>
+    <div class="card-desc">Both words are equal — a union of equals.</div>
+    <table class="grammar-table">
+      <tr><th>Compound</th><th>Split</th><th>Meaning</th></tr>
+      <tr><td class="dv">सुखदुःखे</td><td class="dv">सुखम् च दुःखम् च</td><td>Joy and sorrow</td></tr>
+      <tr><td class="dv">पितरौ</td><td class="dv">माता च पिता च</td><td>Parents</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">3. Bahuvrihi — बहुव्रीहि</div>
+    <div class="card-desc">Neither word is the subject — together they describe a third entity. Sanskrit poetry uses these as divine epithets.</div>
+    <table class="grammar-table">
+      <tr><th>Compound</th><th>Meaning</th><th>Refers to</th></tr>
+      <tr><td class="dv">नीलकण्ठ</td><td>Blue-throated one</td><td>Shiva</td></tr>
+      <tr><td class="dv">चक्रपाणि</td><td>Chakra in hand</td><td>Vishnu</td></tr>
+      <tr><td class="dv">पीताम्बर</td><td>Yellow-robed one</td><td>Krishna</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">4. Avyayibhava — अव्ययीभाव</div>
+    <table class="grammar-table">
+      <tr><th>Compound</th><th>Meaning</th></tr>
+      <tr><td class="dv">यथाशक्ति</td><td>According to ability</td></tr>
+      <tr><td class="dv">प्रतिदिनम्</td><td>Every day</td></tr>
+    </table>
+  </div>
+  <div class="info-box">Mahābhārata is a Tatpurusha — mahā + bhārata — "the great tale of the Bharatas." Upanishad is also a compound — upa (near) + ni (down) + shad (to sit) — "sitting near the teacher." Every Sanskrit word you use is a compressed universe of meaning.</div>
+</div>
+
+<!-- KARAKA -->
+<div class="page" id="page-karaka">
+  <div class="pill">व्याकरण</div>
+  <div class="page-heading">Karaka & Vibhakti — कारक</div>
+  <div class="page-desc">Sanskrit sees every noun as playing a role in the drama of a sentence — and names each role precisely. This is Karaka — the grammar of relationships.</div>
+  <div class="card">
+    <table class="grammar-table">
+      <tr><th>Case</th><th>Karaka</th><th>English</th><th>Example</th></tr>
+      <tr><td>1st</td><td>कर्ता — Doer</td><td>Subject</td><td class="dv">रामः पठति</td></tr>
+      <tr><td>2nd</td><td>कर्म — Action's object</td><td>Object</td><td class="dv">पुस्तकम् पठति</td></tr>
+      <tr><td>3rd</td><td>करण — Instrument</td><td>By/With</td><td class="dv">लेखन्या लिखति</td></tr>
+      <tr><td>4th</td><td>सम्प्रदान — Recipient</td><td>For/To</td><td class="dv">गुरवे नमः</td></tr>
+      <tr><td>5th</td><td>अपादान — Separation</td><td>From</td><td class="dv">ग्रामात् आगच्छति</td></tr>
+      <tr><td>6th</td><td>सम्बन्ध — Relation</td><td>Of</td><td class="dv">रामस्य पुस्तकम्</td></tr>
+      <tr><td>7th</td><td>अधिकरण — Location</td><td>In/At</td><td class="dv">विद्यालये पठति</td></tr>
+    </table>
+  </div>
+  <div class="info-box">Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.</div>
+</div>
+
+<!-- SCRIPT -->
+<div class="page" id="page-script">
+  <div class="pill">लिपि</div>
+  <div class="page-heading">Devanagari — देवनागरी</div>
+  <div class="page-desc">The script of the gods. Every letter has one sound — no ambiguity, no exceptions. Once truly learned, it cannot be unlearned.</div>
+  <div class="card"><div class="card-title">Vowels — स्वर</div><div class="letter-grid" id="vowel-grid"></div></div>
+  <div class="card"><div class="card-title">Consonants — व्यञ्जन (first 10)</div><div class="letter-grid" id="cons-grid"></div></div>
+  <div class="info-box">The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.</div>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="page" id="page-flashcards">
+  <div class="pill">अभ्यास</div>
+  <div class="page-heading">Vocabulary — शब्द</div>
+  <div class="page-desc">These are not just words. Each one carries centuries of meaning. Some you use daily without knowing their depth.</div>
+  <div class="score-row">
+    <span class="serif" style="font-style:italic" id="fc-count">Card 1 of 15</span>
+    <span>✓ <span id="fc-right">0</span> &nbsp; ✗ <span id="fc-wrong">0</span></span>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="fc-bar" style="width:6%"></div></div>
+  <div class="fc-wrap">
+    <div class="fc" id="fc" onclick="flipFC()">
+      <div class="fc-front">
+        <span class="fc-deva-xl" id="fc-deva"></span>
+        <span class="fc-roman" id="fc-roman" style="font-size:13px;color:var(--gold);font-style:italic"></span>
+        <span class="fc-hint">tap to reveal its depth</span>
+      </div>
+      <div class="fc-back" style="padding:14px;overflow-y:auto;justify-content:flex-start;align-items:flex-start;gap:6px">
+        <div id="fc-meaning" style="font-family:'EB Garamond',serif;font-size:15px;color:#f0e8d8;line-height:1.6;margin-bottom:8px"></div>
+        <div id="fc-shloka" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:12px;color:var(--gold);line-height:1.8;border-top:1px solid rgba(200,134,10,.3);padding-top:8px;width:100%"></div>
+        <div id="fc-shloka-meaning" style="font-family:'EB Garamond',serif;font-size:12px;color:#b0a08a;line-height:1.6;font-style:italic"></div>
+        <div id="fc-source" style="font-size:10px;color:rgba(200,134,10,.7);margin-top:4px;letter-spacing:.3px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-controls">
+    <button class="fc-btn" onclick="flipFC()">Reveal</button>
+    <button class="fc-btn btn-wrong" onclick="nextFC(false)">Not yet</button>
+    <button class="fc-btn btn-right" onclick="nextFC(true)">Remembered</button>
+  </div>
+</div>
+
+<!-- TUTOR -->
+<div class="page" id="page-tutor">
+  <div class="pill">AI</div>
+  <div class="page-heading">Ask Guru Ji — गुरु जी</div>
+  <div class="page-desc">Not a chatbot. A teacher who knows you have already lived enough to understand Sanskrit deeply.</div>
+  <div class="sugs">
+    <button class="sug" onclick="askSug(this)">What does the Gita say about Karma?</button>
+    <button class="sug" onclick="askSug(this)">Explain बालक Shabd Roop with a life example</button>
+    <button class="sug" onclick="askSug(this)">Teach me a shloka on wisdom</button>
+    <button class="sug" onclick="askSug(this)">What does Dharma really mean?</button>
+    <button class="sug" onclick="askSug(this)">How do I say "life teaches us" in Sanskrit?</button>
+  </div>
+  <div id="chat-box">
+    <div class="msg ai">🙏 Namaste.
+
+You did not come here to learn Sanskrit from scratch. You came to understand what you once memorised — to find the meaning behind words that stayed with you all these years.
+
+Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects to something you have lived through. I am here.</div>
+  </div>
+  <div class="chat-row">
+    <input type="text" id="chat-input" placeholder="What would you like to understand?" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button id="send-btn" onclick="sendMsg()">Ask</button>
+  </div>
+  <div class="no-key-msg" id="no-key-msg">Please set your Gemini API key first — tap 🔑 in the top right corner.</div>
+</div>
+
+
+<!-- SENTENCES -->
+<div class="page" id="page-sentences">
+  <div class="pill">अभ्यास</div>
+  <div class="page-heading">Sentence Practice — वाक्य रचना</div>
+  <div class="page-desc">Sanskrit sentence structure is Subject → Object → Verb (SOV). Try forming these sentences. The answer unfolds when you are ready.</div>
+
+  <div id="sentence-list"></div>
+</div>
+
+<script>
+const vowels=[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
+const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'}];
+const shlokas=[
+  {text:'विद्या ददाति विनयं विनयाद् याति पात्रताम् । पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम् ॥',source:'— Hitopadesha',meaning:'Knowledge gives humility. From humility comes worthiness. From worthiness, wealth. From wealth — righteousness. And from righteousness, happiness.',life:'We spent years chasing wealth before wisdom. Sanskrit knew the order all along.'},
+  {text:'अयं निजः परो वेति गणना लघुचेतसाम् । उदारचरितानां तु वसुधैव कुटुम्बकम् ॥',source:'— Maha Upanishad',meaning:'"Mine or yours" — such calculations are for the small-minded. For those of generous character, the entire world is one family.',life:'Vasudhaiva Kutumbakam. Four words from every school assembly. Now you know their weight.'},
+  {text:'उत्तिष्ठत जाग्रत प्राप्य वरान् निबोधत । क्षुरस्य धारा निशिता दुरत्यया दुर्गं पथस्तत् कवयो वदन्ति ॥',source:'— Katha Upanishad',meaning:'Arise, awake, stop not till the goal is reached. The path is sharp as a razor — the wise say it is hard to traverse.',life:'You memorised this in Class 9. Today you have the scars to know what the razor edge actually feels like.'},
+  {text:'सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः । सर्वे भद्राणि पश्यन्तु मा कश्चिद् दुःखभाग् भवेत् ॥',source:'— Brihadaranyaka Upanishad',meaning:'May all be happy. May all be free from illness. May all see what is auspicious. May no one suffer.',life:'This was the prayer before every school assembly — recited as routine, written as the highest aspiration for all humanity.'},
+  {text:'चरैवेति चरैवेति',source:'— Aitareya Brahmana',meaning:'Keep moving. Keep moving.',life:'Two words. The shortest and perhaps the most powerful instruction in Sanskrit. No explanation needed.'},
+  {text:'यो मां पश्यति सर्वत्र सर्वं च मयि पश्यति । तस्याहं न प्रणश्यामि स च मे न प्रणश्यति ॥',source:'— Bhagavad Gita 6.30',meaning:'One who sees Me everywhere and sees everything in Me — I am never lost to them, nor are they to Me.',life:'Whether or not you believe in the divine, this is a statement on connection so deep that separation becomes impossible.'},
+];
+const cards=[
+  {d:'विवेक',r:'Viveka',m:'Discernment — the ability to tell the real from the unreal, the eternal from the temporary.',shloka:'नित्यानित्यवस्तुविवेकः',slokaMeaning:'Discrimination between the eternal and the transient — the first qualification for seeking truth.',source:'Vivekachudamani — Adi Shankaracharya'},
+  {d:'वैराग्य',r:'Vairagya',m:'Dispassion — not bitterness toward the world, but freedom from being pulled by it.',shloka:'वि + राग = वैराग्य',slokaMeaning:'Vi means without, raga means passion. Vairagya is being without the colouring of desire — seeing clearly.',source:'Vedanta etymology — Vivekachudamani'},
+  {d:'तितिक्षा',r:'Titiksha',m:'Patient endurance of opposites — bearing heat and cold, praise and insult, with equal steadiness.',shloka:'सहनं सर्वदुःखानामप्रतीकारपूर्वकम् । चिन्ताविलापरहितं सा तितिक्षा निगद्यते ॥',slokaMeaning:'Bearing all suffering without retaliation, without worry, without lament — that is called Titiksha.',source:'Vivekachudamani 24 — Adi Shankaracharya'},
+  {d:'उपेक्षा',r:'Upeksha',m:'Equanimity toward the indifferent — not every situation deserves your emotional energy.',shloka:'मैत्रीकरुणामुदितोपेक्षाणां सुखदुःखपुण्यापुण्यविषयाणाम्',slokaMeaning:'Friendliness toward the happy, compassion for the suffering, joy for the virtuous, equanimity toward the wicked.',source:'Yoga Sutras 1.33 — Patanjali'},
+  {d:'समत्व',r:'Samatva',m:'Evenness of mind — where neither success nor failure disturbs the inner stillness.',shloka:'समत्वं योग उच्यते',slokaMeaning:'Evenness of mind is called Yoga.',source:'Bhagavad Gita 2.48 — Vyasa'},
+  {d:'निर्वेद',r:'Nirveda',m:'The weariness of the world — not despair, but the turning inward that precedes wisdom.',shloka:'शमो दमस्तितिक्षा च निर्वेदः',slokaMeaning:'Calmness, self-restraint, endurance, and nirveda — these travel together on the path.',source:'Bhagavata Purana 11.19'},
+  {d:'मुमुक्षुत्व',r:'Mumukshutva',m:'The burning desire for liberation — not a casual wish, but an urgency that consumes all distraction.',shloka:'मोक्षो मे भूयात् इति इच्छा मुमुक्षुत्वम्',slokaMeaning:'The intense desire May I be liberated — this longing itself is called Mumukshutva.',source:'Tattva Bodha — Adi Shankaracharya'},
+  {d:'अन्तरात्मन्',r:'Antaratman',m:'The inner self — the witness that watches all your thoughts without ever being touched by them.',shloka:'अन्तरात्मा तु सर्वेषां साक्षी',slokaMeaning:'The inner self is the witness of all.',source:'Manusmriti 8.85'},
+  {d:'चित्तवृत्ति',r:'Chittavritti',m:'The modifications of the mind — every thought, memory, judgment that arises and disturbs stillness.',shloka:'योगश्चित्तवृत्तिनिरोधः',slokaMeaning:'Yoga is the cessation of the modifications of the mind.',source:'Yoga Sutras 1.2 — Patanjali'},
+  {d:'उपाधि',r:'Upadhi',m:'A limiting label — the roles we wear that make us forget what we truly are beneath them.',shloka:'देहो देवालयः प्रोक्तः जीवो देवः सनातनः',slokaMeaning:'The body is the temple; the soul within is the eternal deity.',source:'Shiva Purana'},
+  {d:'श्रद्धा',r:'Shraddha',m:'Not blind faith — trust born of direct experience. The willingness to move toward what is true.',shloka:'श्रद्धावाँल्लभते ज्ञानम्',slokaMeaning:'One who has Shraddha attains knowledge.',source:'Bhagavad Gita 4.39'},
+  {d:'विषाद',r:'Vishada',m:'The grief that opens the door — the collapse that made the Gita necessary.',shloka:'सीदन्ति मम गात्राणि मुखं च परिशुष्यति',slokaMeaning:'My limbs fail and my mouth is parched — the beginning of all wisdom.',source:'Bhagavad Gita 1.29 — Arjuna'},
+  {d:'अभिनिवेश',r:'Abhinivesha',m:'The clinging to life — the deepest instinct, present even in the wisest, that binds us to existence.',shloka:'स्वरसवाही विदुषोऽपि तथारूढोऽभिनिवेशः',slokaMeaning:'Flowing by its own force, even in the wise, is the deeply rooted clinging to life.',source:'Yoga Sutras 2.9 — Patanjali'},
+  {d:'तुरीय',r:'Turiya',m:'The fourth state — beyond waking, dreaming, and deep sleep. The pure awareness that witnesses all three.',shloka:'शान्तं शिवमद्वैतं चतुर्थं मन्यन्ते',slokaMeaning:'The fourth is peaceful, auspicious, non-dual — the witness of all phenomena.',source:'Mandukya Upanishad 7'},
+  {d:'प्रज्ञा',r:'Prajna',m:'Wisdom settled into the bones — not what you know, but what you have irreversibly become.',shloka:'प्रजहाति यदा कामान्सर्वान्पार्थ मनोगतान् । आत्मन्येवात्मना तुष्टः स्थितप्रज्ञस्तदोच्यते ॥',slokaMeaning:'When one abandons all desires of the mind and is content in the self alone — they are called Sthitaprajna.',source:'Bhagavad Gita 2.55'},
+];
+const dhatu={
+  lat:{title:'लट् लकार — Present Tense',desc:'Actions happening now. In Sanskrit, present tense also conveys timeless truths.',roots:[
+    {name:'भू — to be, to exist',rows:[['भवति','भवतः','भवन्ति'],['भवसि','भवथः','भवथ'],['भवामि','भवावः','भवामः']]},
+    {name:'पठ् — to read, to study',rows:[['पठति','पठतः','पठन्ति'],['पठसि','पठथः','पठथ'],['पठामि','पठावः','पठामः']]},
+    {name:'गम् — to go',rows:[['गच्छति','गच्छतः','गच्छन्ति'],['गच्छसि','गच्छथः','गच्छथ'],['गच्छामि','गच्छावः','गच्छामः']]},
+  ]},
+  lrit:{title:'लृट् लकार — Future Tense',desc:'What will be. The grammar of hope and intention.',roots:[
+    {name:'भू — to be',rows:[['भविष्यति','भविष्यतः','भविष्यन्ति'],['भविष्यसि','भविष्यथः','भविष्यथ'],['भविष्यामि','भविष्यावः','भविष्यामः']]},
+    {name:'पठ् — to read',rows:[['पठिष्यति','पठिष्यतः','पठिष्यन्ति'],['पठिष्यसि','पठिष्यथः','पठिष्यथ'],['पठिष्यामि','पठिष्यावः','पठिष्यामः']]},
+  ]},
+  lang:{title:'लङ् लकार — Past Tense',desc:'What has already happened. The "a" prefix marks time having passed — even grammar mourns the past.',roots:[
+    {name:'भू — to be',rows:[['अभवत्','अभवताम्','अभवन्'],['अभवः','अभवतम्','अभवत'],['अभवम्','अभवाव','अभवाम']]},
+    {name:'पठ् — to read',rows:[['अपठत्','अपठताम्','अपठन्'],['अपठः','अपठतम्','अपठत'],['अपठम्','अपठाव','अपठाम']]},
+  ]},
+  lot:{title:'लोट् लकार — Imperative',desc:'Commands, blessings, and urgent requests. When the Gita says "Arise!" — it uses Lot Lakar.',roots:[
+    {name:'भू — to be',rows:[['भवतु','भवताम्','भवन्तु'],['भव','भवतम्','भवत'],['भवानि','भवाव','भवाम']]},
+    {name:'पठ् — to read',rows:[['पठतु','पठताम्','पठन्तु'],['पठ','पठतम्','पठत'],['पठानि','पठाव','पठाम']]},
+  ]},
+  vidhiling:{title:'विधिलिङ् लकार — Should / Ought to',desc:'The mood of ethics, advice, and possibility. What one should do.',roots:[
+    {name:'भू — to be',rows:[['भवेत्','भवेताम्','भवेयुः'],['भवेः','भवेतम्','भवेत'],['भवेयम्','भवेव','भवेम']]},
+    {name:'पठ् — to read',rows:[['पठेत्','पठेताम्','पठेयुः'],['पठेः','पठेतम्','पठेत'],['पठेयम्','पठेव','पठेम']]},
+  ]},
+};
+const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',sentences:'Sentence Practice',tutor:'Ask Guru Ji'};
+
+const sentences=[
+  {
+    english:'The boy reads the book.',
+    hint:'Subject (1st) → Object (2nd) → Verb',
+    breakdown:[{w:'बालकः',role:'Subject (1st Vibhakti)'},{w:'पुस्तकम्',role:'Object (2nd Vibhakti)'},{w:'पठति',role:'Verb — पठ् Lat Lakar, Prathama, Eka'}],
+    answer:'बालकः पुस्तकम् पठति ।',
+    roman:'Bālakaḥ pustakam paṭhati.',
+    note:'बालकः is the 1st Vibhakti of बालक. पुस्तकम् is 2nd Vibhakti of neuter noun पुस्तक.'
+  },
+  {
+    english:'The teacher goes to the village.',
+    hint:'Who goes? Where to? What action?',
+    breakdown:[{w:'गुरुः',role:'Subject (1st Vibhakti)'},{w:'ग्रामम्',role:'Destination (2nd Vibhakti)'},{w:'गच्छति',role:'Verb — गम् Lat Lakar'}],
+    answer:'गुरुः ग्रामम् गच्छति ।',
+    roman:'Guruḥ grāmam gacchati.',
+    note:'Destination uses 2nd Vibhakti in Sanskrit, unlike English which uses "to".'
+  },
+  {
+    english:'I study with a pen.',
+    hint:'Who? With what? What action?',
+    breakdown:[{w:'अहम्',role:'Subject — I'},{w:'लेखन्या',role:'Instrument (3rd Vibhakti) — by/with pen'},{w:'पठामि',role:'Verb — उत्तम Purusha, Eka (I)'}],
+    answer:'अहम् लेखन्या पठामि ।',
+    roman:'Aham lekhaṇyā paṭhāmi.',
+    note:'3rd Vibhakti (Karana) is used for instruments — what you use to do something.'
+  },
+  {
+    english:'Knowledge belongs to the student.',
+    hint:'Of whom? What is it?',
+    breakdown:[{w:'शिष्यस्य',role:'6th Vibhakti — of the student'},{w:'ज्ञानम्',role:'Subject (1st Vibhakti)'}],
+    answer:'शिष्यस्य ज्ञानम् अस्ति ।',
+    roman:'Śiṣyasya jñānam asti.',
+    note:'6th Vibhakti (Sambandha) shows possession — like apostrophe-s in English.'
+  },
+  {
+    english:'The student bows to the teacher.',
+    hint:'Who bows? To whom?',
+    breakdown:[{w:'शिष्यः',role:'Subject (1st Vibhakti)'},{w:'गुरवे',role:'4th Vibhakti — for/to the teacher'},{w:'नमति',role:'Verb — to bow'}],
+    answer:'शिष्यः गुरवे नमति ।',
+    roman:'Śiṣyaḥ gurave namati.',
+    note:'4th Vibhakti (Sampradana) shows the recipient — to whom something is given or offered.'
+  },
+  {
+    english:'The two boys go to school.',
+    hint:'Two = Dual number (द्विवचन)',
+    breakdown:[{w:'बालकौ',role:'Subject — Dual 1st Vibhakti (two boys)'},{w:'विद्यालयम्',role:'Destination — 2nd Vibhakti'},{w:'गच्छतः',role:'Verb — Dual Prathama Purusha'}],
+    answer:'बालकौ विद्यालयम् गच्छतः ।',
+    roman:'Bālakau vidyālayam gacchataḥ.',
+    note:'Sanskrit has three numbers: Singular, Dual, Plural. Dual is used for exactly two — rare in modern languages.'
+  },
+  {
+    english:'May wisdom arise in the mind.',
+    hint:'Use Lot Lakar (command/blessing form)',
+    breakdown:[{w:'मनसि',role:'7th Vibhakti — in the mind'},{w:'प्रज्ञा',role:'Subject — wisdom'},{w:'उदेतु',role:'Verb — Lot Lakar, let it arise'}],
+    answer:'मनसि प्रज्ञा उदेतु ।',
+    roman:'Manasi prajñā udetu.',
+    note:'Lot Lakar expresses blessings and wishes — not just commands. Many Sanskrit prayers use this form.'
+  },
+  {
+    english:'He should read the Gita every day.',
+    hint:'Use Vidhiling Lakar — the "should" mood',
+    breakdown:[{w:'सः',role:'Subject — He'},{w:'प्रतिदिनम्',role:'Every day (Avyaya — indeclinable)'},{w:'गीताम्',role:'Object — 2nd Vibhakti'},{w:'पठेत्',role:'Vidhiling Lakar — should read'}],
+    answer:'सः प्रतिदिनम् गीताम् पठेत् ।',
+    roman:'Saḥ pratidinam gītām paṭhet.',
+    note:'Vidhiling is the grammar of ethics and advice. Chanakya wrote most of his Arthashastra in this mood.'
+  },
+  {
+    english:'From silence, wisdom is born.',
+    hint:'From what? What is born?',
+    breakdown:[{w:'मौनात्',role:'5th Vibhakti — from silence'},{w:'प्रज्ञा',role:'Subject — wisdom'},{w:'जायते',role:'Verb — is born'}],
+    answer:'मौनात् प्रज्ञा जायते ।',
+    roman:'Maunāt prajñā jāyate.',
+    note:'5th Vibhakti (Apadana) shows the source of separation or origin — "from" in English.'
+  },
+  {
+    english:'In this world, equanimity is called yoga.',
+    hint:'From Bhagavad Gita 2.48',
+    breakdown:[{w:'इह',role:'In this (world) — Avyaya'},{w:'समत्वम्',role:'Subject — evenness, equanimity'},{w:'योगः',role:'Predicate — is called yoga'},{w:'उच्यते',role:'Verb — is called (passive)'}],
+    answer:'इह समत्वम् योगः उच्यते ।',
+    roman:'Iha samatvaṃ yogaḥ ucyate.',
+    note:'This is a direct adaptation of Gita 2.48. You now understand the grammar behind one of its most famous lines.'
+  },
+];
+
+function renderSentences(){
+  const list=document.getElementById('sentence-list');
+  if(!list||list.children.length>0)return;
+  sentences.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.style.marginBottom='20px';
+    div.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Sentence ${i+1}</div>
+        <div style="font-size:10px;color:var(--accent);font-style:italic;font-family:'EB Garamond',serif">${s.hint}</div>
+      </div>
+      <div style="font-family:'EB Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:14px">"${s.english}"</div>
+      <button onclick="toggleAnswer(${i})" style="background:var(--light-accent);border:1px solid var(--border);color:var(--accent);padding:8px 16px;border-radius:4px;font-family:'EB Garamond',serif;font-size:14px;cursor:pointer;width:100%;text-align:left" id="btn-${i}">
+        Show Sanskrit →
+      </button>
+      <div id="ans-${i}" style="display:none;margin-top:14px">
+        <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:22px;color:var(--accent);line-height:1.8;margin-bottom:6px">${s.answer}</div>
+        <div style="font-size:13px;color:var(--muted);font-style:italic;margin-bottom:12px">${s.roman}</div>
+        <div style="margin-bottom:10px">
+          ${s.breakdown.map(b=>`<span style="display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 10px;margin:3px 3px 3px 0;font-size:12px"><span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--accent)">${b.w}</span> <span style="color:var(--muted);font-size:10px">— ${b.role}</span></span>`).join('')}
+        </div>
+        <div style="background:#f0f7f4;border:1px solid #b7d4c7;border-radius:6px;padding:10px 12px;font-family:'EB Garamond',serif;font-size:14px;color:#2d5a48;line-height:1.7">
+          💡 ${s.note}
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function toggleAnswer(i){
+  const ans=document.getElementById('ans-'+i);
+  const btn=document.getElementById('btn-'+i);
+  const visible=ans.style.display!=='none';
+  ans.style.display=visible?'none':'block';
+  btn.textContent=visible?'Show Sanskrit →':'Hide ↑';
+}
+let apiKey='',chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
+
+(function init(){
+  ['vowel-grid','cons-grid'].forEach((id,i)=>{
+    const data=i===0?vowels:cons;
+    const g=document.getElementById(id);
+    data.forEach(x=>{const el=document.createElement('div');el.className='letter-card';el.innerHTML=`<div class="lc-deva">${x.d}</div><div class="lc-roman">${x.r}</div>`;g.appendChild(el);});
+  });
+  const day=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const s=shlokas[day%shlokas.length];
+  document.getElementById('shloka-text').textContent=s.text;
+  document.getElementById('shloka-source').textContent=s.source;
+  document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
+  document.getElementById('shloka-life').textContent=s.life;
+  loadFC();
+  showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
+})();
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+function getNav(id){return document.querySelector(`.nav-item[onclick*="'${id}'"]`)}
+let navHistory=[];
+function nav(id,el){
+  const cur=document.querySelector('.page.active');
+  if(cur&&cur.id!=='page-'+id) navHistory.push(cur.id.replace('page-',''));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(id==='sentences')renderSentences();
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el&&el.classList)el.classList.add('active');
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+  var bb=document.getElementById('back-btn');
+  var mb=document.getElementById('menu-btn');
+  if(id==='home'){bb.style.display='none';mb.style.display='block';}
+  else{bb.style.display='flex';mb.style.display='none';}
+  closeSidebar();window.scrollTo(0,0);
+}
+function goBack(){
+  var prev=navHistory.length>0?navHistory.pop():'home';
+  var items=document.querySelectorAll('.nav-item');
+  var el=null;
+  items.forEach(function(item){
+    if(item.getAttribute('onclick')&&item.getAttribute('onclick').indexOf("'"+prev+"'")>-1) el=item;
+  });
+  nav(prev,el);
+}
+function openKey(){document.getElementById('key-modal').classList.add('open')}
+function closeKey(){document.getElementById('key-modal').classList.remove('open')}
+function saveKey(){
+  const v=document.getElementById('key-input').value.trim();
+  if(!v)return;apiKey=v;
+  document.getElementById('key-msg').textContent='Key saved. Guru Ji is ready.';
+  document.getElementById('key-input').value='';
+  setTimeout(()=>{closeKey();document.getElementById('key-msg').textContent=''},1800);
+}
+function showShabd(id,btn){
+  ['baalak','lata','fal'].forEach(x=>document.getElementById('shabd-'+x).style.display='none');
+  document.getElementById('shabd-'+id).style.display='block';
+  document.querySelectorAll('#page-shabdroop .sub-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function showDhatu(id,btn){
+  const data=dhatu[id];
+  let html=`<div class="card"><div class="card-title">${data.title}</div><div class="card-desc">${data.desc}</div>`;
+  data.roots.forEach(root=>{
+    html+=`<div style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--muted);margin:14px 0 6px">${root.name}</div>
+    <table class="grammar-table">
+      <tr><th>Purusha</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
+      <tr><td style="text-align:left;padding-left:10px">प्रथम<span style="font-size:10px;color:var(--muted);display:block">He/She/It</span></td><td class="dv">${root.rows[0][0]}</td><td class="dv">${root.rows[0][1]}</td><td class="dv">${root.rows[0][2]}</td></tr>
+      <tr><td style="text-align:left;padding-left:10px">मध्यम<span style="font-size:10px;color:var(--muted);display:block">You</span></td><td class="dv">${root.rows[1][0]}</td><td class="dv">${root.rows[1][1]}</td><td class="dv">${root.rows[1][2]}</td></tr>
+      <tr><td style="text-align:left;padding-left:10px">उत्तम<span style="font-size:10px;color:var(--muted);display:block">I/We</span></td><td class="dv">${root.rows[2][0]}</td><td class="dv">${root.rows[2][1]}</td><td class="dv">${root.rows[2][2]}</td></tr>
+    </table>`;
+  });
+  html+='</div>';
+  document.getElementById('dhatu-content').innerHTML=html;
+  document.querySelectorAll('#page-dhaturoop .sub-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+function loadFC(){
+  const c=cards[fcIdx];
+  document.getElementById('fc-deva').textContent=c.d;
+  document.getElementById('fc-roman').textContent=c.r;
+  document.getElementById('fc-meaning').textContent=c.m;
+  document.getElementById('fc-shloka').textContent=c.shloka;
+  document.getElementById('fc-shloka-meaning').textContent=c.slokaMeaning;
+  document.getElementById('fc-source').textContent='— '+c.source;
+  document.getElementById('fc').classList.remove('flipped');
+  document.getElementById('fc-count').textContent='Card '+(fcIdx+1)+' of '+cards.length;
+  document.getElementById('fc-bar').style.width=((fcIdx+1)/cards.length*100)+'%';
+}
+function flipFC(){document.getElementById('fc').classList.toggle('flipped')}
+function nextFC(got){
+  if(got)fcRight++;else fcWrong++;
+  document.getElementById('fc-right').textContent=fcRight;
+  document.getElementById('fc-wrong').textContent=fcWrong;
+  fcIdx=(fcIdx+1)%cards.length;loadFC();
+}
+function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
+async function sendMsg(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  if(!apiKey){document.getElementById('no-key-msg').style.display='block';return}
+  document.getElementById('no-key-msg').style.display='none';
+  addMsg('user',text);input.value='';
+  document.getElementById('send-btn').disabled=true;
+  const t=document.createElement('div');t.className='msg typing';t.textContent='Guru Ji is reflecting...';
+  document.getElementById('chat-box').appendChild(t);scrollChat();
+  chatHistory.push({role:'user',parts:[{text}]});
+  const sys=`You are Guru Ji — a wise, philosophical Sanskrit teacher within the app "Samsmarana" (संस्मरण), meaning Remembrance.
+
+Your students are well-educated adults aged 30 and above who studied Sanskrit in school (CBSE Class 8-10) but never truly understood its depth. They return now with the wisdom of lived experience — career, relationships, losses, choices — and are ready to understand what they once only memorised.
+
+Your style:
+- Speak with intellectual warmth and dignity — like a thoughtful professor, not a textbook
+- Always write Sanskrit in Devanagari first, then romanization in brackets, then meaning
+- Connect grammar and shlokas to real adult life experiences and philosophical insight
+- Reference the Bhagavad Gita, Upanishads, Hitopadesha when relevant
+- Never be dry — every response should feel like a small discovery
+- CBSE topics covered: Shabd Roop (बालक/लता/फल), Dhatu Roop (5 Lakaars), Sandhi (3 types), Samas (4 types), Karaka & Vibhakti (7 cases)`;
+  try{
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key='+apiKey,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:chatHistory,generationConfig:{temperature:0.8,maxOutputTokens:1024}})
+    });
+    const data=await res.json();
+    const reply=data?.candidates?.[0]?.content?.parts?.[0]?.text||(data?.error?.message?'API Error: '+data.error.message:'I could not respond. Please check your key.');
+    chatHistory.push({role:'model',parts:[{text:reply}]});
+    t.remove();addMsg('ai',reply);
+  }catch(e){
+    t.remove();
+    addMsg('ai','Could not reach Guru Ji.\n\nIf you opened this file directly (file://), browsers block API calls for security. Please host this file — we can deploy it to Vercel together and this will work perfectly.');
+  }
+  document.getElementById('send-btn').disabled=false;
+}
+function addMsg(role,text){
+  const box=document.getElementById('chat-box');
+  const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
+  box.appendChild(d);scrollChat();
+}
+function scrollChat(){const b=document.getElementById('chat-box');b.scrollTop=b.scrollHeight}
+</script>
+</body>
+</html>
