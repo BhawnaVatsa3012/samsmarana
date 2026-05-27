@@ -1195,7 +1195,14 @@ updateUserUI();
 }
 
 function isPremium(){
-return _user && _user.user_metadata && _user.user_metadata.premium === true;
+if(!_user) return false;
+// Check all possible metadata locations
+var meta = _user.user_metadata || _user.user_meta_data || {};
+var appMeta = _user.app_metadata || {};
+return meta.premium === true
+|| appMeta.premium === true
+|| meta.premium === 'true'
+|| appMeta.premium === 'true';
 }
 
 function updateUserUI(){
