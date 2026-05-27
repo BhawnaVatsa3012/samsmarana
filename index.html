@@ -194,7 +194,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 Continue with Google
 </button>
 <div class="auth-switch">No account? <span onclick="showAuthView('signup')">Create one free</span></div>
-<div class="auth-switch" style="margin-top:6px"><span onclick="closeAuth()">Continue without signing in</span></div>
+
 </div>
 
 <div id="auth-signup-view" style="display:none">
@@ -215,7 +215,7 @@ Continue with Google
 Continue with Google
 </button>
 <div class="auth-switch">Already have an account? <span onclick="showAuthView('signin')">Sign in</span></div>
-<div class="auth-switch" style="margin-top:6px"><span onclick="closeAuth()">Continue without signing in</span></div>
+
 </div>
 
 <div id="auth-profile-view" style="display:none">
@@ -529,10 +529,26 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 </div>
 
 <!-- Sign in prompt for guests -->
+<!-- Premium prompt for community -->
 <div id="reflection-signin-prompt" style="display:none" class="card">
-<div class="card-title">Join the conversation</div>
-<div class="card-desc">Sign in to share your reflection and read what others have discovered in this shloka.</div>
-<button onclick="openAuth('signin')" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">Sign In to Share</button>
+<div style="text-align:center;padding:10px 0 16px">
+<div style="font-size:36px;margin-bottom:12px">🌸</div>
+<div class="card-title" style="text-align:center;font-size:20px">Community is a Premium feature</div>
+<div class="card-desc" style="text-align:center;margin-top:8px">Share your reflections on today's shloka, read insights from others, and be part of a community rediscovering Sanskrit together.</div>
+<div style="background:#faebd7;border-radius:10px;padding:14px;margin:16px 0;text-align:left">
+<div style="font-size:13px;color:#1a0f00;line-height:2">
+✦ Share your daily shloka reflection<br>
+✦ Read and like others' insights<br>
+✦ Weekly Sanskrit challenge<br>
+✦ 15 Guru Ji questions daily<br>
+✦ Personalised learning path
+</div>
+</div>
+<div style="font-family:'EB Garamond',serif;font-size:22px;font-weight:600;color:#7a2800;margin-bottom:4px">₹299 / month</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px">or ₹1,999 / year — save 44%</div>
+<button onclick="openAuth('signin')" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:10px">Sign In / Sign Up</button>
+<div style="font-size:12px;color:var(--muted);font-style:italic;font-family:'EB Garamond',serif">After signing in, upgrade to Premium to unlock community access.</div>
+</div>
 </div>
 
 <!-- Feed -->
@@ -891,7 +907,7 @@ counter.style.color = count > 450 ? '#8b0000' : 'var(--muted)';
 // Show/hide post box based on login
 var postBox = document.getElementById('reflection-post-box');
 var signinPrompt = document.getElementById('reflection-signin-prompt');
-if(_user){
+if(isPremium()){
 if(postBox) postBox.style.display = 'block';
 if(signinPrompt) signinPrompt.style.display = 'none';
 } else {
@@ -1093,7 +1109,9 @@ showAuthSuccess('signup','Account created! Please check your email to confirm.')
 }
 
 async function authGoogle(){
-window.location.href = 'https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to=https://samsmarana.vercel.app';
+var returnPage = document.querySelector('.page.active') ? document.querySelector('.page.active').id.replace('page-','') : 'home';
+var redirectUrl = 'https://samsmarana.vercel.app?return='+returnPage;
+window.location.href = 'https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redirectUrl);
 }
 async function authSignOut(){
 try{
@@ -1149,6 +1167,16 @@ _session = {access_token: accessToken};
 saveSession({user:user, session:{access_token:accessToken}});
 updateUserUI();
 // Clean up URL
+
+// Return to page user was on before signing in
+var urlParams = new URLSearchParams(window.location.search);
+var returnPage = urlParams.get('return');
+if(returnPage && returnPage !== 'home'){
+setTimeout(function(){
+var el = document.querySelector('.nav-item[onclick*="\''+returnPage+'\'"]');
+nav(returnPage, el);
+}, 500);
+}
 window.history.replaceState({}, document.title, window.location.pathname);
 })
 .catch(function(e){console.log('Token fetch error:',e);});
