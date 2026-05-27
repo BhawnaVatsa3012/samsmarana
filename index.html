@@ -874,12 +874,19 @@ showAuthSuccess('signup','Account created! Please check your email to confirm.')
 }
 
 async function authGoogle(){
-try{
-var res = await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({action:'google'})});
-var data = await res.json();
-if(data.url) window.location.href = data.url;
-}catch(e){alert('Google sign in failed. Try again.');}
+window.location.href = 'https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to=https://samsmarana.vercel.app';
+}
+var res = await fetch(SUPABASE_URL+'/auth/v1/authorize?provider=google&redirect_to=https://samsmarana.vercel.app', {
+method: 'GET',
+headers: {
+'apikey': SUPABASE_ANON_KEY,
+'Content-Type': 'application/json'
+}
+});
+window.location.href = SUPABASE_URL+'/auth/v1/authorize?provider=google&redirect_to=https://samsmarana.vercel.app';
+}catch(e){
+alert('Google sign in failed: '+e.message);
+}
 }
 
 async function authSignOut(){
