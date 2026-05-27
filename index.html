@@ -906,8 +906,37 @@ function saveSession(data){
 try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
 }
 
+
 function loadSession(){
 try{
+// Check if returning from Google OAuth redirect
+var hash = window.location.hash;
+if(hash && hash.includes('access_token')){
+var params = new URLSearchParams(hash.substring(1));
+var accessToken = params.get('access_token');
+var refreshToken = params.get('refresh_token');
+if(accessToken){
+// Fetch user details using the token
+fetch('https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/user', {
+headers:{
+'Authorization': 'Bearer '+accessToken,
+'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indjdmpkam1namdvY2d3Zm9yc3IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0Nzk5MDYxOSwiZXhwIjoyMDYzNTY2NjE5fQ.3o3UxFMCWUMdPsNXRFGhHHBFRIFRMrEfCHaboJjlkQM'
+}
+})
+.then(function(r){return r.json();})
+.then(function(user){
+_user = user;
+_session = {access_token: accessToken};
+saveSession({user:user, session:{access_token:accessToken}});
+updateUserUI();
+// Clean up URL
+window.history.replaceState({}, document.title, window.location.pathname);
+})
+.catch(function(e){console.log('Token fetch error:',e);});
+return;
+}
+}
+// Check localStorage for existing session
 var s = localStorage.getItem('samsmarana_session');
 if(s){
 var data = JSON.parse(s);
@@ -915,7 +944,7 @@ _user = data.user;
 _session = data.session;
 updateUserUI();
 }
-}catch(e){}
+}catch(e){console.log('Session error:',e);}
 }
 
 function isPremium(){
