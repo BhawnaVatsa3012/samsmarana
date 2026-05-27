@@ -786,10 +786,16 @@ async function sendMsg(){
   const input=document.getElementById('chat-input');
   const text=input.value.trim();
   if(!text)return;
-    if(!isPremium() && _guruCount >= GURU_FREE_LIMIT){
+    var limit = !_user ? GURU_GUEST_LIMIT : isPremium() ? GURU_PREMIUM_LIMIT : GURU_FREE_LIMIT;
+if(_guruCount >= limit){
+if(!_user){
 openAuth('signin');
+} else if(!isPremium()){
+openAuth('profile');
+}
 return;
 }
+
 _guruCount++;
 updateUserUI();
 addMsg('user',text);;input.value='';
@@ -825,7 +831,9 @@ Always follow these rules:
 var _user = null;
 var _session = null;
 var _guruCount = 0;
-var GURU_FREE_LIMIT = 5;
+var GURU_GUEST_LIMIT=5;
+var GURU_FREE_LIMIT = 10;
+var GURU_PREMIUM_LIMIT=15;
 
 function openAuth(view){
 showAuthView(view||'signin');
@@ -974,7 +982,7 @@ var profilePlan = document.getElementById('profile-plan');
 if(profileEmail) profileEmail.textContent = '✉ '+_user.email;
 if(profilePlan) profilePlan.innerHTML = isPremium()
 ?'<strong>✨ Premium member</strong><br>Unlimited Guru Ji · Community access · All features'
-:'<strong>Free plan</strong><br>'+GURU_FREE_LIMIT+' Guru Ji questions/day · Upgrade for unlimited access';
+:'<strong>Free plan</strong><br>8 Guru Ji questions/day · Upgrade to Premium for 15 daily';
 }
 
 // Update Guru Ji limit display
@@ -987,7 +995,15 @@ limitEl.style.display = 'block';
 limitEl.style.display = 'none';
 } else {
 var remaining = Math.max(0, GURU_FREE_LIMIT - _guruCount);
-limitEl.textContent = remaining+' free questions remaining today. Upgrade for unlimited.';
+var limit = !_user ? GURU_GUEST_LIMIT : isPremium() ? GURU_PREMIUM_LIMIT : GURU_FREE_LIMIT;
+var remaining = Math.max(0, limit - _guruCount);
+if(!_user){
+limitEl.textContent = remaining+' questions remaining. Sign in for 8 questions free daily.';
+} else if(isPremium()){
+limitEl.textContent = remaining+' questions remaining today.';
+} else {
+limitEl.textContent = remaining+' questions remaining. Upgrade to premium for 15 daily.';
+}
 limitEl.style.display = 'block';
 }
 }
