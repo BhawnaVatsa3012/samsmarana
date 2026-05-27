@@ -161,6 +161,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   <div class="nav-item" onclick="nav('karaka',this)"><span class="nav-icon">△</span> Karaka & Vibhakti</div>
   <div class="sidebar-section">Script & Practice</div>
   <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
+  <div class="nav-item" onclick="nav('community',this)"><span class="nav-icon">🌸</span> Community <span class="nav-badge">New</span></div>
   <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
   <div class="nav-item" onclick="nav('sentences',this)"><span class="nav-icon">✎</span> Sentence Practice</div>
   <div class="sidebar-footer">
@@ -509,6 +510,40 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
       </div>
   <div id="guru-limit-msg" style="font-size:12px;color:#7a2800;margin-top:8px;display:none;font-style:italic;font-family:'EB Garamond',serif;text-align:center"></div>
 </div>
+<!-- COMMUNITY -->
+<div class="page" id="page-community">
+<div class="pill">समाज · Community</div>
+<div class="page-heading">Daily Reflections</div>
+<div class="page-desc">What does today's shloka mean to you? Share your reflection with the Samsmarana community.</div>
+
+<!-- Post reflection box -->
+<div class="card" id="reflection-post-box">
+<div class="card-title">Share your reflection</div>
+<div id="reflection-shloka-preview" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--accent);margin-bottom:10px;line-height:1.8"></div>
+<textarea id="reflection-input" placeholder="What does this shloka mean to you personally? How does it connect to your life..." style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:12px;font-size:13px;font-family:'EB Garamond',serif;color:#1a0f00;min-height:100px;resize:vertical;line-height:1.7"></textarea>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+<span id="reflection-char-count" style="font-size:11px;color:var(--muted)">0 / 500</span>
+<button onclick="postReflection()" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Share 🙏</button>
+</div>
+<div id="reflection-error" style="font-size:12px;color:#8b0000;margin-top:8px;display:none"></div>
+</div>
+
+<!-- Sign in prompt for guests -->
+<div id="reflection-signin-prompt" style="display:none" class="card">
+<div class="card-title">Join the conversation</div>
+<div class="card-desc">Sign in to share your reflection and read what others have discovered in this shloka.</div>
+<button onclick="openAuth('signin')" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">Sign In to Share</button>
+</div>
+
+<!-- Feed -->
+<div id="reflection-feed" style="margin-top:4px"></div>
+<div id="reflection-loading" style="text-align:center;padding:20px;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)">Loading reflections...</div>
+<div id="reflection-empty" style="display:none;text-align:center;padding:30px 20px">
+<div style="font-size:32px;margin-bottom:12px">🙏</div>
+<div style="font-family:'EB Garamond',serif;font-size:18px;color:var(--ink)">Be the first to share</div>
+<div style="font-size:13px;color:var(--muted);margin-top:6px">No reflections yet for today's shloka. Share yours above.</div>
+</div>
+</div>
 <!-- SENTENCES -->
 <div class="page" id="page-sentences">
   <div class="pill">अभ्यास</div>
@@ -569,7 +604,7 @@ const dhatu={
     {name:'पठ् — to read',rows:[['पठेत्','पठेताम्','पठेयुः'],['पठेः','पठेतम्','पठेत'],['पठेयम्','पठेव','पठेम']]},
   ]},
 };
-const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',sentences:'Sentence Practice',tutor:'Ask Guru Ji'};
+const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji'};
 
 const sentences=[
   {
@@ -719,6 +754,7 @@ function nav(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(id==='sentences')renderSentences();
+  if(id==='community')initCommunity();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el&&el.classList)el.classList.add('active');
   document.getElementById('topbar-title').textContent=titles[id]||id;
@@ -826,6 +862,181 @@ Always follow these rules:
     addMsg('ai','Could not reach Guru Ji.\n\nError: '+e.message+'\n\nPlease check:\n1. GEMINI_API_KEY is set in Vercel Environment Variables\n2. You have redeployed after adding the key\n3. The api/guru.js file is in your GitHub repo');
   }
   document.getElementById('send-btn').disabled=false;
+}
+// ── COMMUNITY ─────────────────────────────────────────
+var _reflections = [];
+var _currentShloka = null;
+
+function initCommunity(){
+// Show shloka preview in post box
+if(window._shloka){
+_currentShloka = window._shloka;
+var preview = document.getElementById('reflection-shloka-preview');
+if(preview) preview.textContent = _currentShloka.text + ' — ' + _currentShloka.source;
+}
+
+// Character counter
+var input = document.getElementById('reflection-input');
+if(input){
+input.addEventListener('input', function(){
+var count = this.value.length;
+var counter = document.getElementById('reflection-char-count');
+if(counter){
+counter.textContent = count + ' / 500';
+counter.style.color = count > 450 ? '#8b0000' : 'var(--muted)';
+}
+});
+}
+
+// Show/hide post box based on login
+var postBox = document.getElementById('reflection-post-box');
+var signinPrompt = document.getElementById('reflection-signin-prompt');
+if(_user){
+if(postBox) postBox.style.display = 'block';
+if(signinPrompt) signinPrompt.style.display = 'none';
+} else {
+if(postBox) postBox.style.display = 'none';
+if(signinPrompt) signinPrompt.style.display = 'block';
+}
+
+loadReflections();
+}
+
+async function loadReflections(){
+var loading = document.getElementById('reflection-loading');
+var empty = document.getElementById('reflection-empty');
+var feed = document.getElementById('reflection-feed');
+if(loading) loading.style.display = 'block';
+if(empty) empty.style.display = 'none';
+if(feed) feed.innerHTML = '';
+
+try{
+var res = await fetch('/api/community');
+var data = await res.json();
+if(loading) loading.style.display = 'none';
+
+if(!data.reflections || data.reflections.length === 0){
+if(empty) empty.style.display = 'block';
+return;
+}
+
+_reflections = data.reflections;
+renderReflections();
+} catch(e){
+if(loading) loading.style.display = 'none';
+if(feed) feed.innerHTML = '<div style="text-align:center;padding:20px;color:#8b0000;font-size:13px">Could not load reflections. Please try again.</div>';
+}
+}
+
+function renderReflections(){
+var feed = document.getElementById('reflection-feed');
+if(!feed) return;
+feed.innerHTML = '';
+
+_reflections.forEach(function(r){
+var timeAgo = getTimeAgo(r.created_at);
+var isOwn = _user && _user.id === r.user_id;
+
+var card = document.createElement('div');
+card.className = 'card';
+card.style.marginBottom = '14px';
+card.innerHTML =
+'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
++'<div style="display:flex;align-items:center;gap:10px">'
++'<div style="width:36px;height:36px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7a2800;flex-shrink:0">'+r.user_initials+'</div>'
++'<div>'
++'<div style="font-size:13px;font-weight:600;color:#1a0f00">'+r.user_name+'</div>'
++'<div style="font-size:11px;color:var(--muted)">'+timeAgo+'</div>'
++'</div></div>'
++(isOwn ? '<button onclick="deleteReflection(\''+r.id+'\')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0">×</button>' : '')
++'</div>'
++'<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:var(--accent);margin-bottom:10px;line-height:1.8;padding:8px 12px;background:#fdf8f2;border-radius:6px;border-left:3px solid var(--accent)">'+r.shloka_source+'</div>'
++'<div style="font-family:\'EB Garamond\',serif;font-size:16px;color:#1a0f00;line-height:1.8;margin-bottom:12px">'+r.reflection+'</div>'
++'<div style="display:flex;align-items:center;gap:6px">'
++'<button onclick="likeReflection(\''+r.id+'\',this)" style="background:#faebd7;border:1px solid #e0c9a8;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;color:#7a2800;font-weight:600">🙏 '+r.likes+'</button>'
++'</div>';
+feed.appendChild(card);
+});
+}
+
+async function postReflection(){
+if(!_user){ openAuth('signin'); return; }
+
+var input = document.getElementById('reflection-input');
+var errorEl = document.getElementById('reflection-error');
+var text = input ? input.value.trim() : '';
+
+if(text.length < 10){
+if(errorEl){ errorEl.textContent = 'Please write at least 10 characters.'; errorEl.style.display = 'block'; }
+return;
+}
+
+if(errorEl) errorEl.style.display = 'none';
+
+try{
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/community',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({
+action:'post',
+reflection: text,
+shloka_source: _currentShloka ? _currentShloka.source : '',
+shloka_text: _currentShloka ? _currentShloka.text : ''
+})
+});
+var data = await res.json();
+if(data.error){
+if(errorEl){ errorEl.textContent = data.error; errorEl.style.display = 'block'; }
+return;
+}
+if(input) input.value = '';
+var counter = document.getElementById('reflection-char-count');
+if(counter) counter.textContent = '0 / 500';
+loadReflections();
+} catch(e){
+if(errorEl){ errorEl.textContent = 'Could not post. Try again.'; errorEl.style.display = 'block'; }
+}
+}
+
+async function likeReflection(id, btn){
+if(!_user){ openAuth('signin'); return; }
+try{
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/community',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({action:'like', reflection_id:id})
+});
+var data = await res.json();
+if(data.liked !== undefined){
+loadReflections();
+}
+} catch(e){ console.log('Like error:',e); }
+}
+
+async function deleteReflection(id){
+if(!_user) return;
+if(!confirm('Delete your reflection?')) return;
+try{
+var token = _session ? _session.access_token : '';
+await fetch('/api/community',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({action:'delete', reflection_id:id})
+});
+loadReflections();
+} catch(e){ console.log('Delete error:',e); }
+}
+
+function getTimeAgo(timestamp){
+var now = new Date();
+var then = new Date(timestamp);
+var diff = Math.floor((now - then) / 1000);
+if(diff < 60) return 'just now';
+if(diff < 3600) return Math.floor(diff/60)+' min ago';
+if(diff < 86400) return Math.floor(diff/3600)+' hr ago';
+return Math.floor(diff/86400)+' days ago';
 }
 // ── AUTH ─────────────────────────────────────────────
 var _user = null;
