@@ -1153,15 +1153,8 @@ var params = new URLSearchParams(hash.substring(1));
 var accessToken = params.get('access_token');
 var refreshToken = params.get('refresh_token');
 if(accessToken){
-// Fetch user details using the token
-fetch('https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/user', {
-headers:{
-'Authorization': 'Bearer '+accessToken,
-'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indjdmpkam1namdvY2d3Zm9yc3IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0Nzk5MDYxOSwiZXhwIjoyMDYzNTY2NjE5fQ.3o3UxFMCWUMdPsNXRFGhHHBFRIFRMrEfCHaboJjlkQM'
-}
-})
-.then(function(r){return r.json();})
-.then(function(user){
+fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:accessToken})}).then(function(r){return r.json();}).then(function(data){if(data&&data.user&&data.user.id){_user=data.user;_session={access_token:accessToken,refresh_token:refreshToken};try{localStorage.setItem('samsmarana_session',JSON.stringify({user:data.user,session:{access_token:accessToken,refresh_token:refreshToken}}));}catch(e){}updateUserUI();var urlParams=new URLSearchParams(window.location.search);var returnPage=urlParams.get('return');window.history.replaceState({},document.title,window.location.pathname);if(returnPage&&returnPage!=='home'){setTimeout(function(){nav(returnPage,null);},500);}}}).catch(function(e){console.log('Auth error:',e);});
+then(function(user){
 _user = user;
 _session = {access_token: accessToken};
 saveSession({user:user, session:{access_token:accessToken}});
