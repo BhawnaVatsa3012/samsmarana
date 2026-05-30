@@ -889,7 +889,7 @@ async function authSignUp(){
 
 function authGoogle(){
   var returnPage=document.querySelector('.page.active')?document.querySelector('.page.active').id.replace('page-',''):'home';
-  window.location.href='https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent('https://samsmarana.vercel.app?return='+returnPage);
+  window.location.href='https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent('https://samsmarana.vercel.app');
 }
 
 async function authSignOut(){
