@@ -140,436 +140,543 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .premium-badge{background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px}
 .guru-limit{font-size:11px;color:#5a4020;text-align:center;margin-top:8px;font-style:italic}
 </style>
-</head>
+/* AUTH STYLES */
+#auth-overlay{display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+#auth-overlay.open{display:flex}
+.auth-box{background:#ffffff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.auth-box h2{font-family:'EB Garamond',serif;font-size:24px;font-weight:600;color:#1a0f00;margin-bottom:4px}
+.auth-box p{font-size:13px;color:#5a4020;margin-bottom:20px;line-height:1.6}
+.auth-input{width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:11px 13px;color:#1a0f00;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:12px;box-sizing:border-box}
+.auth-input:focus{outline:none;border-color:#7a2800}
+.auth-btn{width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px}
+.auth-google{background:white;color:#1a0f00;border:1.5px solid #e0c9a8;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-switch{text-align:center;font-size:13px;color:#5a4020;margin-top:8px}
+.auth-switch span{color:#7a2800;cursor:pointer;font-weight:600;text-decoration:underline}
+.auth-error{font-size:12px;color:#8b0000;margin-bottom:10px;padding:8px 12px;background:#fdf2f2;border-radius:6px;display:none}
+.auth-success{font-size:12px;color:#1a5c38;margin-bottom:10px;padding:8px 12px;background:#f2faf6;border-radius:6px;display:none}
+.user-pill{display:none;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer}
+.premium-badge{background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px}
+</style>
 <body>
-<div id="overlay" onclick="closeSidebar()"></div>
 
-<div id="sidebar">
-  <div class="sidebar-brand">
-    <span class="brand-deva">संस्मरण</span>
-    <div class="brand-name">Samsmarana</div>
-    <div class="brand-tag">Rediscover the Sanskrit you once knew</div>
-  </div>
-  <div class="sidebar-section">Begin Here</div>
-  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">☀</span> Today's Shloka</div>
-  <div class="nav-item" onclick="nav('tutor',this)"><span class="nav-icon">◎</span> Ask Guru Ji <span class="nav-badge">AI</span></div>
-  <div class="sidebar-section">Grammar (व्याकरण)</div>
-  <div class="nav-item" onclick="nav('shabdroop',this)"><span class="nav-icon">—</span> Shabd Roop</div>
-  <div class="nav-item" onclick="nav('dhaturoop',this)"><span class="nav-icon">↻</span> Dhatu Roop</div>
-  <div class="nav-item" onclick="nav('sandhi',this)"><span class="nav-icon">∞</span> Sandhi</div>
-  <div class="nav-item" onclick="nav('samas',this)"><span class="nav-icon">⊕</span> Samas</div>
-  <div class="nav-item" onclick="nav('karaka',this)"><span class="nav-icon">△</span> Karaka & Vibhakti</div>
-  <div class="sidebar-section">Script & Practice</div>
-  <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
-  <div class="nav-item" onclick="nav('community',this)"><span class="nav-icon">🌸</span> Community <span class="nav-badge">New</span></div>
-  <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
-  <div class="nav-item" onclick="nav('sentences',this)"><span class="nav-icon">✎</span> Sentence Practice</div>
-  <div class="sidebar-footer">
-    <p>"That which is remembered<br>is never truly forgotten."</p>
-    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-bottom:14px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#4a3a28;margin-bottom:4px">Created by</div>
-      <div style="font-family:'EB Garamond',serif;font-size:16px;color:#c8a87a;letter-spacing:.5px">Bhawna Mishra</div>
-    </div>
-  </div>
-</div>
-</div>
 <!-- AUTH OVERLAY -->
 <div id="auth-overlay">
-<div class="auth-box">
-<div id="auth-signin-view">
-<h2>Welcome back 🙏</h2>
-<p>Sign in to track your progress and join the Samsmarana community.</p>
-<div class="auth-error" id="auth-error"></div>
-<div class="auth-success" id="auth-success"></div>
-<input class="auth-input" type="email" id="auth-email" placeholder="Your email address"/>
-<input class="auth-input" type="password" id="auth-password" placeholder="Password"/>
-<button class="auth-btn" onclick="authSignIn()">Sign In</button>
-<button class="auth-btn auth-google" onclick="authGoogle()">
-<svg width="18" height="18" viewBox="0 0 24 24">
-<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-</svg>
+  <div class="auth-box">
+    <div id="auth-signin-view">
+      <h2>Welcome back 🙏</h2>
+      <p>Sign in to track your progress and join the Samsmarana community.</p>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-success" id="auth-success"></div>
+      <input class="auth-input" type="email" id="auth-email" placeholder="Your email address"/>
+      <input class="auth-input" type="password" id="auth-password" placeholder="Password"/>
+      <button class="auth-btn" onclick="authSignIn()">Sign In</button>
+      <button class="auth-btn auth-google" onclick="authGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-switch">No account? <span onclick="showAuthView('signup')">Create one free</span></div>
+    </div>
+    <div id="auth-signup-view" style="display:none">
+      <h2>Join Samsmarana 🙏</h2>
+      <p>Create a free account to save your progress.</p>
+      <div class="auth-error" id="auth-error-signup"></div>
+      <div class="auth-success" id="auth-success-signup"></div>
+      <input class="auth-input" type="email" id="auth-email-signup" placeholder="Your email address"/>
+      <input class="auth-input" type="password" id="auth-password-signup" placeholder="Choose a password"/>
+      <button class="auth-btn" onclick="authSignUp()">Create Free Account</button>
+      <button class="auth-btn auth-google" onclick="authGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-switch">Already have an account? <span onclick="showAuthView('signin')">Sign in</span></div>
+    </div>
+    <div id="auth-profile-view" style="display:none">
+      <h2>Your Profile 🙏</h2>
+      <div id="profile-email" style="font-size:13px;color:#5a4020;margin-bottom:16px"></div>
+      <div id="profile-plan" style="background:#faebd7;border:1px solid #e0c9a8;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#1a0f00"></div>
+      <button class="auth-btn" onclick="authSignOut()">Sign Out</button>
+      <div class="auth-switch" style="margin-top:8px"><span onclick="closeAuth()">Close</span></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+  
+    संस्मरण
+    Samsmarana
+    Rediscover the Sanskrit you once knew
+  
+  Begin Here
+  ☀ Today's Shloka
+  ◎ Ask Guru Ji AI
+  Grammar (व्याकरण)
+  — Shabd Roop
+  ↻ Dhatu Roop
+  ∞ Sandhi
+  ⊕ Samas
+  △ Karaka & Vibhakti
+  Script & Practice
+  अ Devanagari
+  🌸 Community New
+  ◻ Vocabulary
+  ✎ Sentence Practice
+  
+    "That which is remembered
+is never truly forgotten."
+    
+      Created by
+      Bhawna Mishra
+    
+  
+
+
+
+
+
+
+Welcome back 🙏
+Sign in to track your progress and join the Samsmarana community.
+
+
+
+
+Sign In
+
+
+
+
+
+
+
 Continue with Google
-</button>
-<div class="auth-switch">No account? <span onclick="showAuthView('signup')">Create one free</span></div>
 
-</div>
+No account? Create one free
 
-<div id="auth-signup-view" style="display:none">
-<h2>Join Samsmarana 🙏</h2>
-<p>Create a free account to save your progress and explore the community.</p>
-<div class="auth-error" id="auth-error-signup"></div>
-<div class="auth-success" id="auth-success-signup"></div>
-<input class="auth-input" type="email" id="auth-email-signup" placeholder="Your email address"/>
-<input class="auth-input" type="password" id="auth-password-signup" placeholder="Choose a password"/>
-<button class="auth-btn" onclick="authSignUp()">Create Free Account</button>
-<button class="auth-btn auth-google" onclick="authGoogle()">
-<svg width="18" height="18" viewBox="0 0 24 24">
-<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-</svg>
+
+
+
+Join Samsmarana 🙏
+Create a free account to save your progress and explore the community.
+
+
+
+
+Create Free Account
+
+
+
+
+
+
+
 Continue with Google
-</button>
-<div class="auth-switch">Already have an account? <span onclick="showAuthView('signin')">Sign in</span></div>
 
-</div>
+Already have an account? Sign in
 
-<div id="auth-profile-view" style="display:none">
-<h2>Your Profile 🙏</h2>
-<div id="profile-email" style="font-size:13px;color:#5a4020;margin-bottom:16px"></div>
-<div id="profile-plan" style="background:#faebd7;border:1px solid #e0c9a8;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#1a0f00"></div>
-<button class="auth-btn" onclick="authSignOut()">Sign Out</button>
-<div class="auth-switch" style="margin-top:8px"><span onclick="closeAuth()">Close</span></div>
-</div>
-</div>
-</div>
-<!-- TOPBAR -->
-<div id="topbar">
-  <button id="menu-btn" onclick="toggleSidebar()">☰</button>
-  <button id="back-btn" onclick="goBack()">
-    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+
+
+
+Your Profile 🙏
+
+
+Sign Out
+Close
+
+
+
+
+
+  ☰
+  
+    
     Back
-  </button>
-  <div id="topbar-title">Samsmarana</div>
-  <button onclick="openAuth('signin')" id="signin-btn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Sign In</button>
-</div>
+  
+  Samsmarana
+  Sign In
 
-<!-- HOME -->
-<div class="page active" id="page-home">
-  <div class="home-hero">
-    <span class="deva hero-deva">संस्मरण</span>
-    <div class="hero-name">Samsmarana</div>
-    <div class="hero-tagline">You once read these words in school.<br>Now you are ready to understand them.</div>
-    <div style="margin-top:20px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Created by <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.5px;text-transform:none;color:var(--accent)">Bhawna Mishra</span></div>
-  </div>
-  <div class="shloka-card">
-    <div class="shloka-label">☀ Shloka of the Day</div>
-    <div class="shloka-text deva" id="shloka-text"></div>
-    <div class="shloka-source serif" id="shloka-source"></div>
-    <div class="shloka-meaning" id="shloka-meaning"></div>
-    <div class="shloka-life" id="shloka-life"></div>
-  </div>
-  <div class="divider">· · ·</div>
-  <div class="quick-grid">
-    <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
-    <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
-    <div class="quick-card" onclick="nav('sandhi',getNav('sandhi'))"><div class="qc-icon">🔗</div><div class="qc-title">Sandhi</div><div class="qc-sub">Sound unions</div></div>
-    <div class="quick-card" onclick="nav('samas',getNav('samas'))"><div class="qc-icon">🧩</div><div class="qc-title">Samas</div><div class="qc-sub">Compound words</div></div>
-    <div class="quick-card" onclick="nav('flashcards',getNav('flashcards'))"><div class="qc-icon">🃏</div><div class="qc-title">Vocabulary</div><div class="qc-sub">Words with meaning</div></div>
-    <div class="quick-card" onclick="nav('tutor',getNav('tutor'))"><div class="qc-icon">◎</div><div class="qc-title">Ask Guru Ji</div><div class="qc-sub">AI powered</div></div>
-  </div>
-</div>
 
-<!-- SHABD ROOP -->
-<div class="page" id="page-shabdroop">
-  <div class="pill">व्याकरण</div>
-  <div class="page-heading">Shabd Roop — शब्द रूप</div>
-  <div class="page-desc">In Sanskrit, a noun changes its ending to show its role. What English does with prepositions — "of", "by", "for" — Sanskrit does by transforming the word itself.</div>
-  <div class="sub-tabs">
-    <button class="sub-tab active" onclick="showShabd('baalak',this)">बालक (m)</button>
-    <button class="sub-tab" onclick="showShabd('lata',this)">लता (f)</button>
-    <button class="sub-tab" onclick="showShabd('fal',this)">फल (n)</button>
-  </div>
-  <div id="shabd-baalak">
-    <div class="card">
-      <div class="card-title">बालक — Boy (Masculine · अकारान्त)</div>
-      <div class="card-desc">Nouns like राम, देव, छात्र, गुरु all follow this pattern.</div>
-      <table class="grammar-table">
-        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
-        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">बालकः</td><td class="dv">बालकौ</td><td class="dv">बालकाः</td></tr>
-        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">बालकम्</td><td class="dv">बालकौ</td><td class="dv">बालकान्</td></tr>
-        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">बालकेन</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकैः</td></tr>
-        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">बालकाय</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकेभ्यः</td></tr>
-        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">बालकात्</td><td class="dv">बालकाभ्याम्</td><td class="dv">बालकेभ्यः</td></tr>
-        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">बालकस्य</td><td class="dv">बालकयोः</td><td class="dv">बालकानाम्</td></tr>
-        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">बालके</td><td class="dv">बालकयोः</td><td class="dv">बालकेषु</td></tr>
-        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे बालक!</td><td class="dv">हे बालकौ!</td><td class="dv">हे बालकाः!</td></tr>
-      </table>
-    </div>
-  </div>
-  <div id="shabd-lata" style="display:none">
-    <div class="card">
-      <div class="card-title">लता — Vine (Feminine · आकारान्त)</div>
-      <div class="card-desc">Nouns like सीता, रमा, माला, विद्या all follow this pattern.</div>
-      <table class="grammar-table">
-        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
-        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">लता</td><td class="dv">लते</td><td class="dv">लताः</td></tr>
-        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">लताम्</td><td class="dv">लते</td><td class="dv">लताः</td></tr>
-        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">लतया</td><td class="dv">लताभ्याम्</td><td class="dv">लताभिः</td></tr>
-        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">लतायै</td><td class="dv">लताभ्याम्</td><td class="dv">लताभ्यः</td></tr>
-        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">लतायाः</td><td class="dv">लताभ्याम्</td><td class="dv">लताभ्यः</td></tr>
-        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">लतायाः</td><td class="dv">लतयोः</td><td class="dv">लतानाम्</td></tr>
-        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">लतायाम्</td><td class="dv">लतयोः</td><td class="dv">लतासु</td></tr>
-        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे लते!</td><td class="dv">हे लते!</td><td class="dv">हे लताः!</td></tr>
-      </table>
-    </div>
-  </div>
-  <div id="shabd-fal" style="display:none">
-    <div class="card">
-      <div class="card-title">फल — Fruit (Neuter · अकारान्त नपुंसक)</div>
-      <div class="card-desc">Nouns like ज्ञान, जल, वन, धन, कर्म all follow this pattern.</div>
-      <table class="grammar-table">
-        <tr><th>Vibhakti</th><th>Role</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
-        <tr><td><span class="vib-label">प्रथमा</span>1st</td><td>Subject</td><td class="dv">फलम्</td><td class="dv">फले</td><td class="dv">फलानि</td></tr>
-        <tr><td><span class="vib-label">द्वितीया</span>2nd</td><td>Object</td><td class="dv">फलम्</td><td class="dv">फले</td><td class="dv">फलानि</td></tr>
-        <tr><td><span class="vib-label">तृतीया</span>3rd</td><td>By/With</td><td class="dv">फलेन</td><td class="dv">फलाभ्याम्</td><td class="dv">फलैः</td></tr>
-        <tr><td><span class="vib-label">चतुर्थी</span>4th</td><td>For/To</td><td class="dv">फलाय</td><td class="dv">फलाभ्याम्</td><td class="dv">फलेभ्यः</td></tr>
-        <tr><td><span class="vib-label">पञ्चमी</span>5th</td><td>From</td><td class="dv">फलात्</td><td class="dv">फलाभ्याम्</td><td class="dv">फलेभ्यः</td></tr>
-        <tr><td><span class="vib-label">षष्ठी</span>6th</td><td>Of</td><td class="dv">फलस्य</td><td class="dv">फलयोः</td><td class="dv">फलानाम्</td></tr>
-        <tr><td><span class="vib-label">सप्तमी</span>7th</td><td>In/At</td><td class="dv">फले</td><td class="dv">फलयोः</td><td class="dv">फलेषु</td></tr>
-        <tr><td><span class="vib-label">सम्बोधन</span>Voc.</td><td>O!</td><td class="dv">हे फल!</td><td class="dv">हे फले!</td><td class="dv">हे फलानि!</td></tr>
-      </table>
-    </div>
-  </div>
-  <div class="info-box">The word Karma (कर्म) is itself a neuter noun — a Shabd Roop of the root kar. When the Gita says "Karmanyevadhikaraste" — your right is to karma alone — it uses the 7th Vibhakti. The action is the location you inhabit.</div>
-</div>
 
-<!-- DHATU ROOP -->
-<div class="page" id="page-dhaturoop">
-  <div class="pill">व्याकरण</div>
-  <div class="page-heading">Dhatu Roop — धातु रूप</div>
-  <div class="page-desc">Dhatu is the root of every verb. From one seed, an entire forest of meanings grows — across time, mood, and person.</div>
-  <div class="sub-tabs">
-    <button class="sub-tab active" onclick="showDhatu('lat',this)">लट् Present</button>
-    <button class="sub-tab" onclick="showDhatu('lrit',this)">लृट् Future</button>
-    <button class="sub-tab" onclick="showDhatu('lang',this)">लङ् Past</button>
-    <button class="sub-tab" onclick="showDhatu('lot',this)">लोट् Command</button>
-    <button class="sub-tab" onclick="showDhatu('vidhiling',this)">विधि Should</button>
-  </div>
-  <div id="dhatu-content"></div>
-  <div class="info-box">The Gita's most quoted verse uses Lot Lakar — "Arise! Fight!" (उत्तिष्ठ, अर्जुन). Commands in Sanskrit are not harsh — they carry the weight of love and duty combined.</div>
-</div>
 
-<!-- SANDHI -->
-<div class="page" id="page-sandhi">
-  <div class="pill">व्याकरण</div>
-  <div class="page-heading">Sandhi — सन्धि</div>
-  <div class="page-desc">Sandhi means union — the blending of sounds at word boundaries. Sanskrit does not tolerate awkward gaps. Like rivers joining the sea, sounds merge into something seamless.</div>
-  <div class="card">
-    <div class="card-title">1. Swar Sandhi — Vowel Union</div>
-    <table class="grammar-table">
-      <tr><th>Type</th><th>Rule</th><th>Example</th><th>Meaning</th></tr>
-      <tr><td>दीर्घ</td><td>a+a=ā</td><td class="dv">राम+अयन=रामायण</td><td>Ramayana</td></tr>
-      <tr><td>गुण</td><td>a+i=e</td><td class="dv">देव+इन्द्र=देवेन्द्र</td><td>King of Gods</td></tr>
-      <tr><td>गुण</td><td>a+u=o</td><td class="dv">गङ्गा+उदक=गङ्गोदक</td><td>Ganga water</td></tr>
-      <tr><td>यण्</td><td>i+a=ya</td><td class="dv">इति+आदि=इत्यादि</td><td>And so on</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <div class="card-title">2. Vyanjan Sandhi — Consonant Union</div>
-    <table class="grammar-table">
-      <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
-      <tr><td>t+vowel→d</td><td class="dv">जगत्+ईश=जगदीश</td><td>Lord of Universe</td></tr>
-      <tr><td>s→ṣ after i/u/r</td><td class="dv">अभि+सेक=अभिषेक</td><td>Coronation</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <div class="card-title">3. Visarga Sandhi — The Breath</div>
-    <table class="grammar-table">
-      <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
-      <tr><td>aḥ+vowel→o'</td><td class="dv">रामः+अस्ति=रामोऽस्ति</td><td>Ram exists</td></tr>
-      <tr><td>aḥ+voiced→o</td><td class="dv">बालकः+गच्छति=बालको गच्छति</td><td>Boy goes</td></tr>
-    </table>
-  </div>
-  <div class="info-box">Namaste is itself a Sandhi — namas + te. "I bow to you." Two words, spoken millions of times daily, that most people don't know are grammatically fused. Sandhi is everywhere once you see it.</div>
-</div>
+  
+    संस्मरण
+    Samsmarana
+    You once read these words in school.
+Now you are ready to understand them.
+    Created by Bhawna Mishra
+  
+  
+    ☀ Shloka of the Day
+    
+    
+    
+    
+  
+  · · ·
+  
+    📋Shabd RoopNoun declensions
+    🔄Dhatu RoopVerb conjugations
+    🔗SandhiSound unions
+    🧩SamasCompound words
+    🃏VocabularyWords with meaning
+    ◎Ask Guru JiAI powered
+  
 
-<!-- SAMAS -->
-<div class="page" id="page-samas">
-  <div class="pill">व्याकरण</div>
-  <div class="page-heading">Samas — समास</div>
-  <div class="page-desc">The art of compression. Two words becoming one, carrying the weight of both. Sanskrit says in one word what English takes a sentence to express.</div>
-  <div class="card">
-    <div class="card-title">1. Tatpurusha — तत्पुरुष</div>
-    <div class="card-desc">Second word dominates. First qualifies it.</div>
-    <table class="grammar-table">
-      <tr><th>Compound</th><th>Split</th><th>Meaning</th></tr>
-      <tr><td class="dv">राजपुत्रः</td><td class="dv">राज्ञः पुत्रः</td><td>Son of the king</td></tr>
-      <tr><td class="dv">विद्यालयः</td><td class="dv">विद्यायाः आलयः</td><td>Home of knowledge</td></tr>
-      <tr><td class="dv">देवालयः</td><td class="dv">देवस्य आलयः</td><td>Temple</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <div class="card-title">2. Dvandva — द्वन्द्व</div>
-    <div class="card-desc">Both words are equal — a union of equals.</div>
-    <table class="grammar-table">
-      <tr><th>Compound</th><th>Split</th><th>Meaning</th></tr>
-      <tr><td class="dv">सुखदुःखे</td><td class="dv">सुखम् च दुःखम् च</td><td>Joy and sorrow</td></tr>
-      <tr><td class="dv">पितरौ</td><td class="dv">माता च पिता च</td><td>Parents</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <div class="card-title">3. Bahuvrihi — बहुव्रीहि</div>
-    <div class="card-desc">Neither word is the subject — together they describe a third entity. Sanskrit poetry uses these as divine epithets.</div>
-    <table class="grammar-table">
-      <tr><th>Compound</th><th>Meaning</th><th>Refers to</th></tr>
-      <tr><td class="dv">नीलकण्ठ</td><td>Blue-throated one</td><td>Shiva</td></tr>
-      <tr><td class="dv">चक्रपाणि</td><td>Chakra in hand</td><td>Vishnu</td></tr>
-      <tr><td class="dv">पीताम्बर</td><td>Yellow-robed one</td><td>Krishna</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <div class="card-title">4. Avyayibhava — अव्ययीभाव</div>
-    <table class="grammar-table">
-      <tr><th>Compound</th><th>Meaning</th></tr>
-      <tr><td class="dv">यथाशक्ति</td><td>According to ability</td></tr>
-      <tr><td class="dv">प्रतिदिनम्</td><td>Every day</td></tr>
-    </table>
-  </div>
-  <div class="info-box">Mahābhārata is a Tatpurusha — mahā + bhārata — "the great tale of the Bharatas." Upanishad is also a compound — upa (near) + ni (down) + shad (to sit) — "sitting near the teacher." Every Sanskrit word you use is a compressed universe of meaning.</div>
-</div>
 
-<!-- KARAKA -->
-<div class="page" id="page-karaka">
-  <div class="pill">व्याकरण</div>
-  <div class="page-heading">Karaka & Vibhakti — कारक</div>
-  <div class="page-desc">Sanskrit sees every noun as playing a role in the drama of a sentence — and names each role precisely. This is Karaka — the grammar of relationships.</div>
-  <div class="card">
-    <table class="grammar-table">
-      <tr><th>Case</th><th>Karaka</th><th>English</th><th>Example</th></tr>
-      <tr><td>1st</td><td>कर्ता — Doer</td><td>Subject</td><td class="dv">रामः पठति</td></tr>
-      <tr><td>2nd</td><td>कर्म — Action's object</td><td>Object</td><td class="dv">पुस्तकम् पठति</td></tr>
-      <tr><td>3rd</td><td>करण — Instrument</td><td>By/With</td><td class="dv">लेखन्या लिखति</td></tr>
-      <tr><td>4th</td><td>सम्प्रदान — Recipient</td><td>For/To</td><td class="dv">गुरवे नमः</td></tr>
-      <tr><td>5th</td><td>अपादान — Separation</td><td>From</td><td class="dv">ग्रामात् आगच्छति</td></tr>
-      <tr><td>6th</td><td>सम्बन्ध — Relation</td><td>Of</td><td class="dv">रामस्य पुस्तकम्</td></tr>
-      <tr><td>7th</td><td>अधिकरण — Location</td><td>In/At</td><td class="dv">विद्यालये पठति</td></tr>
-    </table>
-  </div>
-  <div class="info-box">Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.</div>
-</div>
 
-<!-- SCRIPT -->
-<div class="page" id="page-script">
-  <div class="pill">लिपि</div>
-  <div class="page-heading">Devanagari — देवनागरी</div>
-  <div class="page-desc">The script of the gods. Every letter has one sound — no ambiguity, no exceptions. Once truly learned, it cannot be unlearned.</div>
-  <div class="card"><div class="card-title">Vowels — स्वर</div><div class="letter-grid" id="vowel-grid"></div></div>
-  <div class="card"><div class="card-title">Consonants — व्यञ्जन (first 10)</div><div class="letter-grid" id="cons-grid"></div></div>
-  <div class="info-box">The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.</div>
-</div>
 
-<!-- FLASHCARDS -->
-<div class="page" id="page-flashcards">
-  <div class="pill">अभ्यास</div>
-  <div class="page-heading">Vocabulary — शब्द</div>
-  <div class="page-desc">These are not just words. Each one carries centuries of meaning. Some you use daily without knowing their depth.</div>
-  <div class="score-row">
-    <span class="serif" style="font-style:italic" id="fc-count">Card 1 of 15</span>
-    <span>✓ <span id="fc-right">0</span> &nbsp; ✗ <span id="fc-wrong">0</span></span>
-  </div>
-  <div class="prog-wrap"><div class="prog-bar" id="fc-bar" style="width:6%"></div></div>
-  <div class="fc-wrap">
-    <div class="fc" id="fc" onclick="flipFC()">
-      <div class="fc-front">
-        <span class="fc-deva-xl" id="fc-deva"></span>
-        <span class="fc-roman" id="fc-roman" style="font-size:13px;color:var(--gold);font-style:italic"></span>
-        <span class="fc-hint">tap to reveal its depth</span>
-      </div>
-      <div class="fc-back" style="padding:14px;overflow-y:auto;justify-content:flex-start;align-items:flex-start;gap:6px">
-        <div id="fc-meaning" style="font-family:'EB Garamond',serif;font-size:15px;color:#f0e8d8;line-height:1.6;margin-bottom:8px"></div>
-        <div id="fc-shloka" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:12px;color:var(--gold);line-height:1.8;border-top:1px solid rgba(200,134,10,.3);padding-top:8px;width:100%"></div>
-        <div id="fc-shloka-meaning" style="font-family:'EB Garamond',serif;font-size:12px;color:#b0a08a;line-height:1.6;font-style:italic"></div>
-        <div id="fc-source" style="font-size:10px;color:rgba(200,134,10,.7);margin-top:4px;letter-spacing:.3px"></div>
-      </div>
-    </div>
-  </div>
-  <div class="fc-controls">
-    <button class="fc-btn" onclick="flipFC()">Reveal</button>
-    <button class="fc-btn btn-wrong" onclick="nextFC(false)">Not yet</button>
-    <button class="fc-btn btn-right" onclick="nextFC(true)">Remembered</button>
-  </div>
-</div>
+  व्याकरण
+  Shabd Roop — शब्द रूप
+  In Sanskrit, a noun changes its ending to show its role. What English does with prepositions — "of", "by", "for" — Sanskrit does by transforming the word itself.
+  
+    बालक (m)
+    लता (f)
+    फल (n)
+  
+  
+    
+      बालक — Boy (Masculine · अकारान्त)
+      Nouns like राम, देव, छात्र, गुरु all follow this pattern.
+      
+        VibhaktiRoleSingularDualPlural
+        प्रथमा1stSubjectबालकःबालकौबालकाः
+        द्वितीया2ndObjectबालकम्बालकौबालकान्
+        तृतीया3rdBy/Withबालकेनबालकाभ्याम्बालकैः
+        चतुर्थी4thFor/Toबालकायबालकाभ्याम्बालकेभ्यः
+        पञ्चमी5thFromबालकात्बालकाभ्याम्बालकेभ्यः
+        षष्ठी6thOfबालकस्यबालकयोःबालकानाम्
+        सप्तमी7thIn/Atबालकेबालकयोःबालकेषु
+        सम्बोधनVoc.O!हे बालक!हे बालकौ!हे बालकाः!
+      
+    
+  
+  
+    
+      लता — Vine (Feminine · आकारान्त)
+      Nouns like सीता, रमा, माला, विद्या all follow this pattern.
+      
+        VibhaktiRoleSingularDualPlural
+        प्रथमा1stSubjectलतालतेलताः
+        द्वितीया2ndObjectलताम्लतेलताः
+        तृतीया3rdBy/Withलतयालताभ्याम्लताभिः
+        चतुर्थी4thFor/Toलतायैलताभ्याम्लताभ्यः
+        पञ्चमी5thFromलतायाःलताभ्याम्लताभ्यः
+        षष्ठी6thOfलतायाःलतयोःलतानाम्
+        सप्तमी7thIn/Atलतायाम्लतयोःलतासु
+        सम्बोधनVoc.O!हे लते!हे लते!हे लताः!
+      
+    
+  
+  
+    
+      फल — Fruit (Neuter · अकारान्त नपुंसक)
+      Nouns like ज्ञान, जल, वन, धन, कर्म all follow this pattern.
+      
+        VibhaktiRoleSingularDualPlural
+        प्रथमा1stSubjectफलम्फलेफलानि
+        द्वितीया2ndObjectफलम्फलेफलानि
+        तृतीया3rdBy/Withफलेनफलाभ्याम्फलैः
+        चतुर्थी4thFor/Toफलायफलाभ्याम्फलेभ्यः
+        पञ्चमी5thFromफलात्फलाभ्याम्फलेभ्यः
+        षष्ठी6thOfफलस्यफलयोःफलानाम्
+        सप्तमी7thIn/Atफलेफलयोःफलेषु
+        सम्बोधनVoc.O!हे फल!हे फले!हे फलानि!
+      
+    
+  
+  The word Karma (कर्म) is itself a neuter noun — a Shabd Roop of the root kar. When the Gita says "Karmanyevadhikaraste" — your right is to karma alone — it uses the 7th Vibhakti. The action is the location you inhabit.
 
-<!-- TUTOR -->
-<div class="page" id="page-tutor">
-  <div class="pill">AI</div>
-  <div class="page-heading">Ask Guru Ji — गुरु जी</div>
-  <div class="page-desc">Not a chatbot. A teacher who knows you have already lived enough to understand Sanskrit deeply.</div>
-  <div class="sugs">
-    <button class="sug" onclick="askSug(this)">What does the Gita say about Karma?</button>
-    <button class="sug" onclick="askSug(this)">Explain बालक Shabd Roop with a life example</button>
-    <button class="sug" onclick="askSug(this)">Teach me a shloka on wisdom</button>
-    <button class="sug" onclick="askSug(this)">What does Dharma really mean?</button>
-    <button class="sug" onclick="askSug(this)">How do I say "life teaches us" in Sanskrit?</button>
-  </div>
-  <div id="chat-box">
-    <div class="msg ai">🙏 Namaste.
+
+
+
+  व्याकरण
+  Dhatu Roop — धातु रूप
+  Dhatu is the root of every verb. From one seed, an entire forest of meanings grows — across time, mood, and person.
+  
+    लट् Present
+    लृट् Future
+    लङ् Past
+    लोट् Command
+    विधि Should
+  
+  
+  The Gita's most quoted verse uses Lot Lakar — "Arise! Fight!" (उत्तिष्ठ, अर्जुन). Commands in Sanskrit are not harsh — they carry the weight of love and duty combined.
+
+
+
+
+  व्याकरण
+  Sandhi — सन्धि
+  Sandhi means union — the blending of sounds at word boundaries. Sanskrit does not tolerate awkward gaps. Like rivers joining the sea, sounds merge into something seamless.
+  
+    1. Swar Sandhi — Vowel Union
+    
+      TypeRuleExampleMeaning
+      दीर्घa+a=āराम+अयन=रामायणRamayana
+      गुणa+i=eदेव+इन्द्र=देवेन्द्रKing of Gods
+      गुणa+u=oगङ्गा+उदक=गङ्गोदकGanga water
+      यण्i+a=yaइति+आदि=इत्यादिAnd so on
+    
+  
+  
+    2. Vyanjan Sandhi — Consonant Union
+    
+      RuleExampleMeaning
+      t+vowel→dजगत्+ईश=जगदीशLord of Universe
+      s→ṣ after i/u/rअभि+सेक=अभिषेकCoronation
+    
+  
+  
+    3. Visarga Sandhi — The Breath
+    
+      RuleExampleMeaning
+      aḥ+vowel→o'रामः+अस्ति=रामोऽस्तिRam exists
+      aḥ+voiced→oबालकः+गच्छति=बालको गच्छतिBoy goes
+    
+  
+  Namaste is itself a Sandhi — namas + te. "I bow to you." Two words, spoken millions of times daily, that most people don't know are grammatically fused. Sandhi is everywhere once you see it.
+
+
+
+
+  व्याकरण
+  Samas — समास
+  The art of compression. Two words becoming one, carrying the weight of both. Sanskrit says in one word what English takes a sentence to express.
+  
+    1. Tatpurusha — तत्पुरुष
+    Second word dominates. First qualifies it.
+    
+      CompoundSplitMeaning
+      राजपुत्रःराज्ञः पुत्रःSon of the king
+      विद्यालयःविद्यायाः आलयःHome of knowledge
+      देवालयःदेवस्य आलयःTemple
+    
+  
+  
+    2. Dvandva — द्वन्द्व
+    Both words are equal — a union of equals.
+    
+      CompoundSplitMeaning
+      सुखदुःखेसुखम् च दुःखम् चJoy and sorrow
+      पितरौमाता च पिता चParents
+    
+  
+  
+    3. Bahuvrihi — बहुव्रीहि
+    Neither word is the subject — together they describe a third entity. Sanskrit poetry uses these as divine epithets.
+    
+      CompoundMeaningRefers to
+      नीलकण्ठBlue-throated oneShiva
+      चक्रपाणिChakra in handVishnu
+      पीताम्बरYellow-robed oneKrishna
+    
+  
+  
+    4. Avyayibhava — अव्ययीभाव
+    
+      CompoundMeaning
+      यथाशक्तिAccording to ability
+      प्रतिदिनम्Every day
+    
+  
+  Mahābhārata is a Tatpurusha — mahā + bhārata — "the great tale of the Bharatas." Upanishad is also a compound — upa (near) + ni (down) + shad (to sit) — "sitting near the teacher." Every Sanskrit word you use is a compressed universe of meaning.
+
+
+
+
+  व्याकरण
+  Karaka & Vibhakti — कारक
+  Sanskrit sees every noun as playing a role in the drama of a sentence — and names each role precisely. This is Karaka — the grammar of relationships.
+  
+    
+      CaseKarakaEnglishExample
+      1stकर्ता — DoerSubjectरामः पठति
+      2ndकर्म — Action's objectObjectपुस्तकम् पठति
+      3rdकरण — InstrumentBy/Withलेखन्या लिखति
+      4thसम्प्रदान — RecipientFor/Toगुरवे नमः
+      5thअपादान — SeparationFromग्रामात् आगच्छति
+      6thसम्बन्ध — RelationOfरामस्य पुस्तकम्
+      7thअधिकरण — LocationIn/Atविद्यालये पठति
+    
+  
+  Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.
+
+
+
+
+  लिपि
+  Devanagari — देवनागरी
+  The script of the gods. Every letter has one sound — no ambiguity, no exceptions. Once truly learned, it cannot be unlearned.
+  Vowels — स्वर
+  Consonants — व्यञ्जन (first 10)
+  The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.
+
+
+
+
+  अभ्यास
+  Vocabulary — शब्द
+  These are not just words. Each one carries centuries of meaning. Some you use daily without knowing their depth.
+  
+    Card 1 of 15
+    ✓ 0 &nbsp; ✗ 0
+  
+  
+  
+    
+      
+        
+        
+        tap to reveal its depth
+      
+      
+        
+        
+        
+        
+      
+    
+  
+  
+    Reveal
+    Not yet
+    Remembered
+  
+
+
+
+
+  AI
+  Ask Guru Ji — गुरु जी
+  Not a chatbot. A teacher who knows you have already lived enough to understand Sanskrit deeply.
+  
+    What does the Gita say about Karma?
+    Explain बालक Shabd Roop with a life example
+    Teach me a shloka on wisdom
+    What does Dharma really mean?
+    How do I say "life teaches us" in Sanskrit?
+  
+  
+    🙏 Namaste.
 
 You did not come here to learn Sanskrit from scratch. You came to understand what you once memorised — to find the meaning behind words that stayed with you all these years.
 
-Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects to something you have lived through. I am here.</div>
-  </div>
-  <div class="chat-row">
-    <input type="text" id="chat-input" placeholder="What would you like to understand?" onkeydown="if(event.key==='Enter')sendMsg()"/>
-    <button id="send-btn" onclick="sendMsg()">Ask</button>
-      </div>
-  <div id="guru-limit-msg" style="font-size:12px;color:#7a2800;margin-top:8px;display:none;font-style:italic;font-family:'EB Garamond',serif;text-align:center"></div>
-</div>
-<!-- COMMUNITY -->
-<div class="page" id="page-community">
-<div class="pill">समाज · Community</div>
-<div class="page-heading">Daily Reflections</div>
-<div class="page-desc">What does today's shloka mean to you? Share your reflection with the Samsmarana community.</div>
+Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects to something you have lived through. I am here.
+  
+  
+    
+    Ask
+      
+  
 
-<!-- Post reflection box -->
-<div class="card" id="reflection-post-box">
-<div class="card-title">Share your reflection</div>
-<div id="reflection-shloka-preview" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--accent);margin-bottom:10px;line-height:1.8"></div>
-<textarea id="reflection-input" placeholder="What does this shloka mean to you personally? How does it connect to your life..." style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:12px;font-size:13px;font-family:'EB Garamond',serif;color:#1a0f00;min-height:100px;resize:vertical;line-height:1.7"></textarea>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-<span id="reflection-char-count" style="font-size:11px;color:var(--muted)">0 / 500</span>
-<button onclick="postReflection()" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Share 🙏</button>
-</div>
-<div id="reflection-error" style="font-size:12px;color:#8b0000;margin-top:8px;display:none"></div>
-</div>
 
-<!-- Sign in prompt for guests -->
-<!-- Premium prompt for community -->
-<div id="reflection-signin-prompt" style="display:none" class="card">
-<div style="text-align:center;padding:10px 0 16px">
-<div style="font-size:36px;margin-bottom:12px">🌸</div>
-<div class="card-title" style="text-align:center;font-size:20px">Community is a Premium feature</div>
-<div class="card-desc" style="text-align:center;margin-top:8px">Share your reflections on today's shloka, read insights from others, and be part of a community rediscovering Sanskrit together.</div>
-<div style="background:#faebd7;border-radius:10px;padding:14px;margin:16px 0;text-align:left">
-<div style="font-size:13px;color:#1a0f00;line-height:2">
-✦ Share your daily shloka reflection<br>
-✦ Read and like others' insights<br>
-✦ Weekly Sanskrit challenge<br>
-✦ 15 Guru Ji questions daily<br>
+
+समाज · Community
+Daily Reflections
+What does today's shloka mean to you? Share your reflection with the Samsmarana community.
+
+
+
+Share your reflection
+
+
+
+0 / 500
+Share 🙏
+
+
+
+
+
+
+
+
+🌸
+Community is a Premium feature
+Share your reflections on today's shloka, read insights from others, and be part of a community rediscovering Sanskrit together.
+
+
+✦ Share your daily shloka reflection
+
+✦ Read and like others' insights
+
+✦ Weekly Sanskrit challenge
+
+✦ 15 Guru Ji questions daily
+
 ✦ Personalised learning path
-</div>
-</div>
-<div style="font-family:'EB Garamond',serif;font-size:22px;font-weight:600;color:#7a2800;margin-bottom:4px">₹299 / month</div>
-<div style="font-size:12px;color:var(--muted);margin-bottom:16px">or ₹1,999 / year — save 44%</div>
-<button onclick="openAuth('signin')" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:10px">Sign In / Sign Up</button>
-<div style="font-size:12px;color:var(--muted);font-style:italic;font-family:'EB Garamond',serif">After signing in, upgrade to Premium to unlock community access.</div>
-</div>
-</div>
 
-<!-- Feed -->
-<div id="reflection-feed" style="margin-top:4px"></div>
-<div id="reflection-loading" style="text-align:center;padding:20px;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)">Loading reflections...</div>
-<div id="reflection-empty" style="display:none;text-align:center;padding:30px 20px">
-<div style="font-size:32px;margin-bottom:12px">🙏</div>
-<div style="font-family:'EB Garamond',serif;font-size:18px;color:var(--ink)">Be the first to share</div>
-<div style="font-size:13px;color:var(--muted);margin-top:6px">No reflections yet for today's shloka. Share yours above.</div>
-</div>
-</div>
-<!-- SENTENCES -->
-<div class="page" id="page-sentences">
-  <div class="pill">अभ्यास</div>
-  <div class="page-heading">Sentence Practice — वाक्य रचना</div>
-  <div class="page-desc">Sanskrit sentence structure is Subject → Object → Verb (SOV). Try forming these sentences. The answer unfolds when you are ready.</div>
 
-  <div id="sentence-list"></div>
+₹299 / month
+or ₹1,999 / year — save 44%
+Sign In / Sign Up
+After signing in, upgrade to Premium to unlock community access.
+
+
+
+
+
+Loading reflections...
+
+🙏
+Be the first to share
+No reflections yet for today's shloka. Share yours above.
+
+
+
+
+  अभ्यास
+  Sentence Practice — वाक्य रचना
+  Sanskrit sentence structure is Subject → Object → Verb (SOV). Try forming these sentences. The answer unfolds when you are ready.
+
+  
+
+
+
+
+<!-- COMMUNITY PAGE -->
+<div class="page" id="page-community">
+  <div class="pill">समाज · Community</div>
+  <div class="page-heading">Daily Reflections</div>
+  <div class="page-desc">What does today's shloka mean to you? Share your reflection with the Samsmarana community.</div>
+  <div class="card" id="reflection-post-box" style="display:none">
+    <div class="card-title">Share your reflection</div>
+    <div id="reflection-shloka-preview" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--accent);margin-bottom:10px;line-height:1.8"></div>
+    <textarea id="reflection-input" placeholder="What does this shloka mean to you personally?" style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:12px;font-size:13px;font-family:'EB Garamond',serif;color:#1a0f00;min-height:100px;resize:vertical;line-height:1.7;box-sizing:border-box"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+      <span id="reflection-char-count" style="font-size:11px;color:var(--muted)">0 / 500</span>
+      <button onclick="postReflection()" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer">Share 🙏</button>
+    </div>
+    <div id="reflection-error" style="font-size:12px;color:#8b0000;margin-top:8px;display:none"></div>
+  </div>
+  <div id="reflection-signin-prompt" class="card">
+    <div style="text-align:center;padding:10px 0 16px">
+      <div style="font-size:36px;margin-bottom:12px">🌸</div>
+      <div class="card-title" style="text-align:center;font-size:20px">Community is a Premium feature</div>
+      <div class="card-desc" style="text-align:center;margin-top:8px">Share your reflections, read insights from others, and rediscover Sanskrit together.</div>
+      <div style="background:#faebd7;border-radius:10px;padding:14px;margin:16px 0;text-align:left;font-size:13px;color:#1a0f00;line-height:2">
+        ✦ Share your daily shloka reflection<br>✦ Read and like others insights<br>✦ Weekly Sanskrit challenge<br>✦ 15 Guru Ji questions daily<br>✦ Personalised learning path
+      </div>
+      <div style="font-family:'EB Garamond',serif;font-size:22px;font-weight:600;color:#7a2800;margin-bottom:4px">₹299 / month</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px">or ₹1,999 / year — save 44%</div>
+      <button onclick="openAuth('signin')" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-bottom:10px">Sign In / Sign Up</button>
+      <div style="font-size:12px;color:var(--muted);font-style:italic">After signing in, upgrade to Premium to unlock community access.</div>
+    </div>
+  </div>
+  <div id="reflection-feed" style="margin-top:4px"></div>
+  <div id="reflection-loading" style="text-align:center;padding:20px;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)">Loading reflections...</div>
+  <div id="reflection-empty" style="display:none;text-align:center;padding:30px 20px">
+    <div style="font-size:32px;margin-bottom:12px">🙏</div>
+    <div style="font-family:'EB Garamond',serif;font-size:18px">Be the first to share</div>
+  </div>
 </div>
 
 <script>
+
 const vowels=[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
 const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'}];
 const shlokas=[
@@ -713,24 +820,24 @@ function renderSentences(){
     div.className='card';
     div.style.marginBottom='20px';
     div.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Sentence ${i+1}</div>
-        <div style="font-size:10px;color:var(--accent);font-style:italic;font-family:'EB Garamond',serif">${s.hint}</div>
-      </div>
-      <div style="font-family:'EB Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:14px">"${s.english}"</div>
-      <button onclick="toggleAnswer(${i})" style="background:var(--light-accent);border:1px solid var(--border);color:var(--accent);padding:8px 16px;border-radius:4px;font-family:'EB Garamond',serif;font-size:14px;cursor:pointer;width:100%;text-align:left" id="btn-${i}">
+      
+        Sentence ${i+1}
+        ${s.hint}
+      
+      "${s.english}"
+      
         Show Sanskrit →
-      </button>
-      <div id="ans-${i}" style="display:none;margin-top:14px">
-        <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:22px;color:var(--accent);line-height:1.8;margin-bottom:6px">${s.answer}</div>
-        <div style="font-size:13px;color:var(--muted);font-style:italic;margin-bottom:12px">${s.roman}</div>
-        <div style="margin-bottom:10px">
-          ${s.breakdown.map(b=>`<span style="display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 10px;margin:3px 3px 3px 0;font-size:12px"><span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--accent)">${b.w}</span> <span style="color:var(--muted);font-size:10px">— ${b.role}</span></span>`).join('')}
-        </div>
-        <div style="background:#f0f7f4;border:1px solid #b7d4c7;border-radius:6px;padding:10px 12px;font-family:'EB Garamond',serif;font-size:14px;color:#2d5a48;line-height:1.7">
+      
+      
+        ${s.answer}
+        ${s.roman}
+        
+          ${s.breakdown.map(b=>`${b.w} — ${b.role}`).join('')}
+        
+        
           💡 ${s.note}
-        </div>
-      </div>`;
+        
+      `;
     list.appendChild(div);
   });
 }
@@ -748,13 +855,13 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
   ['vowel-grid','cons-grid'].forEach((id,i)=>{
     const data=i===0?vowels:cons;
     const g=document.getElementById(id);
-    data.forEach(x=>{const el=document.createElement('div');el.className='letter-card';el.innerHTML=`<div class="lc-deva">${x.d}</div><div class="lc-roman">${x.r}</div>`;g.appendChild(el);});
+    data.forEach(x=>{const el=document.createElement('div');el.className='letter-card';el.innerHTML=`${x.d}${x.r}`;g.appendChild(el);});
   });
   const day=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
   const s=shlokas[day%shlokas.length];
   document.getElementById('shloka-text').textContent=s.text;
   document.getElementById('shloka-source').textContent=s.source;
-  document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
+  document.getElementById('shloka-meaning').innerHTML='Meaning: '+s.meaning;
   document.getElementById('shloka-life').textContent=s.life;
   loadFC();
   showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
@@ -799,23 +906,23 @@ function showShabd(id,btn){
 }
 function showDhatu(id,btn){
   const data=dhatu[id];
-  let html=`<div class="card"><div class="card-title">${data.title}</div><div class="card-desc">${data.desc}</div>`;
+  let html=`${data.title}${data.desc}`;
   data.roots.forEach(root=>{
-    html+=`<div style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--muted);margin:14px 0 6px">${root.name}</div>
-    <table class="grammar-table">
-      <tr><th>Purusha</th><th>Singular</th><th>Dual</th><th>Plural</th></tr>
-      <tr><td style="text-align:left;padding-left:10px">प्रथम<span style="font-size:10px;color:var(--muted);display:block">He/She/It</span></td><td class="dv">${root.rows[0][0]}</td><td class="dv">${root.rows[0][1]}</td><td class="dv">${root.rows[0][2]}</td></tr>
-      <tr><td style="text-align:left;padding-left:10px">मध्यम<span style="font-size:10px;color:var(--muted);display:block">You</span></td><td class="dv">${root.rows[1][0]}</td><td class="dv">${root.rows[1][1]}</td><td class="dv">${root.rows[1][2]}</td></tr>
-      <tr><td style="text-align:left;padding-left:10px">उत्तम<span style="font-size:10px;color:var(--muted);display:block">I/We</span></td><td class="dv">${root.rows[2][0]}</td><td class="dv">${root.rows[2][1]}</td><td class="dv">${root.rows[2][2]}</td></tr>
-    </table>`;
+    html+=`${root.name}
+    
+      PurushaSingularDualPlural
+      प्रथमHe/She/It${root.rows[0][0]}${root.rows[0][1]}${root.rows[0][2]}
+      मध्यमYou${root.rows[1][0]}${root.rows[1][1]}${root.rows[1][2]}
+      उत्तमI/We${root.rows[2][0]}${root.rows[2][1]}${root.rows[2][2]}
+    `;
   });
-  html+='</div>';
+  html+='';
   document.getElementById('dhatu-content').innerHTML=html;
   document.querySelectorAll('#page-dhaturoop .sub-tab').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
 }
 function loadFC(){
-  const c=cards[fcIdx];
+  const c = cards[fcIdx];
   document.getElementById('fc-deva').textContent=c.d;
   document.getElementById('fc-roman').textContent=c.r;
   document.getElementById('fc-meaning').textContent=c.m;
@@ -829,8 +936,8 @@ function loadFC(){
 function flipFC(){document.getElementById('fc').classList.toggle('flipped')}
 function nextFC(got){
   if(got)fcRight++;else fcWrong++;
-  document.getElementById('fc-right').textContent=fcRight;
-  document.getElementById('fc-wrong').textContent=fcWrong;
+  document.getElementById('fc-right').textContent='✅ Right';
+  document.getElementById('fc-wrong').textContent='❌ Wrong';
   fcIdx=(fcIdx+1)%cards.length;loadFC();
 }
 function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
@@ -940,7 +1047,7 @@ _reflections = data.reflections;
 renderReflections();
 } catch(e){
 if(loading) loading.style.display = 'none';
-if(feed) feed.innerHTML = '<div style="text-align:center;padding:20px;color:#8b0000;font-size:13px">Could not load reflections. Please try again.</div>';
+if(feed) feed.innerHTML = 'Could not load reflections. Please try again.';
 }
 }
 
@@ -957,20 +1064,20 @@ var card = document.createElement('div');
 card.className = 'card';
 card.style.marginBottom = '14px';
 card.innerHTML =
-'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
-+'<div style="display:flex;align-items:center;gap:10px">'
-+'<div style="width:36px;height:36px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7a2800;flex-shrink:0">'+r.user_initials+'</div>'
-+'<div>'
-+'<div style="font-size:13px;font-weight:600;color:#1a0f00">'+r.user_name+'</div>'
-+'<div style="font-size:11px;color:var(--muted)">'+timeAgo+'</div>'
-+'</div></div>'
-+(isOwn ? '<button onclick="deleteReflection(\''+r.id+'\')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0">×</button>' : '')
-+'</div>'
-+'<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:var(--accent);margin-bottom:10px;line-height:1.8;padding:8px 12px;background:#fdf8f2;border-radius:6px;border-left:3px solid var(--accent)">'+r.shloka_source+'</div>'
-+'<div style="font-family:\'EB Garamond\',serif;font-size:16px;color:#1a0f00;line-height:1.8;margin-bottom:12px">'+r.reflection+'</div>'
-+'<div style="display:flex;align-items:center;gap:6px">'
-+'<button onclick="likeReflection(\''+r.id+'\',this)" style="background:#faebd7;border:1px solid #e0c9a8;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;color:#7a2800;font-weight:600">🙏 '+r.likes+'</button>'
-+'</div>';
+''
++''
++''+r.user_initials+''
++''
++''+r.user_name+''
++''+timeAgo+''
++''
++(isOwn ? '×' : '')
++''
++''+r.shloka_source+''
++''+r.reflection+''
++''
++'🙏 '+r.likes+''
++'';
 feed.appendChild(card);
 });
 }
@@ -982,284 +1089,20 @@ var input = document.getElementById('reflection-input');
 var errorEl = document.getElementById('reflection-error');
 var text = input ? input.value.trim() : '';
 
-if(text.length < 10){
-if(errorEl){ errorEl.textContent = 'Please write at least 10 characters.'; errorEl.style.display = 'block'; }
-return;
-}
-
-if(errorEl) errorEl.style.display = 'none';
-
+if(text.length<10){if(errorEl){errorEl.textContent='Please write at least 10 characters.';errorEl.style.display='block';}return;}
+if(errorEl)errorEl.style.display='none';
 try{
-var token = _session ? _session.access_token : '';
-var res = await fetch('/api/community',{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-body:JSON.stringify({
-action:'post',
-reflection: text,
-shloka_source: _currentShloka ? _currentShloka.source : '',
-shloka_text: _currentShloka ? _currentShloka.text : ''
-})
-});
-var data = await res.json();
-if(data.error){
-if(errorEl){ errorEl.textContent = data.error; errorEl.style.display = 'block'; }
-return;
-}
-if(input) input.value = '';
-var counter = document.getElementById('reflection-char-count');
-if(counter) counter.textContent = '0 / 500';
-loadReflections();
-} catch(e){
-if(errorEl){ errorEl.textContent = 'Could not post. Try again.'; errorEl.style.display = 'block'; }
-}
+    var token=_session?_session.access_token:'';
+    var res=await fetch('/api/community',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'post',reflection:text,shloka_source:_currentShloka?_currentShloka.source:'',shloka_text:_currentShloka?_currentShloka.text:''})});
+    var data=await res.json();
+    if(data.error){if(errorEl){errorEl.textContent=data.error;errorEl.style.display='block';}return;}
+    if(input)input.value='';
+    var counter=document.getElementById('reflection-char-count');
+    if(counter)counter.textContent='0 / 500';
+    loadReflections();
+  }catch(e){if(errorEl){errorEl.textContent='Could not post. Try again.';errorEl.style.display='block';}}
 }
 
-async function likeReflection(id, btn){
-if(!_user){ openAuth('signin'); return; }
-try{
-var token = _session ? _session.access_token : '';
-var res = await fetch('/api/community',{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-body:JSON.stringify({action:'like', reflection_id:id})
-});
-var data = await res.json();
-if(data.liked !== undefined){
-loadReflections();
-}
-} catch(e){ console.log('Like error:',e); }
-}
-
-async function deleteReflection(id){
-if(!_user) return;
-if(!confirm('Delete your reflection?')) return;
-try{
-var token = _session ? _session.access_token : '';
-await fetch('/api/community',{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-body:JSON.stringify({action:'delete', reflection_id:id})
-});
-loadReflections();
-} catch(e){ console.log('Delete error:',e); }
-}
-
-function getTimeAgo(timestamp){
-var now = new Date();
-var then = new Date(timestamp);
-var diff = Math.floor((now - then) / 1000);
-if(diff < 60) return 'just now';
-if(diff < 3600) return Math.floor(diff/60)+' min ago';
-if(diff < 86400) return Math.floor(diff/3600)+' hr ago';
-return Math.floor(diff/86400)+' days ago';
-}
-// ── AUTH ─────────────────────────────────────────────
-var _user = null;
-var _session = null;
-var _guruCount = 0;
-var GURU_GUEST_LIMIT=5;
-var GURU_FREE_LIMIT = 10;
-var GURU_PREMIUM_LIMIT=15;
-
-function openAuth(view){
-showAuthView(view||'signin');
-document.getElementById('auth-overlay').classList.add('open');
-}
-function closeAuth(){
-document.getElementById('auth-overlay').classList.remove('open');
-}
-function showAuthView(view){
-['signin','signup','profile'].forEach(function(v){
-document.getElementById('auth-'+v+'-view').style.display = v===view?'block':'none';
-});
-}
-
-async function authSignIn(){
-var email = document.getElementById('auth-email').value.trim();
-var password = document.getElementById('auth-password').value.trim();
-if(!email||!password){showAuthError('signin','Please enter email and password.');return;}
-showAuthError('signin','');
-try{
-var res = await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({action:'signin',email,password})});
-var data = await res.json();
-if(data.error){showAuthError('signin',data.error);return;}
-_user = data.user;
-_session = data.session;
-saveSession(data);
-closeAuth();
-updateUserUI();
-}catch(e){showAuthError('signin','Connection error. Try again.');}
-}
-
-async function authSignUp(){
-var email = document.getElementById('auth-email-signup').value.trim();
-var password = document.getElementById('auth-password-signup').value.trim();
-if(!email||!password){showAuthError('signup','Please enter email and password.');return;}
-if(password.length<6){showAuthError('signup','Password must be at least 6 characters.');return;}
-showAuthError('signup','');
-try{
-var res = await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({action:'signup',email,password})});
-var data = await res.json();
-if(data.error){showAuthError('signup',data.error);return;}
-showAuthSuccess('signup','Account created! Please check your email to confirm.');
-}catch(e){showAuthError('signup','Connection error. Try again.');}
-}
-
-async function authGoogle(){
-var returnPage = document.querySelector('.page.active') ? document.querySelector('.page.active').id.replace('page-','') : 'home';
-var redirectUrl = 'https://samsmarana.vercel.app?return='+returnPage;
-window.location.href = 'https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redirectUrl);
-}
-async function authSignOut(){
-try{
-await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({action:'signout'})});
-}catch(e){}
-_user = null;
-_session = null;
-localStorage.removeItem('samsmarana_session');
-closeAuth();
-updateUserUI();
-}
-
-function showAuthError(view,msg){
-var el = document.getElementById('auth-error'+(view==='signup'?'-signup':''));
-if(!el)return;
-el.textContent = msg;
-el.style.display = msg?'block':'none';
-}
-
-function showAuthSuccess(view,msg){
-var el = document.getElementById('auth-success'+(view==='signup'?'-signup':''));
-if(!el)return;
-el.textContent = msg;
-el.style.display = msg?'block':'none';
-}
-
-function saveSession(data){
-try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
-}
-
-
-function loadSession(){
-try{
-// Check if returning from Google OAuth redirect
-var hash = window.location.hash;
-if(hash && hash.includes('access_token')){
-var params = new URLSearchParams(hash.substring(1));
-var accessToken = params.get('access_token');
-var refreshToken = params.get('refresh_token');
-if(accessToken){
-fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:accessToken})}).then(function(r){return r.json();}).then(function(data){if(data&&data.user&&data.user.id){_user=data.user;_session={access_token:accessToken,refresh_token:refreshToken};try{localStorage.setItem('samsmarana_session',JSON.stringify({user:data.user,session:{access_token:accessToken,refresh_token:refreshToken}}));}catch(e){}updateUserUI();var urlParams=new URLSearchParams(window.location.search);var returnPage=urlParams.get('return');window.history.replaceState({},document.title,window.location.pathname);if(returnPage&&returnPage!=='home'){setTimeout(function(){nav(returnPage,null);},500);}}}).catch(function(e){console.log('Auth error:',e);});
-then(function(user){
-_user = user;
-_session = {access_token: accessToken};
-saveSession({user:user, session:{access_token:accessToken}});
-updateUserUI();
-// Clean up URL
-
-// Return to page user was on before signing in
-var urlParams = new URLSearchParams(window.location.search);
-var returnPage = urlParams.get('return');
-if(returnPage && returnPage !== 'home'){
-setTimeout(function(){
-var el = document.querySelector('.nav-item[onclick*="\''+returnPage+'\'"]');
-nav(returnPage, el);
-}, 500);
-}
-window.history.replaceState({}, document.title, window.location.pathname);
-})
-.catch(function(e){console.log('Token fetch error:',e);});
-return;
-}
-}
-// Check localStorage for existing session
-var s = localStorage.getItem('samsmarana_session');
-if(s){
-var data = JSON.parse(s);
-_user = data.user;
-_session = data.session;
-updateUserUI();
-}
-}catch(e){console.log('Session error:',e);}
-}
-
-function isPremium(){
-if(!_user) return false;
-// Check all possible metadata locations
-var meta = _user.user_metadata || _user.user_meta_data || {};
-var appMeta = _user.app_metadata || {};
-return meta.premium === true
-|| appMeta.premium === true
-|| meta.premium === 'true'
-|| appMeta.premium === 'true';
-}
-
-function updateUserUI(){
-var topbar = document.getElementById('topbar');
-var existing = document.getElementById('user-pill');
-var signinBtn = document.getElementById('signin-btn');
-if(signinBtn) signinBtn.style.display = _user ? 'none' : 'block';
-if(existing) existing.remove();
-
-if(_user){
-var pill = document.createElement('div');
-pill.id = 'user-pill';
-pill.className = 'user-pill';
-pill.style.display = 'flex';
-pill.onclick = function(){openAuth('profile');};
-var fullName = _user.user_metadata && _user.user_metadata.full_name
-? _user.user_metadata.full_name
-: _user.user_metadata && _user.user_metadata.name
-? _user.user_metadata.name
-: _user.email||'U';
-var nameParts = fullName.trim().split(' ');
-var initial = nameParts.length >= 2
-? (nameParts[0][0] + nameParts[nameParts.length-1][0]).toUpperCase()
-: nameParts[0][0].toUpperCase();
-pill.innerHTML = '<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div>'
-+'<span>'+(fullName.split(' ')[0])+'</span>'
-+(isPremium()?'<span class="premium-badge">PRO</span>':'');
-topbar.appendChild(pill);
-
-// Update profile view
-var profileEmail = document.getElementById('profile-email');
-var profilePlan = document.getElementById('profile-plan');
-if(profileEmail) profileEmail.textContent = '✉ '+_user.email;
-if(profilePlan) profilePlan.innerHTML = isPremium()
-?'<strong>✨ Premium member</strong><br>Unlimited Guru Ji · Community access · All features'
-:'<strong>Free plan</strong><br>8 Guru Ji questions/day · Upgrade to Premium for 15 daily';
-}
-
-// Update Guru Ji limit display
-var limitEl = document.getElementById('guru-limit-msg');
-if(limitEl){
-if(!_user){
-limitEl.textContent = 'Sign in to get more than '+GURU_FREE_LIMIT+' questions per day.';
-limitEl.style.display = 'block';
-} else if(isPremium()){
-limitEl.style.display = 'none';
-} else {
-var remaining = Math.max(0, GURU_FREE_LIMIT - _guruCount);
-var limit = !_user ? GURU_GUEST_LIMIT : isPremium() ? GURU_PREMIUM_LIMIT : GURU_FREE_LIMIT;
-var remaining = Math.max(0, limit - _guruCount);
-if(!_user){
-limitEl.textContent = remaining+' questions remaining. Sign in for 8 questions free daily.';
-} else if(isPremium()){
-limitEl.textContent = remaining+' questions remaining today.';
-} else {
-limitEl.textContent = remaining+' questions remaining. Upgrade to premium for 15 daily.';
-}
-limitEl.style.display = 'block';
-}
-}
-}
-
-// Load session on startup
-loadSession();
 function addMsg(role,text){
   const box=document.getElementById('chat-box');
   const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
@@ -1268,6 +1111,181 @@ function addMsg(role,text){
 function scrollChat(){const b=document.getElementById('chat-box');b.scrollTop=b.scrollHeight}
 
 
+
+
+
+async function likeReflection(id,btn){
+  if(!_user){openAuth('signin');return;}
+  try{
+    var token=_session?_session.access_token:'';
+    await fetch('/api/community',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'like',reflection_id:id})});
+    loadReflections();
+  }catch(e){console.log('Like error:',e);}
+}
+
+async function deleteReflection(id){
+  if(!_user)return;
+  if(!confirm('Delete your reflection?'))return;
+  try{
+    var token=_session?_session.access_token:'';
+    await fetch('/api/community',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'delete',reflection_id:id})});
+    loadReflections();
+  }catch(e){console.log('Delete error:',e);}
+}
+
+function getTimeAgo(timestamp){
+  var now=new Date(),then=new Date(timestamp),diff=Math.floor((now-then)/1000);
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+' min ago';
+  if(diff<86400)return Math.floor(diff/3600)+' hr ago';
+  return Math.floor(diff/86400)+' days ago';
+}
+
+// ── AUTH ─────────────────────────────────────────────
+var _user=null,_session=null,_guruCount=0;
+var GURU_GUEST_LIMIT=5,GURU_FREE_LIMIT=8,GURU_PREMIUM_LIMIT=15;
+
+function openAuth(view){showAuthView(view||'signin');document.getElementById('auth-overlay').classList.add('open');}
+function closeAuth(){document.getElementById('auth-overlay').classList.remove('open');}
+function showAuthView(view){['signin','signup','profile'].forEach(function(v){document.getElementById('auth-'+v+'-view').style.display=v===view?'block':'none';});}
+
+async function authSignIn(){
+  var email=document.getElementById('auth-email').value.trim();
+  var password=document.getElementById('auth-password').value.trim();
+  if(!email||!password){showAuthError('signin','Please enter email and password.');return;}
+  showAuthError('signin','');
+  try{
+    var res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signin',email,password})});
+    var data=await res.json();
+    if(data.error){showAuthError('signin',data.error);return;}
+    _user=data.user;_session=data.session;
+    saveSession(data);closeAuth();updateUserUI();
+  }catch(e){showAuthError('signin','Connection error. Try again.');}
+}
+
+async function authSignUp(){
+  var email=document.getElementById('auth-email-signup').value.trim();
+  var password=document.getElementById('auth-password-signup').value.trim();
+  if(!email||!password){showAuthError('signup','Please enter email and password.');return;}
+  if(password.length<6){showAuthError('signup','Password must be at least 6 characters.');return;}
+  showAuthError('signup','');
+  try{
+    var res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signup',email,password})});
+    var data=await res.json();
+    if(data.error){showAuthError('signup',data.error);return;}
+    showAuthSuccess('signup','Account created! Please check your email to confirm.');
+  }catch(e){showAuthError('signup','Connection error. Try again.');}
+}
+
+function authGoogle(){
+  var returnPage=document.querySelector('.page.active')?document.querySelector('.page.active').id.replace('page-',''):'home';
+  var redirectUrl='https://samsmarana.vercel.app?return='+returnPage;
+  window.location.href='https://wcvjdbmigjgocgwforsr.supabase.co/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redirectUrl);
+}
+
+async function authSignOut(){
+  try{
+    var token=_session?_session.access_token:'';
+    await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signout',token})});
+  }catch(e){}
+  _user=null;_session=null;
+  localStorage.removeItem('samsmarana_session');
+  closeAuth();updateUserUI();
+}
+
+function showAuthError(view,msg){var el=document.getElementById('auth-error'+(view==='signup'?'-signup':''));if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
+function showAuthSuccess(view,msg){var el=document.getElementById('auth-success'+(view==='signup'?'-signup':''));if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
+function saveSession(data){try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}}
+
+function isPremium(){
+  if(!_user)return false;
+  var meta=_user.user_metadata||_user.user_meta_data||{};
+  var appMeta=_user.app_metadata||{};
+  return meta.premium===true||appMeta.premium===true||meta.premium==='true';
+}
+
+function updateUserUI(){
+  var topbar=document.getElementById('topbar');
+  var existing=document.getElementById('user-pill');
+  if(existing)existing.remove();
+  var signinBtn=document.getElementById('signin-btn');
+  if(signinBtn)signinBtn.style.display=_user?'none':'block';
+  if(_user){
+    var fullName=(_user.user_metadata&&(_user.user_metadata.full_name||_user.user_metadata.name))||_user.email.split('@')[0];
+    var nameParts=fullName.trim().split(' ');
+    var initial=nameParts.length>=2?(nameParts[0][0]+nameParts[nameParts.length-1][0]).toUpperCase():nameParts[0][0].toUpperCase();
+    var pill=document.createElement('div');
+    pill.id='user-pill';pill.className='user-pill';pill.style.display='flex';
+    pill.onclick=function(){openAuth('profile');};
+    pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div>'+'<span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+(isPremium()?'<span class="premium-badge">PRO</span>':'');
+    topbar.appendChild(pill);
+    var profileEmail=document.getElementById('profile-email');
+    var profilePlan=document.getElementById('profile-plan');
+    if(profileEmail)profileEmail.textContent='✉ '+_user.email;
+    if(profilePlan)profilePlan.innerHTML=isPremium()?'<strong>✨ Premium member</strong><br>Unlimited Guru Ji · Community access':'<strong>Free plan</strong><br>8 Guru Ji questions/day · Upgrade to Premium for 15 daily';
+  }
+  var limitEl=document.getElementById('guru-limit-msg');
+  if(limitEl){
+    var limit=!_user?GURU_GUEST_LIMIT:isPremium()?GURU_PREMIUM_LIMIT:GURU_FREE_LIMIT;
+    var remaining=Math.max(0,limit-_guruCount);
+    if(!_user){limitEl.textContent=remaining+' questions remaining. Sign in for 8 free daily.';}
+    else if(isPremium()){limitEl.textContent=remaining+' questions remaining today.';}
+    else{limitEl.textContent=remaining+' questions remaining. Upgrade to Premium for 15 daily.';}
+    limitEl.style.display='block';
+  }
+}
+
+function loadSession(){
+  try{
+    var hash=window.location.hash;
+    if(hash&&hash.includes('access_token')){
+      var params=new URLSearchParams(hash.substring(1));
+      var accessToken=params.get('access_token');
+      var refreshToken=params.get('refresh_token');
+      if(accessToken){
+        window.history.replaceState({},document.title,window.location.pathname);
+        fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:accessToken})})
+        .then(function(r){return r.json();})
+        .then(function(data){
+          if(data&&data.user&&data.user.id){
+            _user=data.user;
+            _session={access_token:accessToken,refresh_token:refreshToken};
+            try{localStorage.setItem('samsmarana_session',JSON.stringify({user:data.user,session:{access_token:accessToken,refresh_token:refreshToken}}));}catch(e){}
+            updateUserUI();
+            var urlParams=new URLSearchParams(window.location.search);
+            var returnPage=urlParams.get('return');
+            if(returnPage&&returnPage!=='home'){setTimeout(function(){nav(returnPage,null);},500);}
+          }
+        })
+        .catch(function(e){console.log('Auth error:',e);});
+        return;
+      }
+    }
+    var s=localStorage.getItem('samsmarana_session');
+    if(s){
+      var data=JSON.parse(s);
+      if(data&&data.user&&data.user.id&&data.session){
+        _user=data.user;_session=data.session;updateUserUI();
+        if(data.session.access_token){
+          fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:data.session.access_token})})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            if(d&&d.user&&d.user.id){
+              _user=d.user;
+              try{localStorage.setItem('samsmarana_session',JSON.stringify({user:d.user,session:data.session}));}catch(e){}
+              updateUserUI();
+            } else {
+              localStorage.removeItem('samsmarana_session');_user=null;_session=null;updateUserUI();
+            }
+          }).catch(function(e){});
+        }
+      }
+    }
+  }catch(e){console.log('Session error:',e);}
+}
+
+// Load session on startup
+loadSession();
 </script>
 </body>
 </html>
