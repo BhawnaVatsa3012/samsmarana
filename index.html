@@ -528,7 +528,78 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
   <div id="sentence-list"></div>
 <div id="guru-limit-msg" style="font-size:12px;color:#7a2800;margin-top:8px;display:none;font-style:italic;font-family:'EB Garamond',serif;text-align:center"></div>
 </div>
+<!-- SHLOKA CARDS -->
+<div class="page" id="page-shlokaCards">
+<div class="pill">श्लोक · Share</div>
+<div class="page-heading">Shloka Cards — श्लोक पत्र</div>
+<div class="page-desc">Every shloka carries a universe. Read it, reflect on it, share it with someone who needs it today.</div>
 
+<!-- Card display -->
+<div id="sc-card" style="background:#ffffff;border:1px solid #c8b090;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(90,30,0,.10)">
+<!-- Top accent bar -->
+<div style="height:4px;background:linear-gradient(90deg,#7a2800,#9a6800)"></div>
+<div style="padding:24px 20px 20px">
+<!-- Label -->
+<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of 6</div>
+<!-- Sanskrit text -->
+<div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
+<!-- Source -->
+<div id="sc-source" style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#9a6800;text-align:center;margin-bottom:18px"></div>
+
+<!-- Divider -->
+<div style="border-top:1px dashed #e0c9a8;margin-bottom:18px"></div>
+
+<!-- Hindi meaning -->
+<div style="margin-bottom:14px">
+<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5a4020;margin-bottom:6px;font-weight:700">हिंदी अर्थ</div>
+<div id="sc-hindi" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:#1a0f00;line-height:1.9"></div>
+</div>
+
+<!-- English meaning -->
+<div style="margin-bottom:14px">
+<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5a4020;margin-bottom:6px;font-weight:700">English Meaning</div>
+<div id="sc-english" style="font-family:'EB Garamond',serif;font-size:15px;color:#1a0f00;line-height:1.8;font-style:italic"></div>
+</div>
+
+<!-- Real life angle -->
+<div style="background:#faebd7;border-radius:8px;padding:14px;border:1px solid #e0c8a0;margin-top:4px">
+<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#7a2800;margin-bottom:6px;font-weight:700">✦ Real Life</div>
+<div id="sc-life" style="font-family:'EB Garamond',serif;font-size:14px;color:#2a1a08;line-height:1.8"></div>
+</div>
+</div>
+<!-- Bottom brand strip -->
+<div style="background:#5c2a0a;padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
+<span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:#e0b87a">संस्मरण</span>
+<span style="font-size:11px;color:#c8a87a;font-family:'EB Garamond',serif;font-style:italic">samsmarana.vercel.app</span>
+</div>
+</div>
+
+<!-- Navigation row -->
+<div style="display:flex;gap:8px;margin-bottom:16px">
+<button onclick="scNav(-1)" style="flex:1;background:#ffffff;border:1.5px solid #c8b090;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif">← Previous</button>
+<button onclick="scNav(1)" style="flex:1;background:#7a2800;border:none;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600">Next →</button>
+</div>
+
+<!-- Share on WhatsApp -->
+<button onclick="shareWhatsApp()" style="width:100%;background:#25D366;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;box-shadow:0 2px 8px rgba(37,211,102,.25)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+Share on WhatsApp
+</button>
+
+<!-- Copy text -->
+<button onclick="copyCard()" id="copy-btn" style="width:100%;background:#ffffff;border:1.5px solid #c8b090;border-radius:10px;padding:13px;font-size:14px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif;font-weight:500">
+📋 Copy Card Text
+</button>
+
+<div style="text-align:center;margin-top:16px;font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a7a62">
+Share the wisdom. Let it find the one who needs it. 🙏
+</div>
+</div>
+
+// ── SHLOKA CARDS ─────────────────────────────────────
+
+
+  
 <script>
 const vowels=[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
 const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'}];
@@ -1128,75 +1199,7 @@ function getTimeAgo(ts){
 }
 
 loadSession();
-<!-- SHLOKA CARDS -->
-<div class="page" id="page-shlokaCards">
-<div class="pill">श्लोक · Share</div>
-<div class="page-heading">Shloka Cards — श्लोक पत्र</div>
-<div class="page-desc">Every shloka carries a universe. Read it, reflect on it, share it with someone who needs it today.</div>
 
-<!-- Card display -->
-<div id="sc-card" style="background:#ffffff;border:1px solid #c8b090;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(90,30,0,.10)">
-<!-- Top accent bar -->
-<div style="height:4px;background:linear-gradient(90deg,#7a2800,#9a6800)"></div>
-<div style="padding:24px 20px 20px">
-<!-- Label -->
-<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of 6</div>
-<!-- Sanskrit text -->
-<div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
-<!-- Source -->
-<div id="sc-source" style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#9a6800;text-align:center;margin-bottom:18px"></div>
-
-<!-- Divider -->
-<div style="border-top:1px dashed #e0c9a8;margin-bottom:18px"></div>
-
-<!-- Hindi meaning -->
-<div style="margin-bottom:14px">
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5a4020;margin-bottom:6px;font-weight:700">हिंदी अर्थ</div>
-<div id="sc-hindi" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:#1a0f00;line-height:1.9"></div>
-</div>
-
-<!-- English meaning -->
-<div style="margin-bottom:14px">
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#5a4020;margin-bottom:6px;font-weight:700">English Meaning</div>
-<div id="sc-english" style="font-family:'EB Garamond',serif;font-size:15px;color:#1a0f00;line-height:1.8;font-style:italic"></div>
-</div>
-
-<!-- Real life angle -->
-<div style="background:#faebd7;border-radius:8px;padding:14px;border:1px solid #e0c8a0;margin-top:4px">
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#7a2800;margin-bottom:6px;font-weight:700">✦ Real Life</div>
-<div id="sc-life" style="font-family:'EB Garamond',serif;font-size:14px;color:#2a1a08;line-height:1.8"></div>
-</div>
-</div>
-<!-- Bottom brand strip -->
-<div style="background:#5c2a0a;padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
-<span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:#e0b87a">संस्मरण</span>
-<span style="font-size:11px;color:#c8a87a;font-family:'EB Garamond',serif;font-style:italic">samsmarana.vercel.app</span>
-</div>
-</div>
-
-<!-- Navigation row -->
-<div style="display:flex;gap:8px;margin-bottom:16px">
-<button onclick="scNav(-1)" style="flex:1;background:#ffffff;border:1.5px solid #c8b090;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif">← Previous</button>
-<button onclick="scNav(1)" style="flex:1;background:#7a2800;border:none;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600">Next →</button>
-</div>
-
-<!-- Share on WhatsApp -->
-<button onclick="shareWhatsApp()" style="width:100%;background:#25D366;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;box-shadow:0 2px 8px rgba(37,211,102,.25)">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-Share on WhatsApp
-</button>
-
-<!-- Copy text -->
-<button onclick="copyCard()" id="copy-btn" style="width:100%;background:#ffffff;border:1.5px solid #c8b090;border-radius:10px;padding:13px;font-size:14px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif;font-weight:500">
-📋 Copy Card Text
-</button>
-
-<div style="text-align:center;margin-top:16px;font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a7a62">
-Share the wisdom. Let it find the one who needs it. 🙏
-</div>
-</div>
-
-// ── SHLOKA CARDS ─────────────────────────────────────
 var _scIdx = 0;
 
 var scShlokas = [
