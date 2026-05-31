@@ -583,12 +583,8 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <!-- Share on WhatsApp -->
 <button onclick="shareWhatsApp()" id="share-btn" style="width:100%;background:#25D366;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;box-shadow:0 2px 8px rgba(37,211,102,.25)">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-Step 1 — Download Card Image
+Share Shloka Card
 </button>
-
-<a id="wa-btn" href="#" style="display:none;width:100%;background:#128C7E;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;text-align:center;text-decoration:none;margin-bottom:12px;box-shadow:0 2px 8px rgba(18,140,126,.25)">
-Step 2 — Open WhatsApp →
-</a>
 
 <!-- Copy text -->
 <button onclick="copyCard()" id="copy-btn" style="width:100%;background:#ffffff;border:1.5px solid #c8b090;border-radius:10px;padding:13px;font-size:14px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif;font-weight:500">
@@ -1312,131 +1308,134 @@ _scIdx = (_scIdx + 1) % _scCards.length;
 renderShlokaCard();
 }
 
-function shareWhatsApp() {
-if (!_user) { openAuth('signin'); return; }
+  function scNav(dir) {
+_scIdx = (_scIdx + dir+_scCards.length) % _scCards.length;
+renderShlokaCard();
+}
 
-// ── REPLACE the entire shareWhatsApp() function in index.html ──
-// Also replace drawCardBackground() and wrapText() with the versions below
-// Keep everything else in sc_js_patch.js as-is
+async function shareWhatsApp() {
+if (!_user) { openAuth('signin'); return; }
 var card = _scCards[_scIdx];
 if (!card) return;
-var W = 1080, H = 1350; // portrait card
+
+var W = 1080, H = 1350;
 var canvas = document.createElement('canvas');
-canvas.width = W;
-canvas.height = H;
+canvas.width = W; canvas.height = H;
 var ctx = canvas.getContext('2d');
 
-// ── Background ──
-ctx.fillStyle = '#fffff8';
+// Background
+ctx.fillStyle = '#fffdf4';
 ctx.fillRect(0, 0, W, H);
 
-// ── Outer gold border (thick) ──
-ctx.strokeStyle = '#c8960c';
-ctx.lineWidth = 18;
-ctx.strokeRect(18, 18, W - 36, H - 36);
+// Outer gold border
+ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 20;
+ctx.strokeRect(20, 20, W - 40, H - 40);
 
-// ── Inner gold border (thin) ──
-ctx.strokeStyle = '#e8b84b';
-ctx.lineWidth = 5;
-ctx.strokeRect(38, 38, W - 76, H - 76);
+// Inner gold border
+ctx.strokeStyle = '#daa520'; ctx.lineWidth = 4;
+ctx.strokeRect(44, 44, W - 88, H - 88);
 
-// ── Decorative corner dots ──
-var corners = [[54,54],[W-54,54],[54,H-54],[W-54,H-54]];
-corners.forEach(function(c) {
-ctx.beginPath();
-ctx.arc(c[0], c[1], 8, 0, Math.PI * 2);
-ctx.fillStyle = '#c8960c';
-ctx.fill();
+// Corner ornaments
+[[60,60],[W-60,60],[60,H-60],[W-60,H-60]].forEach(function(c) {
+ctx.beginPath(); ctx.arc(c[0], c[1], 10, 0, Math.PI * 2);
+ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
-// ── Om symbol at top ──
-ctx.font = '52px serif';
-ctx.fillStyle = '#c8960c';
+// OM
+ctx.font = '600 60px Georgia, serif';
+ctx.fillStyle = '#b8860b';
 ctx.textAlign = 'center';
-ctx.fillText('ॐ', W / 2, 130);
+ctx.fillText('ॐ', W / 2, 148);
 
-// ── Thin decorative line under Om ──
-ctx.strokeStyle = '#e8b84b';
-ctx.lineWidth = 2;
-ctx.beginPath();
-ctx.moveTo(120, 150);
-ctx.lineTo(W - 120, 150);
-ctx.stroke();
+// Line under OM
+ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
+ctx.beginPath(); ctx.moveTo(150, 172); ctx.lineTo(W - 150, 172); ctx.stroke();
 
-// ── Sanskrit text ──
-ctx.fillStyle = '#7a1800';
-ctx.textAlign = 'center';
-var sanskritY = wrapTextCanvas(ctx, card.sanskrit, W / 2, 230, W - 160, 66, 'bold 48px serif');
+// Sanskrit
+ctx.fillStyle = '#5a1000';
+var y = wrapTextCanvas(ctx, card.sanskrit, W/2, 260, W-180, 78, 'bold 52px Georgia, serif');
 
-// ── Transliteration ──
+// Transliteration
 ctx.fillStyle = '#9a6800';
-ctx.font = 'italic 28px Georgia, serif';
-var translitY = wrapTextCanvas(ctx, card.transliteration || '', W / 2, sanskritY + 30, W - 200, 38, 'italic 28px Georgia, serif');
+y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+38, W-220, 46, 'italic 30px Georgia, serif');
 
-// ── Divider ──
-var divY = translitY + 40;
-ctx.strokeStyle = '#e8b84b';
-ctx.lineWidth = 1.5;
-ctx.beginPath();
-ctx.moveTo(160, divY);
-ctx.lineTo(W - 160, divY);
-ctx.stroke();
+// Divider 1
+y += 52; drawDivider(ctx, y, W);
 
-// ── Hindi meaning ──
-ctx.fillStyle = '#2c2c2c';
-var hindiY = wrapTextCanvas(ctx, card.hindi, W / 2, divY + 60, W - 160, 46, 'bold 34px serif');
+// Hindi label
+y += 48; ctx.fillStyle = '#7a5200'; ctx.font = '500 20px sans-serif';
+ctx.textAlign = 'center'; ctx.fillText('हदी अर्थ', W/2, y);
 
-// ── English meaning ──
-ctx.fillStyle = '#444444';
-var englishY = wrapTextCanvas(ctx, card.english, W / 2, hindiY + 30, W - 160, 40, 'italic 30px Georgia, serif');
+// Hindi text
+y += 12; ctx.fillStyle = '#1a0f00';
+y = wrapTextCanvas(ctx, card.hindi, W/2, y+36, W-180, 52, 'bold 36px Georgia, serif');
 
-// ── Divider ──
-var div2Y = englishY + 40;
-ctx.strokeStyle = '#e8b84b';
-ctx.lineWidth = 1.5;
-ctx.beginPath();
-ctx.moveTo(160, div2Y);
-ctx.lineTo(W - 160, div2Y);
-ctx.stroke();
+// English label
+y += 36; ctx.fillStyle = '#7a5200'; ctx.font = '500 20px sans-serif';
+ctx.fillText('English', W/2, y);
 
-// ── Real Life label ──
-ctx.fillStyle = '#c8960c';
-ctx.font = 'bold 24px sans-serif';
-ctx.textAlign = 'center';
-ctx.fillText('💡 Real Life', W / 2, div2Y + 50);
+// English text
+y += 12; ctx.fillStyle = '#333333';
+y = wrapTextCanvas(ctx, card.english, W/2, y+36, W-180, 46, 'italic 32px Georgia, serif');
 
-// ── Real Life text ──
-ctx.fillStyle = '#333333';
-wrapTextCanvas(ctx, card.real_life, W / 2, div2Y + 100, W - 160, 38, '28px serif');
+// Divider 2
+y += 52; drawDivider(ctx, y, W);
 
-// ── Bottom divider ──
-ctx.strokeStyle = '#e8b84b';
-ctx.lineWidth = 2;
-ctx.beginPath();
-ctx.moveTo(120, H - 130);
-ctx.lineTo(W - 120, H - 130);
-ctx.stroke();
+// Real Life label
+y += 50; ctx.fillStyle = '#9a3800'; ctx.font = 'bold 22px sans-serif';
+ctx.fillText('✦ Real Life ✦', W/2, y);
 
-// ── Branding ──
-ctx.fillStyle = '#c8960c';
-ctx.font = 'bold 26px sans-serif';
-ctx.textAlign = 'center';
-ctx.fillText('Samsmarana', W / 2, H - 90);
-ctx.fillStyle = '#9a6800';
-ctx.font = '22px sans-serif';
-ctx.fillText('samsmarana.vercel.app', W / 2, H - 58);
+// Real Life text
+y += 14; ctx.fillStyle = '#2a2a2a';
+wrapTextCanvas(ctx, card.real_life, W/2, y+38, W-180, 46, 'italic 30px Georgia, serif');
 
-// ── Download ──
+// Bottom divider — fixed from bottom, no gap
+var brandY = H - 80;
+ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
+ctx.beginPath(); ctx.moveTo(150, brandY-40); ctx.lineTo(W-150, brandY-40); ctx.stroke();
+
+// Branding
+ctx.fillStyle = '#b8860b'; ctx.font = 'bold 28px Georgia, serif';
+ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
+ctx.fillStyle = '#9a7830'; ctx.font = 'italic 22px Georgia, serif';
+ctx.fillText('samsmarana.vercel.app', W/2, brandY+36);
+
+// ── Generate blob and share or download ──
+canvas.toBlob(async function(blob) {
+var fileName = 'shloka-' + (card.theme || 'card') + '.png';
+var file = new File([blob], fileName, { type: 'image/png' });
+
+// Try native share sheet first (works on mobile + modern desktop)
+if (navigator.canShare && navigator.canShare({ files: [file] })) {
+try {
+await navigator.share({
+files: [file],
+text: '🙏 samsmarana.vercel.app'
+});
+return;
+} catch(e) {
+if (e.name === 'AbortError') return; // user cancelled, do nothing
+// any other error — fall through to download below
+}
+}
+
+// Fallback: download the image
 var link = document.createElement('a');
-link.download = 'shloka-' + (card.theme || 'card') + '.png';
-link.href = canvas.toDataURL('image/png');
+link.download = fileName;
+link.href = URL.createObjectURL(blob);
 link.click();
+setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
 
-// ── Step 2: Open WhatsApp ──
-setTimeout(function() {
-var msg = encodeURIComponent('🙏 संस्कृत श्लोक का अभ्यास करें — Samsmarana ऐप पर\nhttps://samsmarana.vercel.app');
-window.open('https://wa.me/?text=' + msg, '_blank');
-}, 800);
+}, 'image/png');
+}
+
+function drawDivider(ctx, y, W) {
+ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
+ctx.beginPath(); ctx.moveTo(160, y); ctx.lineTo(W - 160, y); ctx.stroke();
+// small diamond in center
+ctx.beginPath();
+ctx.arc(W / 2, y, 4, 0, Math.PI * 2);
+ctx.fillStyle = '#b8860b'; ctx.fill();
 }
 
 function drawCardBackground(ctx, theme, w, h) {
