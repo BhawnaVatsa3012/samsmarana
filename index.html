@@ -540,7 +540,7 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <div style="height:4px;background:linear-gradient(90deg,#7a2800,#9a6800)"></div>
 <div style="padding:24px 20px 20px">
 <!-- Label -->
-<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of 6</div>
+<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of <span id="sc-total">6</span></div>
 <!-- Sanskrit text -->
 <div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
 <!-- Source -->
@@ -802,7 +802,7 @@ function nav(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(id==='sentences')renderSentences();
-  if(id==='shlokaCards')scLoad();
+  if(id==='shlokaCards')fetchShlokaCards();
   if(id==='community')initCommunity();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el&&el.classList)el.classList.add('active');
@@ -1201,256 +1201,269 @@ function getTimeAgo(ts){
 loadSession();
 
 var _scIdx = 0;
+// ── SHLOKA CARDS ──
+// Replace everything from this comment down to the end of copyCard()
+// with this block in index.html
 
-var scShlokas = [
+var _scCards = [];
+var _scIdx = 0;
+
+// Fallback cards (shown if Supabase is unreachable)
+var SC_FALLBACK = [
 {
-text: 'विद्या ददाति विनयं\nविनयाद् याति पात्रताम् ।\nपात्रत्वाद् धनमाप्नोति\nधनाद् धर्मं ततः सुखम् ॥',
-source: '— Hitopadesha',
-hindi: 'विद्या विनम्रता देती है। विनम्रता से पात्रता आती है। पात्रता से धन मिलता है। धन से धर्म और धर्म से सुख।',
-english: 'Knowledge gives humility. Humility brings worthiness. Worthiness brings wealth. Wealth enables righteousness. From righteousness comes happiness.',
-life: 'We spent years chasing wealth before wisdom. Sanskrit knew the right order all along — wisdom first, everything else follows.'
+theme: 'lamp',
+sanskrit: 'तमसो मा ज्योतिर्गमय।',
+transliteration: 'Tamaso mā jyotirgamaya.',
+hindi: 'अंधकार से प्रकाश की ओर ले जाओ।',
+english: 'Lead me from darkness to light.',
+real_life: 'जब हम अज्ञान और भ्रम में होते हैं, तो ज्ञान ही वह दीपक है जो रास्ता दिखाता है।'
 },
 {
-text: 'अयं निजः परो वेति\nगणना लघुचेतसाम् ।\nउदारचरितानां तु\nवसुधैव कुटुम्बकम् ॥',
-source: '— Maha Upanishad',
-hindi: 'यह मेरा है, वह पराया है — यह सोच संकुचित मन की है। उदार हृदय वालों के लिए सारी धरती एक परिवार है।',
-english: 'Mine or yours — such calculations belong to the small-minded. For those of generous character, the entire world is one family.',
-life: 'Vasudhaiva Kutumbakam — four words from every school assembly. Now you know the full verse, and its true weight.'
+theme: 'path',
+sanskrit: 'चरैवेति चरैवेति।',
+transliteration: 'Caraiveti caraiveti.',
+hindi: 'चलते रहो, चलते रहो।',
+english: 'Keep moving, keep moving.',
+real_life: 'जीवन में रुकना ही सबसे बड़ी हार है। हर दिन थोड़ा आगे बढ़ना — यही सफलता का रहस्य है।'
 },
 {
-text: 'उत्तिष्ठत जाग्रत\nप्राप्य वरान् निबोधत',
-source: '— Katha Upanishad',
-hindi: 'उठो, जागो, और लक्ष्य प्राप्ति तक रुको मत।',
-english: 'Arise. Awake. Stop not till the goal is reached.',
-life: 'You memorised this in Class 9. Today you have lived enough to feel every word of it in your bones.'
+theme: 'manuscript',
+sanskrit: 'विद्या ददाति विनयं विनयाद् याति पात्रताम्।',
+transliteration: 'Vidyā dadāti vinayaṃ vinayād yāti pātratām.',
+hindi: 'विद्या विनम्रता देती है, विनम्रता से योग्यता आती है।',
+english: 'Knowledge gives humility; from humility comes worthiness.',
+real_life: 'जितना ज़्यादा हम सीखते हैं, उतना ही हमें पता चलता है कि हम अभी भी कितना कम जानते हैं।'
 },
 {
-text: 'सर्वे भवन्तु सुखिनः\nसर्वे सन्तु निरामयाः ।\nसर्वे भद्राणि पश्यन्तु\nमा कश्चिद् दुःखभाग् भवेत् ॥',
-source: '— Brihadaranyaka Upanishad',
-hindi: 'सभी सुखी हों। सभी रोगमुक्त हों। सभी का कल्याण हो। कोई भी दुख का भागी न बने।',
-english: 'May all be happy. May all be free from illness. May all see what is good. May no one suffer.',
-life: 'Recited as routine before every school assembly — yet it was written as the highest aspiration for all of humanity, not just your school.'
+theme: 'scale',
+sanskrit: 'सत्यमेव जयते।',
+transliteration: 'Satyameva jayate.',
+hindi: 'सत्य की ही विजय होती है।',
+english: 'Truth alone triumphs.',
+real_life: 'लंबे समय में सच्चाई ही टिकती है — चाहे रास्ता कितना भी कठिन हो।'
 },
 {
-text: 'चरैवेति चरैवेति',
-source: '— Aitareya Brahmana',
-hindi: 'चलते रहो। चलते रहो।',
-english: 'Keep moving. Keep moving.',
-life: 'Two words. The shortest and most powerful instruction in all of Sanskrit. No explanation needed — just live it.'
+theme: 'lotus',
+sanskrit: 'नालेऽपि जायते पद्मं नालेनैव च वर्धते।',
+transliteration: 'Nāle\'pi jāyate padmaṃ nālenai\'va ca vardhate.',
+hindi: 'कमल कीचड़ में जन्म लेता है, पर कीचड़ से प्रभावित नहीं होता।',
+english: 'The lotus is born in mud yet rises above it.',
+real_life: 'बुरे माहौल में भी अच्छे लोग अपना चरित्र बनाए रखते हैं।'
 },
 {
-text: 'समत्वं योग उच्यते',
-source: '— Bhagavad Gita 2.48',
-hindi: 'मन की समता को ही योग कहा जाता है।',
-english: 'Evenness of mind is called Yoga.',
-life: 'Yoga is not the pose. It is the stillness inside you when everything outside is moving. This one sentence redefines everything.'
+theme: 'pot',
+sanskrit: 'पूर्णमदः पूर्णमिदं पूर्णात् पूर्णमुदच्यते।',
+transliteration: 'Pūrṇamadaḥ pūrṇamidaṃ pūrṇāt pūrṇamudacyate.',
+hindi: 'वह पूर्ण है, यह पूर्ण है। पूर्ण से पूर्ण निकलता है।',
+english: 'That is whole, this is whole. From wholeness comes wholeness.',
+real_life: 'देना घटाता नहीं, बढ़ाता है।'
 }
 ];
 
-function scLoad() {
-var s = scShlokas[_scIdx];
-document.getElementById('sc-num').textContent = _scIdx + 1;
-document.getElementById('sc-text').textContent = s.text;
-document.getElementById('sc-source').textContent = s.source;
-document.getElementById('sc-hindi').textContent = s.hindi;
-document.getElementById('sc-english').textContent = s.english;
-document.getElementById('sc-life').textContent = s.life;
+async function fetchShlokaCards() {
+try {
+var resp = await fetch('/api/shlokas');
+if (!resp.ok) throw new Error('API error ' + resp.status);
+var data = await resp.json();
+if (data.cards && data.cards.length > 0) {
+_scCards = data.cards;
+} else {
+console.warn('Shloka API returned empty. Using fallback.');
+_scCards = SC_FALLBACK;
+}
+} catch (e) {
+console.warn('fetchShlokaCards failed, using fallback:', e);
+_scCards = SC_FALLBACK;
 }
 
-function scNav(dir) {
-_scIdx = (_scIdx + dir + scShlokas.length) % scShlokas.length;
-scLoad();
-// Reset copy button
-var btn = document.getElementById('copy-btn');
-if (btn) btn.textContent = '📋 Copy Card Text';
+// Rotate starting index every 2 days based on date
+var daysSinceEpoch = Math.floor(Date.now() / 86400000);
+_scIdx = Math.floor(daysSinceEpoch / 2) % _scCards.length;
+
+renderShlokaCard();
 }
 
-function buildCardText() {
-var s = scShlokas[_scIdx];
-return (
-'🪔 *Shloka ' + (_scIdx + 1) + ' of 6* — Samsmarana\n\n' +
-s.text + '\n' +
-s.source + '\n\n' +
-'*हिंदी अर्थ:*\n' + s.hindi + '\n\n' +
-'*English:*\n' + s.english + '\n\n' +
-'*✦ Real Life:*\n' + s.life + '\n\n' +
-'🙏 _Rediscover Sanskrit at samsmarana.vercel.app_'
-);
+function renderShlokaCard() {
+var card = _scCards[_scIdx];
+if (!card) return;
+
+document.getElementById('sc-sanskrit').textContent = card.sanskrit;
+document.getElementById('sc-translit').textContent = card.transliteration || '';
+document.getElementById('sc-hindi').textContent = card.hindi;
+document.getElementById('sc-english').textContent = card.english;
+document.getElementById('sc-reallife').textContent = card.real_life;
+document.getElementById('sc-num').textContent = (_scIdx + 1);
+document.getElementById('sc-total').textContent = _scCards.length;
+
+// Update theme background class
+var cardEl = document.getElementById('sc-card');
+cardEl.className = cardEl.className.replace(/\btheme-\S+/g, '');
+cardEl.classList.add('theme-' + (card.theme || 'lamp'));
 }
 
-function shareWhatsApp() {
-if (!_user) { openAuth('signin'); return; }
-generateAndShareCard();
+function scPrev() {
+_scIdx = (_scIdx - 1 + _scCards.length) % _scCards.length;
+renderShlokaCard();
 }
-function generateAndShareCard() {
-var s = scShlokas[_scIdx];
-var btn = document.getElementById('share-btn');
-if (btn) { btn.textContent = '⏳ Generating card...'; btn.disabled = true; }
 
+function scNext() {
+_scIdx = (_scIdx + 1) % _scCards.length;
+renderShlokaCard();
+}
+
+function shareOnWhatsApp() {
+if (!_user) { showAuth(); return; }
+
+var card = _scCards[_scIdx];
+if (!card) return;
+
+// Step 1: Generate and download card image
 var canvas = document.createElement('canvas');
-var W = 900, H = 1200;
-canvas.width = W; canvas.height = H;
+canvas.width = 1080;
+canvas.height = 1080;
 var ctx = canvas.getContext('2d');
 
-ctx.fillStyle = '#fdf8f2'; ctx.fillRect(0, 0, W, H);
-var grad = ctx.createLinearGradient(0, 0, W, 0);
-grad.addColorStop(0, '#7a2800'); grad.addColorStop(1, '#9a6800');
-ctx.fillStyle = grad; ctx.fillRect(0, 0, W, 8);
-ctx.strokeStyle = '#c8b090'; ctx.lineWidth = 2;
-roundRect(ctx, 20, 20, W-40, H-40, 16); ctx.stroke();
+drawCardBackground(ctx, card.theme, canvas.width, canvas.height);
 
-ctx.fillStyle = '#9a6800';
-ctx.font = '22px DM Sans, sans-serif';
-ctx.textAlign = 'left';
-ctx.fillText('🪔 SAMSMARANA · SHLOKA ' + (_scIdx+1) + ' OF 6', 60, 80);
-
-ctx.fillStyle = '#4a1000';
-ctx.font = '36px serif';
+// Sanskrit text
+ctx.fillStyle = '#fff';
 ctx.textAlign = 'center';
-var lines = s.text.split('\n');
-var y = 160;
-lines.forEach(function(line) { ctx.fillText(line, W/2, y); y += 52; });
+ctx.font = 'bold 52px serif';
+wrapText(ctx, card.sanskrit, 540, 360, 900, 64);
 
-ctx.fillStyle = '#9a6800';
-ctx.font = 'italic 26px Georgia, serif';
-ctx.fillText(s.source, W/2, y+10);
+// Transliteration
+ctx.font = 'italic 32px sans-serif';
+ctx.fillStyle = 'rgba(255,255,255,0.85)';
+wrapText(ctx, card.transliteration || '', 540, 500, 900, 40);
 
-ctx.strokeStyle = '#e0c9a8'; ctx.lineWidth = 1;
-ctx.setLineDash([6,4]);
-ctx.beginPath(); ctx.moveTo(60, y+40); ctx.lineTo(W-60, y+40); ctx.stroke();
-ctx.setLineDash([]);
+// English
+ctx.font = '34px sans-serif';
+ctx.fillStyle = '#fff';
+wrapText(ctx, card.english, 540, 600, 900, 42);
 
-y += 80; ctx.textAlign = 'left';
-ctx.fillStyle = '#7a2800'; ctx.font = '700 18px DM Sans, sans-serif';
-ctx.fillText('हिंदी अर्थ', 60, y); y += 34;
-ctx.fillStyle = '#1a0f00'; ctx.font = '400 22px serif';
-y = wrapText(ctx, s.hindi, 60, y, W-120, 34);
+// Real Life
+ctx.font = '26px sans-serif';
+ctx.fillStyle = 'rgba(255,255,255,0.8)';
+wrapText(ctx, '💡 ' + card.real_life, 540, 720, 940, 34);
 
-y += 20;
-ctx.fillStyle = '#7a2800'; ctx.font = '700 18px DM Sans, sans-serif';
-ctx.fillText('English Meaning', 60, y); y += 34;
-ctx.fillStyle = '#1a0f00'; ctx.font = 'italic 400 22px Georgia, serif';
-y = wrapText(ctx, s.english, 60, y, W-120, 34);
+// Branding
+ctx.font = 'bold 28px sans-serif';
+ctx.fillStyle = 'rgba(255,255,255,0.7)';
+ctx.fillText('Samsmarana — samsmarana.vercel.app', 540, 1020);
 
-y += 20;
-var lifeLines = measureWrappedLines(ctx, s.life, W-140, '400 20px Georgia, serif');
-var boxH = lifeLines.length * 32 + 48;
-ctx.fillStyle = '#faebd7'; roundRectFill(ctx, 50, y, W-100, boxH, 10);
-ctx.strokeStyle = '#e0c8a0'; ctx.lineWidth = 1;
-roundRect(ctx, 50, y, W-100, boxH, 10); ctx.stroke();
-ctx.fillStyle = '#7a2800'; ctx.font = '700 16px DM Sans, sans-serif';
-ctx.fillText('✦ REAL LIFE', 74, y+30);
-ctx.fillStyle = '#2a1a08'; ctx.font = '400 20px Georgia, serif';
-var ly = y+58;
-lifeLines.forEach(function(line) { ctx.fillText(line, 74, ly); ly += 32; });
+// Download
+var link = document.createElement('a');
+link.download = 'shloka-' + (card.theme || 'card') + '.png';
+link.href = canvas.toDataURL('image/png');
+link.click();
 
-ctx.fillStyle = '#5c2a0a'; ctx.fillRect(0, H-80, W, 80);
-ctx.fillStyle = '#e0b87a'; ctx.font = '500 28px serif';
-ctx.textAlign = 'left'; ctx.fillText('संस्मरण', 60, H-38);
-ctx.fillStyle = '#c8a87a'; ctx.font = 'italic 400 20px Georgia, serif';
-ctx.textAlign = 'right'; ctx.fillText('samsmarana.vercel.app', W-60, H-38);
-
-// Download image
-canvas.toBlob(function(blob) {
-var url = URL.createObjectURL(blob);
-var a = document.createElement('a');
-a.href = url; a.download = 'shloka-' + (_scIdx+1) + '-samsmarana.png';
-a.click();
-URL.revokeObjectURL(url);
-
-// Show Step 2 button — user taps it directly, no setTimeout
-var waText = '🪔 Sharing a shloka from Samsmarana — rediscover the Sanskrit you once knew.\n\n✨ Explore: https://samsmarana.vercel.app';
-var waBtn = document.getElementById('wa-btn');
-if (waBtn) {
-waBtn.href = 'https://wa.me/?text=' + encodeURIComponent(waText);
-waBtn.style.display = 'block';
+// Step 2: Open WhatsApp after short delay
+setTimeout(function() {
+var msg = encodeURIComponent('🙏 संस्कृत श्लोक का अभ्यास करें — Samsmarana ऐप पर\nhttps://samsmarana.vercel.app');
+window.open('https://wa.me/?text=' + msg, '_blank');
+}, 800);
 }
 
-if (btn) {
-btn.textContent = '✓ Card downloaded — now tap Step 2';
-btn.disabled = false;
+function drawCardBackground(ctx, theme, w, h) {
+var grad;
+switch (theme) {
+case 'lamp':
+grad = ctx.createRadialGradient(w/2, h/2, 40, w/2, h/2, w*0.7);
+grad.addColorStop(0, '#ffcc44');
+grad.addColorStop(1, '#7b3a00');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'earth':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#1a0044'); grad.addColorStop(1,'#4b2a00');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'sunrise':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#ff7043'); grad.addColorStop(0.5,'#ffcc80'); grad.addColorStop(1,'#4e342e');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'lotus':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#1b5e20'); grad.addColorStop(1,'#004d40');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'path':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#37474f'); grad.addColorStop(1,'#795548');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'water':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#0077b6'); grad.addColorStop(1,'#023e8a');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'hands':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#e65100'); grad.addColorStop(1,'#bf360c');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'scale':
+ctx.fillStyle = '#fffff0'; ctx.fillRect(0,0,w,h);
+ctx.fillStyle = '#b8860b';
+break;
+case 'manuscript':
+ctx.fillStyle = '#d7c4a0'; ctx.fillRect(0,0,w,h);
+break;
+case 'river':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#006064'); grad.addColorStop(1,'#00838f');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'fork':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#1b5e20'); grad.addColorStop(1,'#f9a825');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+case 'pot':
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#4a148c'); grad.addColorStop(1,'#880e4f');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+break;
+default:
+grad = ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,'#4a148c'); grad.addColorStop(1,'#1a237e');
+ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 }
-}, 'image/png');
 }
 
-  
-
-// ── Canvas helpers ──
-function wrapText(ctx, text, x, y, maxW, lineH) {
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+if (!text) return;
 var words = text.split(' ');
 var line = '';
-words.forEach(function(word) {
-var test = line + word + ' ';
-if (ctx.measureText(test).width > maxW && line !== '') {
-ctx.fillText(line.trim(), x, y);
-y += lineH;
-line = word + ' ';
+for (var n = 0; n < words.length; n++) {
+var testLine = line + words[n] + ' ';
+var metrics = ctx.measureText(testLine);
+if (metrics.width > maxWidth && n > 0) {
+ctx.fillText(line, x, y);
+line = words[n] + ' ';
+y += lineHeight;
 } else {
-line = test;
+line = testLine;
 }
-});
-if (line.trim()) { ctx.fillText(line.trim(), x, y); y += lineH; }
-return y;
 }
-
-function measureWrappedLines(ctx, text, maxW, font) {
-ctx.font = font;
-var words = text.split(' ');
-var lines = [], line = '';
-words.forEach(function(word) {
-var test = line + word + ' ';
-if (ctx.measureText(test).width > maxW && line !== '') {
-lines.push(line.trim());
-line = word + ' ';
-} else {
-line = test;
+ctx.fillText(line, x, y);
 }
-});
-if (line.trim()) lines.push(line.trim());
-return lines;
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-ctx.beginPath();
-ctx.moveTo(x + r, y);
-ctx.lineTo(x + w - r, y);
-ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-ctx.lineTo(x + w, y + h - r);
-ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-ctx.lineTo(x + r, y + h);
-ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-ctx.lineTo(x, y + r);
-ctx.quadraticCurveTo(x, y, x + r, y);
-ctx.closePath();
-}
-
-function roundRectFill(ctx, x, y, w, h, r) {
-roundRect(ctx, x, y, w, h, r);
-ctx.fill();
-}
-
-  
 
 function copyCard() {
-var text = buildCardText();
-var btn = document.getElementById('copy-btn');
-if (navigator.clipboard) {
+var card = _scCards[_scIdx];
+if (!card) return;
+var text = card.sanskrit + '\n' +
+(card.transliteration ? card.transliteration + '\n' : '') +
+'\n' + card.hindi +
+'\n' + card.english +
+'\n\n💡 ' + card.real_life +
+'\n\n— Samsmarana: samsmarana.vercel.app';
 navigator.clipboard.writeText(text).then(function() {
-btn.textContent = '✓ Copied!';
-setTimeout(function() { btn.textContent = '📋 Copy Card Text'; }, 2000);
+showToast('Card text copied!');
 });
-} else {
-// Fallback for older mobile browsers
-var ta = document.createElement('textarea');
-ta.value = text;
-document.body.appendChild(ta);
-ta.select();
-document.execCommand('copy');
-document.body.removeChild(ta);
-btn.textContent = '✓ Copied!';
-setTimeout(function() { btn.textContent = '📋 Copy Card Text'; }, 2000);
 }
-}
+
 </script>
 </body>
 </html>
