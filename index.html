@@ -1257,7 +1257,7 @@ real_life: 'देना घटाता नहीं, बढ़ाता है
 ];
 
 async function fetchShlokaCards() {
-if (!_user) {showAuth(); return;}
+if (!_user) {openAuth('signin'); return;}
 try {
 var resp = await fetch('/api/shlokas');
 if (!resp.ok) throw new Error('API error ' + resp.status);
@@ -1309,7 +1309,8 @@ renderShlokaCard();
 }
 
   function scNav(dir) {
-_scIdx = (_scIdx + dir+_scCards.length) % _scCards.length;
+    if(!_scCards.length) return;
+  _scIdx = ((_scIdx + dir) % _scCards.length+_scCards.length)% _scCards.length
 renderShlokaCard();
 }
 
