@@ -1285,7 +1285,7 @@ var card = _scCards[_scIdx];
 if (!card) return;
 
 document.getElementById('sc-text').textContent = card.sanskrit;
-document.getElementById('sc-translit').textContent = card.transliteration || '';
+//document.getElementById('sc-translit').textContent = card.transliteration || '';
 document.getElementById('sc-hindi').textContent = card.hindi;
 document.getElementById('sc-english').textContent = card.english;
 document.getElementById('sc-life').textContent = card.real_life;
@@ -1400,6 +1400,32 @@ ctx.fillStyle = '#b8860b'; ctx.font = 'bold 28px Georgia, serif';
 ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
 ctx.fillStyle = '#9a7830'; ctx.font = 'italic 22px Georgia, serif';
 ctx.fillText('samsmarana.vercel.app', W/2, brandY + 36);
+
+// Generate blob then share or download
+canvas.toBlob(async function(blob) {
+var fileName = 'shloka-' + (card.theme || 'card') + '.png';
+var file = new File([blob], fileName, { type: 'image/png' });
+
+if (navigator.canShare && navigator.canShare({ files: [file] })) {
+try {
+await navigator.share({ files: [file], text: '🙏 samsmarana.vercel.app' });
+return;
+} catch(e) {
+if (e.name === 'AbortError') return;
+}
+}
+
+// Fallback: download
+var link = document.createElement('a');
+link.download = fileName;
+link.href = URL.createObjectURL(blob);
+link.click();
+setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
+
+}, 'image/png');
+}
+
+
 
 }
 
