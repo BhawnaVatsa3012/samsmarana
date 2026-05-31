@@ -1319,11 +1319,13 @@ if (!_user) { openAuth('signin'); return; }
 var card = _scCards[_scIdx];
 if (!card) return;
 
-// Smaller canvas — fits WhatsApp preview without letterboxing
 var W = 1080, H = 1080;
 var canvas = document.createElement('canvas');
 canvas.width = W; canvas.height = H;
 var ctx = canvas.getContext('2d');
+
+// Always reset textAlign at start and keep resetting it
+ctx.textAlign = 'center';
 
 // Background
 ctx.fillStyle = '#fffdf4';
@@ -1339,68 +1341,94 @@ ctx.strokeRect(36, 36, W - 72, H - 72);
 
 // Corner dots
 [[52,52],[W-52,52],[52,H-52],[W-52,H-52]].forEach(function(c) {
-ctx.beginPath(); ctx.arc(c[0], c[1], 8, 0, Math.PI * 2);
+ctx.beginPath(); ctx.arc(c[0], c[1], 8, 0, Math.PI*2);
 ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
-// OM
-ctx.font = 'bold 52px Georgia, serif';
-ctx.fillStyle = '#b8860b';
+// OM — use serif fallback stack, no Google Font
 ctx.textAlign = 'center';
-ctx.fillText('ॐ', W/2, 120);
+ctx.font = 'bold 52px serif';
+ctx.fillStyle = '#b8860b';
+ctx.fillText('ॐ', W/2, 118);
 
 // Line under OM
-ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.2;
+ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.moveTo(140, 140); ctx.lineTo(W-140, 140); ctx.stroke();
 
-// Sanskrit — tighter maxWidth to prevent overflow
+var maxW = 860; // conservative — well inside borders on all devices
+
+// Sanskrit
 ctx.fillStyle = '#5a1000';
-var maxW = W - 160; // 920px — safe margin both sides
-var y = wrapTextCanvas(ctx, card.sanskrit, W/2, 220, maxW, 68, 'bold 46px Georgia, serif');
+ctx.textAlign = 'center';
+var y = wrapTextCanvas(ctx, card.sanskrit, W/2, 220, maxW, 66, 'bold 44px serif');
 
 // Transliteration
 ctx.fillStyle = '#9a6800';
-y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+28, maxW - 40, 40, 'italic 26px Georgia, serif');
+ctx.textAlign = 'center';
+y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+26, maxW, 38, 'italic 26px serif');
 
 // Divider 1
-y += 40; drawDivider(ctx, y, W);
+y += 38;
+ctx.textAlign = 'center';
+drawDivider(ctx, y, W);
 
 // Hindi label
-y += 38; ctx.fillStyle = '#7a5200'; ctx.font = '500 17px sans-serif';
-ctx.textAlign = 'center'; ctx.fillText('हिंदी अर्थ', W/2, y);
+y += 36;
+ctx.textAlign = 'center';
+ctx.fillStyle = '#7a5200';
+ctx.font = 'bold 17px sans-serif';
+ctx.fillText('हिंदी अर्थ', W/2, y);
 
 // Hindi text
-y += 8; ctx.fillStyle = '#1a0f00';
-y = wrapTextCanvas(ctx, card.hindi, W/2, y+28, maxW, 44, 'bold 30px Georgia, serif');
+y += 8;
+ctx.fillStyle = '#1a0f00';
+ctx.textAlign = 'center';
+y = wrapTextCanvas(ctx, card.hindi, W/2, y+26, maxW, 42, 'bold 29px serif');
 
 // English label
-y += 28; ctx.fillStyle = '#7a5200'; ctx.font = '500 17px sans-serif';
+y += 26;
+ctx.textAlign = 'center';
+ctx.fillStyle = '#7a5200';
+ctx.font = 'bold 17px sans-serif';
 ctx.fillText('English', W/2, y);
 
 // English text
-y += 8; ctx.fillStyle = '#333333';
-y = wrapTextCanvas(ctx, card.english, W/2, y+28, maxW, 38, 'italic 27px Georgia, serif');
+y += 8;
+ctx.fillStyle = '#333333';
+ctx.textAlign = 'center';
+y = wrapTextCanvas(ctx, card.english, W/2, y+26, maxW, 36, 'italic 26px serif');
 
 // Divider 2
-y += 40; drawDivider(ctx, y, W);
+y += 38;
+ctx.textAlign = 'center';
+drawDivider(ctx, y, W);
 
 // Real Life label
-y += 38; ctx.fillStyle = '#9a3800'; ctx.font = 'bold 19px sans-serif';
+y += 36;
+ctx.textAlign = 'center';
+ctx.fillStyle = '#9a3800';
+ctx.font = 'bold 18px sans-serif';
 ctx.fillText('✦ Real Life ✦', W/2, y);
 
-// Real Life text — extra safe maxWidth
-y += 10; ctx.fillStyle = '#2a2a2a';
-y = wrapTextCanvas(ctx, card.real_life, W/2, y+30, maxW, 38, 'italic 26px Georgia, serif');
+// Real Life text
+y += 10;
+ctx.fillStyle = '#2a2a2a';
+ctx.textAlign = 'center';
+y = wrapTextCanvas(ctx, card.real_life, W/2, y+28, maxW, 36, 'italic 25px serif');
 
-// Branding — 70px below last content, floor at H-100
-var brandY = Math.min(y + 70, H - 90);
+// Branding — sits close below content, capped above bottom border
+var brandY = Math.min(y + 60, H - 88);
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.2;
-ctx.beginPath(); ctx.moveTo(140, brandY - 28); ctx.lineTo(W-140, brandY - 28); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(140, brandY - 26); ctx.lineTo(W-140, brandY - 26); ctx.stroke();
 
-ctx.fillStyle = '#b8860b'; ctx.font = 'bold 24px Georgia, serif';
+ctx.textAlign = 'center';
+ctx.fillStyle = '#b8860b';
+ctx.font = 'bold 23px sans-serif';
 ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
-ctx.fillStyle = '#9a7830'; ctx.font = 'italic 19px Georgia, serif';
-ctx.fillText('samsmarana.vercel.app', W/2, brandY + 30);
+
+ctx.fillStyle = '#9a7830';
+ctx.font = 'italic 18px serif';
+ctx.fillText('samsmarana.vercel.app', W/2, brandY + 28);
 
 // Generate blob and share or download
 canvas.toBlob(async function(blob) {
@@ -1416,7 +1444,6 @@ if (e.name === 'AbortError') return;
 }
 }
 
-// Fallback: download
 var link = document.createElement('a');
 link.download = fileName;
 link.href = URL.createObjectURL(blob);
@@ -1425,6 +1452,8 @@ setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
 
 }, 'image/png');
 }
+
+
 
 function drawDivider(ctx, y, W) {
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
@@ -1508,6 +1537,7 @@ ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight, font) {
 if (!text) return y;
 if (font) ctx.font = font;
+ctx.textAlign = 'center'; // reset every call — never trust prior state
 var words = text.split(' ');
 var line = '';
 var currentY = y;
@@ -1525,6 +1555,7 @@ line = testLine;
 ctx.fillText(line.trim(), x, currentY);
 return currentY;
 }
+
 
 function copyCard() {
 if (!_user) { openAuth('signin'); return; }
