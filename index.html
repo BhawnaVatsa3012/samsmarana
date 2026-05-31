@@ -1343,11 +1343,11 @@ ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
 // OM symbol
-ctx.textAlign = 'center';
+//ctx.textAlign = 'center';
 ctx.font = 'bold 52px serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'center';
-ctx.fillText('ॐ', W/2, 118);
+ctx.textAlign = 'left';
+ctx.fillText('ॐ', W/2-ctx.measureText('ॐ').width/2, 118);
 
 // Line under OM
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
@@ -1371,8 +1371,8 @@ drawDivider(ctx, y, W);
 y += 42;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'center';
-ctx.fillText('हिंदी अर्थ', W/2, y);
+ctx.textAlign = 'left';
+ctx.fillText('हिंदी अर्थ', W/2-ctx.measureText('हिंदी अर्थ').width/2, y);
 
 // Hindi text
 ctx.fillStyle = '#1a0f00';
@@ -1382,8 +1382,8 @@ y = wrapTextCanvas(ctx, card.hindi, W/2, y+34, maxW, 50, 'bold 29px serif');
 y += 32;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'center';
-ctx.fillText('English', W/2, y);
+ctx.textAlign = 'left';
+ctx.fillText('English', W/2-ctx.measureText('English').width/2, y);
 
 // English text
 ctx.fillStyle = '#333333';
@@ -1397,8 +1397,8 @@ drawDivider(ctx, y, W);
 y += 42;
 ctx.font = 'bold 18px sans-serif';
 ctx.fillStyle = '#9a3800';
-ctx.textAlign = 'center';
-ctx.fillText('✦ Real Life ✦', W/2, y);
+ctx.textAlign = 'left';
+ctx.fillText('✦ Real Life ✦', W/2-ctx.measureText('✦ Real Life ✦').width/2, y);
 
 // Real Life text
 ctx.fillStyle = '#2a2a2a';
@@ -1411,13 +1411,13 @@ ctx.beginPath(); ctx.moveTo(140, brandY - 26); ctx.lineTo(W-140, brandY - 26); c
 
 ctx.font = 'bold 23px sans-serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'center';
-ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
+ctx.textAlign = 'left';
+ctx.fillText('संस्मरण · Samsmarana', W/2-ctx.measureText('संस्मरण · Samsmarana').width/2, brandY);
 
 ctx.font = 'italic 18px serif';
 ctx.fillStyle = '#9a7830';
-ctx.textAlign = 'center';
-ctx.fillText('samsmarana.vercel.app', W/2, brandY + 28);
+ctx.textAlign = 'left';
+ctx.fillText('samsmarana.vercel.app', W/2-ctx.measureText('samsmarana.vercel.app').width/2, brandY + 28);
 
 // Generate blob and share or download
 canvas.toBlob(async function(blob) {
