@@ -1324,9 +1324,6 @@ var canvas = document.createElement('canvas');
 canvas.width = W; canvas.height = H;
 var ctx = canvas.getContext('2d');
 
-// Always reset textAlign at start and keep resetting it
-ctx.textAlign = 'center';
-
 // Background
 ctx.fillStyle = '#fffdf4';
 ctx.fillRect(0, 0, W, H);
@@ -1345,89 +1342,81 @@ ctx.beginPath(); ctx.arc(c[0], c[1], 8, 0, Math.PI*2);
 ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
-// OM — use serif fallback stack, no Google Font
+// OM symbol
 ctx.textAlign = 'center';
 ctx.font = 'bold 52px serif';
 ctx.fillStyle = '#b8860b';
+ctx.textAlign = 'center';
 ctx.fillText('ॐ', W/2, 118);
 
 // Line under OM
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.moveTo(140, 140); ctx.lineTo(W-140, 140); ctx.stroke();
 
-var maxW = 860; // conservative — well inside borders on all devices
+var maxW = 860;
 
 // Sanskrit
 ctx.fillStyle = '#5a1000';
-ctx.textAlign = 'center';
-var y = wrapTextCanvas(ctx, card.sanskrit, W/2, 220, maxW, 66, 'bold 44px serif');
+var y = wrapTextCanvas(ctx, card.sanskrit, W/2, 220, maxW, 76, 'bold 44px serif');
 
 // Transliteration
 ctx.fillStyle = '#9a6800';
-ctx.textAlign = 'center';
-y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+26, maxW, 38, 'italic 26px serif');
+y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+32, maxW, 46, 'italic 26px serif');
 
 // Divider 1
-y += 38;
-ctx.textAlign = 'center';
+y += 44;
 drawDivider(ctx, y, W);
 
 // Hindi label
-y += 36;
-ctx.textAlign = 'center';
-ctx.fillStyle = '#7a5200';
+y += 42;
 ctx.font = 'bold 17px sans-serif';
+ctx.fillStyle = '#7a5200';
+ctx.textAlign = 'center';
 ctx.fillText('हिंदी अर्थ', W/2, y);
 
 // Hindi text
-y += 8;
 ctx.fillStyle = '#1a0f00';
-ctx.textAlign = 'center';
-y = wrapTextCanvas(ctx, card.hindi, W/2, y+26, maxW, 42, 'bold 29px serif');
+y = wrapTextCanvas(ctx, card.hindi, W/2, y+34, maxW, 50, 'bold 29px serif');
 
 // English label
-y += 26;
-ctx.textAlign = 'center';
-ctx.fillStyle = '#7a5200';
+y += 32;
 ctx.font = 'bold 17px sans-serif';
+ctx.fillStyle = '#7a5200';
+ctx.textAlign = 'center';
 ctx.fillText('English', W/2, y);
 
 // English text
-y += 8;
 ctx.fillStyle = '#333333';
-ctx.textAlign = 'center';
-y = wrapTextCanvas(ctx, card.english, W/2, y+26, maxW, 36, 'italic 26px serif');
+y = wrapTextCanvas(ctx, card.english, W/2, y+32, maxW, 44, 'italic 26px serif');
 
 // Divider 2
-y += 38;
-ctx.textAlign = 'center';
+y += 44;
 drawDivider(ctx, y, W);
 
 // Real Life label
-y += 36;
-ctx.textAlign = 'center';
-ctx.fillStyle = '#9a3800';
+y += 42;
 ctx.font = 'bold 18px sans-serif';
+ctx.fillStyle = '#9a3800';
+ctx.textAlign = 'center';
 ctx.fillText('✦ Real Life ✦', W/2, y);
 
 // Real Life text
-y += 10;
 ctx.fillStyle = '#2a2a2a';
-ctx.textAlign = 'center';
-y = wrapTextCanvas(ctx, card.real_life, W/2, y+28, maxW, 36, 'italic 25px serif');
+y = wrapTextCanvas(ctx, card.real_life, W/2, y+34, maxW, 44, 'italic 25px serif');
 
-// Branding — sits close below content, capped above bottom border
+// Branding
 var brandY = Math.min(y + 60, H - 88);
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.2;
 ctx.beginPath(); ctx.moveTo(140, brandY - 26); ctx.lineTo(W-140, brandY - 26); ctx.stroke();
 
-ctx.textAlign = 'center';
-ctx.fillStyle = '#b8860b';
 ctx.font = 'bold 23px sans-serif';
+ctx.fillStyle = '#b8860b';
+ctx.textAlign = 'center';
 ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
 
-ctx.fillStyle = '#9a7830';
 ctx.font = 'italic 18px serif';
+ctx.fillStyle = '#9a7830';
+ctx.textAlign = 'center';
 ctx.fillText('samsmarana.vercel.app', W/2, brandY + 28);
 
 // Generate blob and share or download
@@ -1537,7 +1526,7 @@ ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight, font) {
 if (!text) return y;
 if (font) ctx.font = font;
-ctx.textAlign = 'center'; // reset every call — never trust prior state
+ctx.textAlign = 'center'; // reset on every call — never trust prior state
 var words = text.split(' ');
 var line = '';
 var currentY = y;
@@ -1545,6 +1534,7 @@ for (var n = 0; n < words.length; n++) {
 var testLine = line + words[n] + ' ';
 var metrics = ctx.measureText(testLine);
 if (metrics.width > maxWidth && n > 0) {
+ctx.textAlign = 'center';
 ctx.fillText(line.trim(), x, currentY);
 line = words[n] + ' ';
 currentY += lineHeight;
@@ -1552,10 +1542,10 @@ currentY += lineHeight;
 line = testLine;
 }
 }
+ctx.textAlign = 'center';
 ctx.fillText(line.trim(), x, currentY);
 return currentY;
 }
-
 
 function copyCard() {
 if (!_user) { openAuth('signin'); return; }
