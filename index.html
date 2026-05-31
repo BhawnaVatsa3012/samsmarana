@@ -1322,14 +1322,9 @@ if (!card) return;
 var W = 1080, H = 1080;
 var canvas = document.createElement('canvas');
 canvas.width = W; canvas.height = H;
-
-// ← ADD: attach to DOM so iOS measureText works correctly
-canvas.style.position = 'fixed';
-canvas.style.opacity = '0';
-canvas.style.pointerEvents = 'none';
-document.body.appendChild(canvas);
-
 var ctx = canvas.getContext('2d');
+
+ctx.textAlign = 'left';
 
 // Background
 ctx.fillStyle = '#fffdf4';
@@ -1349,11 +1344,12 @@ ctx.beginPath(); ctx.arc(c[0], c[1], 8, 0, Math.PI*2);
 ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
-// OM symbol
+// OM symbol — Latin equivalent trick not needed, OM is single glyph
 ctx.font = 'bold 52px serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'center';
-ctx.fillText('ॐ', W/2, 118);
+ctx.textAlign = 'left';
+var omW = ctx.measureText('ॐ').width;
+ctx.fillText('ॐ', W/2 - omW/2, 118);
 
 // Line under OM
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
@@ -1373,23 +1369,25 @@ y = wrapTextCanvas(ctx, card.transliteration || '', W/2, y+32, maxW, 46, 'italic
 y += 44;
 drawDivider(ctx, y, W);
 
-// Hindi label
+// Hindi label — use Latin only
 y += 42;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'center';
-ctx.fillText('हिंदी अर्थ', W/2, y);
+ctx.textAlign = 'left';
+var hlW = ctx.measureText('Hindi Arth').width;
+ctx.fillText('Hindi Arth', W/2 - hlW/2, y);
 
 // Hindi text
 ctx.fillStyle = '#1a0f00';
 y = wrapTextCanvas(ctx, card.hindi, W/2, y+34, maxW, 50, 'bold 29px serif');
 
-// English label
+// English label — pure Latin, safe
 y += 32;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'center';
-ctx.fillText('English', W/2, y);
+ctx.textAlign = 'left';
+var elW = ctx.measureText('English').width;
+ctx.fillText('English', W/2 - elW/2, y);
 
 // English text
 ctx.fillStyle = '#333333';
@@ -1399,12 +1397,13 @@ y = wrapTextCanvas(ctx, card.english, W/2, y+32, maxW, 44, 'italic 26px serif');
 y += 44;
 drawDivider(ctx, y, W);
 
-// Real Life label
+// Real Life label — pure Latin, safe
 y += 42;
 ctx.font = 'bold 18px sans-serif';
 ctx.fillStyle = '#9a3800';
-ctx.textAlign = 'center';
-ctx.fillText('✦ Real Life ✦', W/2, y);
+ctx.textAlign = 'left';
+var rlW = ctx.measureText('* Real Life *').width;
+ctx.fillText('* Real Life *', W/2 - rlW/2, y);
 
 // Real Life text
 ctx.fillStyle = '#2a2a2a';
@@ -1415,18 +1414,18 @@ var brandY = Math.min(y + 60, H - 88);
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.2;
 ctx.beginPath(); ctx.moveTo(140, brandY - 26); ctx.lineTo(W-140, brandY - 26); ctx.stroke();
 
+// Branding — Latin only
 ctx.font = 'bold 23px sans-serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'center';
-ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
+ctx.textAlign = 'left';
+var b1W = ctx.measureText('Samsmarana').width;
+ctx.fillText('Samsmarana', W/2 - b1W/2, brandY);
 
 ctx.font = 'italic 18px serif';
 ctx.fillStyle = '#9a7830';
-ctx.textAlign = 'center';
-ctx.fillText('samsmarana.vercel.app', W/2, brandY + 28);
-
-// ← REMOVE from DOM before generating blob
-document.body.removeChild(canvas);
+ctx.textAlign = 'left';
+var b2W = ctx.measureText('samsmarana.vercel.app').width;
+ctx.fillText('samsmarana.vercel.app', W/2 - b2W/2, brandY + 28);
 
 canvas.toBlob(async function(blob) {
 var fileName = 'shloka-' + (card.theme || 'card') + '.png';
@@ -1449,6 +1448,7 @@ setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
 
 }, 'image/png');
 }
+
 
 
 
@@ -1535,23 +1535,26 @@ ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight, font) {
 if (!text) return y;
 if (font) ctx.font = font;
-ctx.textAlign = 'center';
 var words = text.split(' ');
 var line = '';
-var currentY = y;
+var lines = [];
 for (var n = 0; n < words.length; n++) {
 var testLine = line + words[n] + ' ';
 if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-ctx.textAlign = 'center';
-ctx.fillText(line.trim(), x, currentY);
+lines.push(line.trim());
 line = words[n] + ' ';
-currentY += lineHeight;
 } else {
 line = testLine;
 }
 }
-ctx.textAlign = 'center';
-ctx.fillText(line.trim(), x, currentY);
+lines.push(line.trim());
+ctx.textAlign = 'left';
+var currentY = y;
+for (var i = 0; i < lines.length; i++) {
+var lw = ctx.measureText(lines[i]).width;
+ctx.fillText(lines[i], x - lw/2, currentY);
+if (i < lines.length - 1) currentY += lineHeight;
+}
 return currentY;
 }
 
