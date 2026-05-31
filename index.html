@@ -1261,7 +1261,7 @@ real_life: 'देना घटाता नहीं, बढ़ाता है
 ];
 
 async function fetchShlokaCards() {
-if (!=user) {showAuth(); return;}
+if (!_user) {showAuth(); return;}
 try {
 var resp = await fetch('/api/shlokas');
 if (!resp.ok) throw new Error('API error ' + resp.status);
