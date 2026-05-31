@@ -1311,7 +1311,7 @@ _scIdx = (_scIdx + 1) % _scCards.length;
 renderShlokaCard();
 }
 
-function shareOnWhatsApp() {
+function shareWhatsApp() {
 if (!_user) { showAuth(); return; }
 
 var card = _scCards[_scIdx];
@@ -1460,7 +1460,7 @@ var text = card.sanskrit + '\n' +
 '\n\n💡 ' + card.real_life +
 '\n\n— Samsmarana: samsmarana.vercel.app';
 navigator.clipboard.writeText(text).then(function() {
-showToast('Card text copied!');
+alert('Card text copied!');
 });
 }
 
