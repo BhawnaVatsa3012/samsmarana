@@ -1114,12 +1114,21 @@ async function authSignOut(){
 function showAuthError(view,msg){var el=document.getElementById('auth-error'+(view==='signup'?'-signup':''));if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
 function showAuthSuccess(view,msg){var el=document.getElementById('auth-success'+(view==='signup'?'-signup':''));if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
 
-function isPremium(){
-  if(!_user)return false;
-  var meta=_user.user_metadata||{};
-  var appMeta=_user.app_metadata||{};
-  return meta.premium===true||appMeta.premium===true||meta.premium==='true';
+function getTier(){
+if(!_user) return 'jigyasu';
+var meta=_user.user_metadata||{};
+var appMeta=_user.app_metadata||{};
+var tier=meta.tier||appMeta.tier||'';
+if(tier==='vidvan') return 'vidvan';
+if(tier==='sadhaka') return 'sadhaka';
+if(meta.premium===true||appMeta.premium===true||meta.premium==='true') return 'sadhaka';
+return 'jigyasu';
 }
+function isPremium(){
+var t=getTier();
+return t==='sadhaka'||t==='vidvan';
+}
+
 
 function updateUserUI(){
   var topbar=document.getElementById('topbar');
@@ -1135,12 +1144,17 @@ function updateUserUI(){
     pill.id='user-pill';
     pill.style.cssText='display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer';
     pill.onclick=function(){openAuth('profile');};
-    pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div><span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+(isPremium()?'<span style="background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">PRO</span>':'');
-    topbar.appendChild(pill);
+    var tier=getTier();
+    var tierBadge=tier==='vidvan'?'<span style="background:#c0a000;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">V</span>':tier==='sadhaka'?'<span style="background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">S</span>':'<span style="background:#5a7a50;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">J</span>';
+    pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div><span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+tierBadge;topbar.appendChild(pill);
     var profileEmail=document.getElementById('profile-email');
     var profilePlan=document.getElementById('profile-plan');
     if(profileEmail)profileEmail.textContent='✉ '+_user.email;
-    if(profilePlan)profilePlan.innerHTML=isPremium()?'<strong>✨ Premium member</strong><br>Unlimited Guru Ji · Community access':'<strong>Free plan</strong><br>8 Guru Ji questions/day · Upgrade to Premium for 15 daily';
+    var t=getTier();
+    if(profilePlan)profilePlan.innerHTML=
+    t==='vidvan'?'<strong>✨ विद्वान् (Vidvan)</strong><br>All features unlocked · Priority support':
+    t==='sadhaka'?'<strong>✨ साधक (Sadhaka)</strong><br>15 Guru Ji questions/day · Community access · Unlimited shares':
+    '<strong>जिज्ञासु (Jigyasu)</strong><br>8 questions/day · <span onclick="nav(\'upgrade\',getNav(\'upgrade\'))" style="color:#7a2800;cursor:pointer;font-weight:600;text-decoration:underline">Upgrade to Sadhaka</span>';
   }
   var limitEl=document.getElementById('guru-limit-msg');
   if(limitEl){
