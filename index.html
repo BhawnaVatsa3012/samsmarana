@@ -1322,6 +1322,13 @@ if (!card) return;
 var W = 1080, H = 1080;
 var canvas = document.createElement('canvas');
 canvas.width = W; canvas.height = H;
+
+// ← ADD: attach to DOM so iOS measureText works correctly
+canvas.style.position = 'fixed';
+canvas.style.opacity = '0';
+canvas.style.pointerEvents = 'none';
+document.body.appendChild(canvas);
+
 var ctx = canvas.getContext('2d');
 
 // Background
@@ -1343,11 +1350,10 @@ ctx.fillStyle = '#b8860b'; ctx.fill();
 });
 
 // OM symbol
-//ctx.textAlign = 'center';
 ctx.font = 'bold 52px serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'left';
-ctx.fillText('ॐ', W/2-ctx.measureText('ॐ').width/2, 118);
+ctx.textAlign = 'center';
+ctx.fillText('ॐ', W/2, 118);
 
 // Line under OM
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
@@ -1371,8 +1377,8 @@ drawDivider(ctx, y, W);
 y += 42;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'left';
-ctx.fillText('हिंदी अर्थ', W/2-ctx.measureText('हिंदी अर्थ').width/2, y);
+ctx.textAlign = 'center';
+ctx.fillText('हिंदी अर्थ', W/2, y);
 
 // Hindi text
 ctx.fillStyle = '#1a0f00';
@@ -1382,8 +1388,8 @@ y = wrapTextCanvas(ctx, card.hindi, W/2, y+34, maxW, 50, 'bold 29px serif');
 y += 32;
 ctx.font = 'bold 17px sans-serif';
 ctx.fillStyle = '#7a5200';
-ctx.textAlign = 'left';
-ctx.fillText('English', W/2-ctx.measureText('English').width/2, y);
+ctx.textAlign = 'center';
+ctx.fillText('English', W/2, y);
 
 // English text
 ctx.fillStyle = '#333333';
@@ -1397,8 +1403,8 @@ drawDivider(ctx, y, W);
 y += 42;
 ctx.font = 'bold 18px sans-serif';
 ctx.fillStyle = '#9a3800';
-ctx.textAlign = 'left';
-ctx.fillText('✦ Real Life ✦', W/2-ctx.measureText('✦ Real Life ✦').width/2, y);
+ctx.textAlign = 'center';
+ctx.fillText('✦ Real Life ✦', W/2, y);
 
 // Real Life text
 ctx.fillStyle = '#2a2a2a';
@@ -1411,15 +1417,17 @@ ctx.beginPath(); ctx.moveTo(140, brandY - 26); ctx.lineTo(W-140, brandY - 26); c
 
 ctx.font = 'bold 23px sans-serif';
 ctx.fillStyle = '#b8860b';
-ctx.textAlign = 'left';
-ctx.fillText('संस्मरण · Samsmarana', W/2-ctx.measureText('संस्मरण · Samsmarana').width/2, brandY);
+ctx.textAlign = 'center';
+ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
 
 ctx.font = 'italic 18px serif';
 ctx.fillStyle = '#9a7830';
-ctx.textAlign = 'left';
-ctx.fillText('samsmarana.vercel.app', W/2-ctx.measureText('samsmarana.vercel.app').width/2, brandY + 28);
+ctx.textAlign = 'center';
+ctx.fillText('samsmarana.vercel.app', W/2, brandY + 28);
 
-// Generate blob and share or download
+// ← REMOVE from DOM before generating blob
+document.body.removeChild(canvas);
+
 canvas.toBlob(async function(blob) {
 var fileName = 'shloka-' + (card.theme || 'card') + '.png';
 var file = new File([blob], fileName, { type: 'image/png' });
@@ -1441,6 +1449,7 @@ setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
 
 }, 'image/png');
 }
+
 
 
 
@@ -1526,31 +1535,26 @@ ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight, font) {
 if (!text) return y;
 if (font) ctx.font = font;
-// Measure and draw each line left-aligned from a calculated start x
-// This avoids iOS center-alignment issues with Devanagari fonts
+ctx.textAlign = 'center';
 var words = text.split(' ');
 var line = '';
 var currentY = y;
-var lines = [];
 for (var n = 0; n < words.length; n++) {
 var testLine = line + words[n] + ' ';
 if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-lines.push(line.trim());
+ctx.textAlign = 'center';
+ctx.fillText(line.trim(), x, currentY);
 line = words[n] + ' ';
+currentY += lineHeight;
 } else {
 line = testLine;
 }
 }
-lines.push(line.trim());
-// Draw each line centered using left-align + offset
-ctx.textAlign = 'left';
-for (var i = 0; i < lines.length; i++) {
-var lw = ctx.measureText(lines[i]).width;
-ctx.fillText(lines[i], x - lw / 2, currentY);
-if (i < lines.length - 1) currentY += lineHeight;
-}
+ctx.textAlign = 'center';
+ctx.fillText(line.trim(), x, currentY);
 return currentY;
 }
+
 
 
 function copyCard() {
