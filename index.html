@@ -1310,7 +1310,7 @@ renderShlokaCard();
 
   function scNav(dir) {
     if(!_scCards.length) return;
-  _scIdx = ((_scIdx + dir) % _scCards.length+_scCards.length)% _scCards.length
+  _scIdx = ((_scIdx + dir) % _scCards.length +_scCards.length)% _scCards.length
 renderShlokaCard();
 }
 
@@ -1365,7 +1365,7 @@ y += 52; drawDivider(ctx, y, W);
 
 // Hindi label
 y += 48; ctx.fillStyle = '#7a5200'; ctx.font = '500 20px sans-serif';
-ctx.textAlign = 'center'; ctx.fillText('हदी अर्थ', W/2, y);
+ctx.textAlign = 'center'; ctx.fillText('हिंदी अर्थ', W/2, y);
 
 // Hindi text
 y += 12; ctx.fillStyle = '#1a0f00';
@@ -1388,46 +1388,19 @@ ctx.fillText('✦ Real Life ✦', W/2, y);
 
 // Real Life text
 y += 14; ctx.fillStyle = '#2a2a2a';
-wrapTextCanvas(ctx, card.real_life, W/2, y+38, W-180, 46, 'italic 30px Georgia, serif');
+y = wrapTextCanvas(ctx, card.real_life, W/2, y+38, W-180, 46, 'italic 30px Georgia, serif');
 
-// Bottom divider — fixed from bottom, no gap
-var brandY = H - 80;
+// Bottom divider — sits 60px below last content, never above y+60
+var brandY = Math.max(y + 100, H - 160);
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
-ctx.beginPath(); ctx.moveTo(150, brandY-40); ctx.lineTo(W-150, brandY-40); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(150, brandY - 40); ctx.lineTo(W-150, brandY - 40); ctx.stroke();
 
 // Branding
 ctx.fillStyle = '#b8860b'; ctx.font = 'bold 28px Georgia, serif';
 ctx.fillText('संस्मरण · Samsmarana', W/2, brandY);
 ctx.fillStyle = '#9a7830'; ctx.font = 'italic 22px Georgia, serif';
-ctx.fillText('samsmarana.vercel.app', W/2, brandY+36);
+ctx.fillText('samsmarana.vercel.app', W/2, brandY + 36);
 
-// ── Generate blob and share or download ──
-canvas.toBlob(async function(blob) {
-var fileName = 'shloka-' + (card.theme || 'card') + '.png';
-var file = new File([blob], fileName, { type: 'image/png' });
-
-// Try native share sheet first (works on mobile + modern desktop)
-if (navigator.canShare && navigator.canShare({ files: [file] })) {
-try {
-await navigator.share({
-files: [file],
-text: '🙏 samsmarana.vercel.app'
-});
-return;
-} catch(e) {
-if (e.name === 'AbortError') return; // user cancelled, do nothing
-// any other error — fall through to download below
-}
-}
-
-// Fallback: download the image
-var link = document.createElement('a');
-link.download = fileName;
-link.href = URL.createObjectURL(blob);
-link.click();
-setTimeout(function() { URL.revokeObjectURL(link.href); }, 5000);
-
-}, 'image/png');
 }
 
 function drawDivider(ctx, y, W) {
