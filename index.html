@@ -1353,7 +1353,7 @@ ctx.fillText('ॐ', W/2, 118);
 ctx.strokeStyle = '#daa520'; ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.moveTo(140, 140); ctx.lineTo(W-140, 140); ctx.stroke();
 
-var maxW = 860;
+var maxW = 740;
 
 // Sanskrit
 ctx.fillStyle = '#5a1000';
@@ -1526,26 +1526,32 @@ ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight, font) {
 if (!text) return y;
 if (font) ctx.font = font;
-ctx.textAlign = 'center'; // reset on every call — never trust prior state
+// Measure and draw each line left-aligned from a calculated start x
+// This avoids iOS center-alignment issues with Devanagari fonts
 var words = text.split(' ');
 var line = '';
 var currentY = y;
+var lines = [];
 for (var n = 0; n < words.length; n++) {
 var testLine = line + words[n] + ' ';
-var metrics = ctx.measureText(testLine);
-if (metrics.width > maxWidth && n > 0) {
-ctx.textAlign = 'center';
-ctx.fillText(line.trim(), x, currentY);
+if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+lines.push(line.trim());
 line = words[n] + ' ';
-currentY += lineHeight;
 } else {
 line = testLine;
 }
 }
-ctx.textAlign = 'center';
-ctx.fillText(line.trim(), x, currentY);
+lines.push(line.trim());
+// Draw each line centered using left-align + offset
+ctx.textAlign = 'left';
+for (var i = 0; i < lines.length; i++) {
+var lw = ctx.measureText(lines[i]).width;
+ctx.fillText(lines[i], x - lw / 2, currentY);
+if (i < lines.length - 1) currentY += lineHeight;
+}
 return currentY;
 }
+
 
 function copyCard() {
 if (!_user) { openAuth('signin'); return; }
