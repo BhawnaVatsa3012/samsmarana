@@ -1287,11 +1287,11 @@ function renderShlokaCard() {
 var card = _scCards[_scIdx];
 if (!card) return;
 
-document.getElementById('sc-sanskrit').textContent = card.sanskrit;
+document.getElementById('sc-text').textContent = card.sanskrit;
 document.getElementById('sc-translit').textContent = card.transliteration || '';
 document.getElementById('sc-hindi').textContent = card.hindi;
 document.getElementById('sc-english').textContent = card.english;
-document.getElementById('sc-reallife').textContent = card.real_life;
+document.getElementById('sc-life').textContent = card.real_life;
 document.getElementById('sc-num').textContent = (_scIdx + 1);
 document.getElementById('sc-total').textContent = _scCards.length;
 
