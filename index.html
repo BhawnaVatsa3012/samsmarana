@@ -1313,14 +1313,11 @@ renderShlokaCard();
 }
 
 function shareWhatsApp() {
-if (!_user) { showAuth(); return; }
+if (!_user) { openAuth('signin'); return; }
 
 // ── REPLACE the entire shareWhatsApp() function in index.html ──
 // Also replace drawCardBackground() and wrapText() with the versions below
 // Keep everything else in sc_js_patch.js as-is
-
-function shareWhatsApp() {
-if (!_user) { showAuth(); return; }
 var card = _scCards[_scIdx];
 if (!card) return;
 var W = 1080, H = 1350; // portrait card
@@ -1441,7 +1438,6 @@ var msg = encodeURIComponent('🙏 संस्कृत श्लोक का 
 window.open('https://wa.me/?text=' + msg, '_blank');
 }, 800);
 }
-}
 
 function drawCardBackground(ctx, theme, w, h) {
 var grad;
@@ -1535,6 +1531,7 @@ return currentY;
 }
 
 function copyCard() {
+if (!_user) { openAuth('signin'); return; }
 var card = _scCards[_scIdx];
 if (!card) return;
 var text = card.sanskrit + '\n' +
