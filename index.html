@@ -604,6 +604,8 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <div class="page-heading"id="upgrade-heading">My Plan</div>
 <div class="page-desc"id="upgrade-desc">Track your journey and see what lies ahead.</div>
 
+  
+
 <!-- ALL 3 TIERS TOGETHER -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
 
@@ -750,6 +752,14 @@ if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05r
 Questions? Write to <strong>vatsa.bhawna@gmail.com</strong>
 </div>
 </div>
+<div id="admin-waitlist-panel" style="display:none;margin-top:24px;padding:16px;background:#fff8f0;border:1px solid #c8922a;border-radius:10px;">
+<div style="font-family:'EB Garamond',serif;font-size:20px;font-weight:600;color:#7a2800;margin-bottom:12px;">⚙ Admin — Vidvan Waitlist</div>
+<button onclick="loadAdminWaitlist()" style="background:#7a2800;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:12px;">Load Waitlist</button>
+<div id="admin-waitlist-count" style="font-size:13px;font-weight:600;color:#1a0f00;margin-bottom:8px;"></div>
+<div id="admin-waitlist-table"></div>
+</div>
+
+  
 </div>
 
 
@@ -1063,17 +1073,48 @@ console.error('Razorpay error:', err);
 }
 
 
-function submitVidvanInterest(){
-var successEl=document.getElementById('vidvan-success');
-var errorEl=document.getElementById('vidvan-error');
-if(!_user){openAuth('signin');return;}
-if(successEl){
-successEl.innerHTML='🙏 Thank you! We will notify <strong>'+_user.email+'</strong> as soon as Vidvan launches. Early registrants get a special price.';
-successEl.style.display='block';
+async function submitVidvanInterest(){
+var successEl = document.getElementById('vidvan-success');
+var errorEl = document.getElementById('vidvan-error');
+if(!_user){ openAuth('signin'); return; }
+if(successEl){ successEl.style.display='none'; }
+if(errorEl){ errorEl.style.display='none'; }
+try {
+var token = _session ? _session.access_token : '';
+var r = await fetch('/api/waitlist', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ email: _user.email, user_id: _user.id })
+});
+var d = await r.json();
+var msg = d.message === 'already_registered'
+? '✓ You are already on the waitlist. We will notify <strong>' + _user.email + '</strong> when Vidvan launches. 🙏'
+: '✓ Registered! We will notify <strong>' + _user.email + '</strong> as soon as Vidvan launches. Early registrants get a special price. 🙏';
+if(successEl){ successEl.innerHTML = msg; successEl.style.display = 'block'; }
+} catch(e) {
+if(errorEl){ errorEl.textContent = 'Could not register. Please try again.'; errorEl.style.display = 'block'; }
 }
-if(errorEl) errorEl.style.display='none';
 }
 
+
+
+async function loadAdminWaitlist(){
+var token = _session ? _session.access_token : '';
+var r = await fetch('/api/waitlist', { headers: { 'Authorization': 'Bearer ' + token } });
+var d = await r.json();
+if(d.error){ alert(d.error); return; }
+var list = d.waitlist;
+document.getElementById('admin-waitlist-count').textContent = 'Total: ' + list.length + ' registrations';
+document.getElementById('admin-waitlist-table').innerHTML =
+'<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+'<tr style="background:#faebd7;"><th style="padding:8px;text-align:left;border-bottom:1px solid #c8b090;">Email</th>' +
+'<th style="padding:8px;text-align:left;border-bottom:1px solid #c8b090;">Date</th></tr>' +
+list.map(function(row){
+return '<tr><td style="padding:7px 8px;border-bottom:1px solid #eee;">' + row.email + '</td>' +
+'<td style="padding:7px 8px;border-bottom:1px solid #eee;">' + new Date(row.created_at).toLocaleDateString('en-IN') + '</td></tr>';
+}).join('') + '</table>';
+}
+  
 
 
 
@@ -1384,6 +1425,12 @@ function updateUserUI(){
     var tier=getTier();
     var tierBadge=tier==='vidvan'?'<span style="background:#c0a000;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">V</span>':tier==='sadhaka'?'<span style="background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">S</span>':'<span style="background:#5a7a50;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">J</span>';
     pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div><span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+tierBadge;topbar.appendChild(pill);
+    // Show admin panel if admin user is on upgrade page
+    var adminPanel = document.getElementById('admin-waitlist-panel');
+    if(adminPanel){
+    adminPanel.style.display = (_user && _user.email === 'vatsa.bhawna@gmail.com') ? 'block' : 'none';
+    }
+    
     var profileEmail=document.getElementById('profile-email');
     var profilePlan=document.getElementById('profile-plan');
     if(profileEmail)profileEmail.textContent='✉ '+_user.email;
