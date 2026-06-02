@@ -43,7 +43,7 @@ return res.status(500).json({ error: err.message });
 
 // ── WEBHOOK ───────────────────────────────────────────────
 if (req.method === 'POST' && action === 'webhook') {
-const secret = process.env.RAZORPAY_KEY_SECRET;
+const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 const signature = req.headers['x-razorpay-signature'];
 const body = JSON.stringify(req.body);
 
