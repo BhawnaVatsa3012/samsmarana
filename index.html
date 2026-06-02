@@ -674,7 +674,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div>
 
 <!-- HOW TO PAY -->
-<div class="card" style="margin-bottom:16px">
+<div class="card" id="how-to-pay-box" style="margin-bottom:16px">
 <div class="card-title">How to Become a Sadhaka</div>
 <div style="font-family:'EB Garamond',serif;font-size:15px;color:#2a1a08;line-height:1.9">
 <div style="margin-bottom:8px">① Scan the QR or open any UPI app</div>
@@ -703,8 +703,33 @@ Please <span onclick="openAuth('signin')" style="color:#7a2800;cursor:pointer;fo
 </div>
 </div>
 
+<div id="vidvan-upgrade-box" style="display:none">
+<div class="card" style="margin-bottom:16px;background:#fdf3e0;border-color:#c8a870">
+<div style="text-align:center;margin-bottom:14px">
+<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:#7a2800">विद्वान्</div>
+<div style="font-family:'EB Garamond',serif;font-size:20px;font-weight:600;color:#1a0f00;margin-top:4px">Vidvan — The Learned</div>
+<div style="font-size:12px;color:#7a6040;font-style:italic;font-family:'EB Garamond',serif;margin-top:4px">Coming Soon · Early Access Pricing</div>
+</div>
+<div style="font-family:'EB Garamond',serif;font-size:34px;font-weight:600;color:#7a2800;text-align:center">₹499<span style="font-size:16px;font-weight:400"> / month</span></div>
+<div style="font-size:12px;color:#5a4020;text-align:center;margin-top:4px;margin-bottom:16px">or <strong>₹3,999 / year</strong> — save ₹2,989</div>
+<div style="font-size:11px;color:#3a2a18;line-height:2;padding:12px;background:#fff8f0;border-radius:8px;border:1px solid #e0c9a8;margin-bottom:14px">
+✦ Everything in Sadhaka<br>
+✦ Deep content — advanced grammar & rare shlokas<br>
+✦ Personalised learning path<br>
+✦ Priority Guru Ji support<br>
+✦ Exclusive Vidvan community<br>
+✦ Monthly live Q&A with Bhawna
+</div>
+<div class="card-title">Join the Waitlist</div>
+<div style="font-family:'EB Garamond',serif;font-size:14px;color:#3a2a18;line-height:1.8;margin-bottom:12px">Vidvan is launching soon. Register your interest and get early access at a special price.</div>
+<div id="vidvan-success" style="display:none;font-size:13px;color:#1a5c38;padding:10px 12px;background:#f2faf6;border-radius:6px;margin-bottom:8px;font-family:'EB Garamond',serif;line-height:1.7"></div>
+<div id="vidvan-error" style="display:none;font-size:12px;color:#8b0000;margin-bottom:8px"></div>
+<button onclick="submitVidvanInterest()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Notify Me When Vidvan Launches 🙏</button>
+</div>
+</div>
 <div style="text-align:center;margin-bottom:20px;font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a7a62">
 Questions? Write to <strong>vatsa.bhawna@gmail.com</strong>
+</div>
 </div>
 </div>
 
@@ -909,12 +934,31 @@ col.style.opacity='0.35';
 });
 
 var formBox=document.getElementById('upgrade-form-box');
+var howToPay=document.getElementById('how-to-pay-box');
+var pricingBox=document.querySelector('.card[style*="background:#faebd7"]');
+var qrBox=document.querySelector('img[alt="UPI QR Code"]');
+var vidvanBox=document.getElementById('vidvan-upgrade-box');
 if(formBox) formBox.style.display=tier==='jigyasu'?'block':'none';
+if(howToPay) howToPay.style.display=tier==='jigyasu'?'block':'none';
+if(pricingBox) pricingBox.style.display=tier==='jigyasu'?'block':'none';
+if(qrBox&&qrBox.parentElement&&qrBox.parentElement.parentElement) qrBox.parentElement.parentElement.style.display=tier==='jigyasu'?'block':'none';
+if(vidvanBox) vidvanBox.style.display=tier==='sadhaka'?'block':'none';
+
 
 }, 200);
 }
 
 
+function submitVidvanInterest(){
+var successEl=document.getElementById('vidvan-success');
+var errorEl=document.getElementById('vidvan-error');
+if(!_user){openAuth('signin');return;}
+if(successEl){
+successEl.innerHTML='🙏 Thank you! We will notify <strong>'+_user.email+'</strong> as soon as Vidvan launches. Early registrants get a special price.';
+successEl.style.display='block';
+}
+if(errorEl) errorEl.style.display='none';
+}
 
 
 
