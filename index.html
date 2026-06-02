@@ -609,15 +609,15 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <!-- Jigyasu -->
 <div data-tier="jigyasu" style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center;position:relative">
 <div class="tier-upgrade-badge" style="display:none;position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#ffd700;color:#5a1000;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap">UPGRADE</div>
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Free</div>
-<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">जिजसु</div>
+<div class="tier-label" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Free</div>
+<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">जिज्ञासु</div>
 <div style="font-size:12px;color:#5a4020;font-weight:600;margin-top:2px">Jigyasu</div>
 <div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Seeker</div>
 <div style="font-size:11px;color:#3a2a18;line-height:1.8;text-align:left;padding:0 4px">
-✗ 5 questions/day (guest)<br>
-✗ 8 questions (signed in)<br>
-✗ No community<br>
-✗ 1 card share/day
+◦ 5 questions/day (guest)<br>
+◦ 8 questions (signed in)<br>
+◦ No community<br>
+◦ 1 card share/day
 </div>
 <div style="margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#5a4020;font-style:italic">Free</div>
 </div>
@@ -625,23 +625,23 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <!-- Sadhaka -->
 <div data-tier="sadhaka" style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center;position:relative">
 <div class="tier-upgrade-badge" style="display:none;position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#ffd700;color:#5a1000;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap">UPGRADE</div>
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;class="tier-label";color:#5a4020;font-weight:700;margin-bottom:6px">Practitioner</div>
-<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#ffd700">साधक</div>
-<div style="font-size:12px;color:#faebd7;font-weight:600;margin-top:2px">Sadhaka</div>
-<div style="font-size:10px;color:#e0b87a;font-style:italic;margin-bottom:10px">The Practitioner</div>
-<div style="font-size:11px;color:#faebd7;line-height:1.8;text-align:left;padding:0 4px">
+<div class="tier-label" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Practitioner</div>
+<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">साधक</div>
+<div style="font-size:12px;color:#3a2a18;font-weight:600;margin-top:2px">Sadhaka</div>
+<div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Practitioner</div>
+<div style="font-size:11px;color:#3a2a18;line-height:1.8;text-align:left;padding:0 4px">
 ✓ 15 questions/day<br>
 ✓ Community access<br>
 ✓ Unlimited shares<br>
 ✓ Priority features
 </div>
-<div style="margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#ffd700;font-weight:600">₹299/month</div>
+<div style="margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#9a6800;font-weight:600">₹299/month</div>
 </div>
 
 <!-- Vidvan -->
 <div data-tier="vidvan" style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center;position:relative">
 <div class="tier-upgrade-badge" style="display:none;position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#ffd700;color:#5a1000;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap">NEXT</div>
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Coming Soon</div>
+<div class="tier-label" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Coming Soon</div>
 <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">विद्वान्</div>
 <div style="font-size:12px;color:#5a4020;font-weight:600;margin-top:2px">Vidvan</div>
 <div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Learned</div>
@@ -655,6 +655,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div>
 
 </div>
+
 
 
 <!-- PRICING -->
@@ -846,11 +847,9 @@ const sentences=[
   },
 ];
 
-function initUpgradePage(){
-// Defer slightly so _user is guaranteed loaded from session
+function initUpgradePage(){function initUpgradePage(){
 setTimeout(function(){
 var tier=getTier();
-console.log('initUpgradePage tier:', tier); // debug — remove after confirming
 
 var heading=document.getElementById('upgrade-heading');
 var desc=document.getElementById('upgrade-desc');
@@ -871,25 +870,40 @@ var cols=document.querySelectorAll('#page-upgrade [data-tier]');
 cols.forEach(function(col){
 var t=col.getAttribute('data-tier');
 var badge=col.querySelector('.tier-upgrade-badge');
+var label=col.querySelector('.tier-label');
 
 // Reset all first
 col.style.opacity='1';
 col.style.border='1px solid #c8b090';
+col.style.background='#fdf8f2';
 if(badge) badge.style.display='none';
+if(label){
+label.style.color='#5a4020';
+if(t==='jigyasu') label.textContent='Free';
+else if(t==='sadhaka') label.textContent='Practitioner';
+else label.textContent='Coming Soon';
+}
 
 if(t===tier){
 // Current tier
 col.style.border='2px solid #aaaaaa';
-col.style.opacity='1';
+col.style.background='#fff8f0';
+if(label){label.textContent='YOUR PLAN';label.style.color='#7a2800';}
 } else if(
-(tier==='jigyasu' && t==='sadhaka') ||
+(tier==='jigyasu' && t==='sadhaka')||
 (tier==='sadhaka' && t==='vidvan')
 ){
-// Next tier — highlight as upgrade target
+// Next tier
 col.style.border='2px solid #ffd700';
+col.style.background='#fffdf0';
 if(badge) badge.style.display='block';
-} else {
-// Past tier — dim
+if(label){label.textContent='UPGRADE TO THIS';label.style.color='#9a6800';}
+} else if(
+(tier==='sadhaka' && t==='jigyasu')||
+(tier==='vidvan' && t==='jigyasu')||
+(tier==='vidvan' && t==='sadhaka')
+){
+// Already passed
 col.style.opacity='0.35';
 }
 });
@@ -897,7 +911,7 @@ col.style.opacity='0.35';
 var formBox=document.getElementById('upgrade-form-box');
 if(formBox) formBox.style.display=tier==='jigyasu'?'block':'none';
 
-}, 200); // 200ms ensures _user is set from loadSession()
+}, 200);
 }
 
 
