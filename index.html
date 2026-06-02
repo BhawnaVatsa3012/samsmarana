@@ -843,11 +843,13 @@ const sentences=[
 ];
 
 function initUpgradePage(){
+// Defer slightly so _user is guaranteed loaded from session
+setTimeout(function(){
 var tier=getTier();
+console.log('initUpgradePage tier:', tier); // debug — remove after confirming
+
 var heading=document.getElementById('upgrade-heading');
 var desc=document.getElementById('upgrade-desc');
-var jigyasuCol=document.querySelector('#page-upgrade .tier-col-jigyasu');
-
 if(heading){
 heading.textContent=
 tier==='vidvan'?'My Plan · विद्वान्':
@@ -861,38 +863,37 @@ tier==='sadhaka'?'You are a Sadhaka. The next level is विद्वान् 
 'The Seeker has begun. Now deepen the practice.';
 }
 
-// Highlight the NEXT tier card with UPGRADE badge, dim current
 var cols=document.querySelectorAll('#page-upgrade [data-tier]');
 cols.forEach(function(col){
 var t=col.getAttribute('data-tier');
-col.style.opacity='1';
 var badge=col.querySelector('.tier-upgrade-badge');
+
+// Reset all first
+col.style.opacity='1';
+col.style.border='1px solid #c8b090';
 if(badge) badge.style.display='none';
 
 if(t===tier){
-// Current tier — show "Current" styling, no upgrade badge
-col.style.border='2px solid #ffd700';
+// Current tier
+col.style.border='2px solid #aaaaaa';
+col.style.opacity='1';
 } else if(
-(tier==='jigyasu'&&t==='sadhaka')||
-(tier==='sadhaka'&&t==='vidvan')
+(tier==='jigyasu' && t==='sadhaka') ||
+(tier==='sadhaka' && t==='vidvan')
 ){
 // Next tier — highlight as upgrade target
 col.style.border='2px solid #ffd700';
 if(badge) badge.style.display='block';
-} else if(
-(tier==='sadhaka'&&t==='jigyasu')||
-(tier==='vidvan'&&(t==='jigyasu'||t==='sadhaka'))
-){
-// Past tier — dim it
-col.style.opacity='0.4';
+} else {
+// Past tier — dim
+col.style.opacity='0.35';
 }
 });
 
-// Show/hide payment form — only for Jigyasu
 var formBox=document.getElementById('upgrade-form-box');
-var howToPay=document.querySelector('#page-upgrade .card:has(.card-title)');
-var qrSection=document.querySelector('#page-upgrade [style*="GooglePay_QR"]');
 if(formBox) formBox.style.display=tier==='jigyasu'?'block':'none';
+
+}, 200); // 200ms ensures _user is set from loadSession()
 }
 
 
