@@ -1235,6 +1235,9 @@ function updateUserUI(){
     else{limitEl.textContent=remaining+' questions remaining. Upgrade to Premium for 15 daily.';}
     limitEl.style.display='block';
   }
+  //Re render upgrade page if it is currently open
+  if(document.getElementById('page-upgrade').classList.contains('active'))
+  {initUpgradePage();}
 }
 
 function loadSession(){
