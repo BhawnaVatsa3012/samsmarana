@@ -959,8 +959,11 @@ if(vidvanBox) vidvanBox.style.display=tier==='sadhaka'?'block':'none';
 
 async function startRazorpay(plan) {
 if (!_user) {
-showToast('Please sign in to upgrade 🙏');
-showPage('auth');
+var statusEl = document.getElementById('payment-status');
+statusEl.style.display = 'block';
+statusEl.style.background = '#fff8ee';
+statusEl.style.border = '1px solid #c8922a';
+statusEl.innerHTML = '🙏 Please <span onclick="showPage(\'auth\')" style="color:#7a2800;font-weight:600;cursor:pointer;text-decoration:underline;">sign in</span> first to upgrade.';
 return;
 }
 
