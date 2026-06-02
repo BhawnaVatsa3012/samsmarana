@@ -186,7 +186,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
   <div class="nav-item" onclick="nav('shlokaCards',this)"><span class="nav-icon">🪔</span> Shloka Cards</div>
   <div class="nav-item" onclick="nav('community',this)"><span class="nav-icon">🌸</span> Community <span class="nav-badge">New</span></div>
-  <div class="nav-item" onclick="nav('upgrade',this)"><span class="nav-icon">✨</span> Become Sadhaka </div>
+  <div class="nav-item" onclick="nav('upgrade',this)"><span class="nav-icon">✨</span> My Plan </div>
   
   <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
   <div class="nav-item" onclick="nav('sentences',this)"><span class="nav-icon">✎</span> Sentence Practice</div>
@@ -600,16 +600,16 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <!-- UPGRADE PAGE -->
 <div class="page" id="page-upgrade">
 <div class="pill">साधक · Upgrade</div>
-<div class="page-heading">Become a Sadhaka</div>
-<div class="page-desc">The Seeker has begun. Now deepen the practice.</div>
+<div class="page-heading"id="upgrade-heading">My Plan</div>
+<div class="page-desc"id="upgrade-desc">Track your journey and see what lies ahead.</div>
 
 <!-- ALL 3 TIERS TOGETHER -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
 
 <!-- Jigyasu -->
-<div style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center">
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Current</div>
-<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">जिज्ञासु</div>
+<div data-tier="jigyasu" style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center">
+<div data-tier="sadhaka" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Current</div>
+<div data-tier="vidvan" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">जिज्ञासु</div>
 <div style="font-size:12px;color:#5a4020;font-weight:600;margin-top:2px">Jigyasu</div>
 <div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Seeker</div>
 <div style="font-size:11px;color:#3a2a18;line-height:1.8;text-align:left;padding:0 4px">
@@ -842,6 +842,65 @@ const sentences=[
   },
 ];
 
+function initUpgradePage(){
+var tier=getTier();
+var heading=document.getElementById('upgrade-heading');
+var desc=document.getElementById('upgrade-desc');
+var jigyasuCol=document.querySelector('#page-upgrade .tier-col-jigyasu');
+
+if(heading){
+heading.textContent=
+tier==='vidvan'?'My Plan · विद्वान्':
+tier==='sadhaka'?'My Plan · साधक':
+'Become a Sadhaka';
+}
+if(desc){
+desc.textContent=
+tier==='vidvan'?'You have reached the highest tier. All features are yours.':
+tier==='sadhaka'?'You are a Sadhaka. The next level is विद्वान् (Vidvan) — coming soon.':
+'The Seeker has begun. Now deepen the practice.';
+}
+
+// Highlight the NEXT tier card with UPGRADE badge, dim current
+var cols=document.querySelectorAll('#page-upgrade [data-tier]');
+cols.forEach(function(col){
+var t=col.getAttribute('data-tier');
+col.style.opacity='1';
+var badge=col.querySelector('.tier-upgrade-badge');
+if(badge) badge.style.display='none';
+
+if(t===tier){
+// Current tier — show "Current" styling, no upgrade badge
+col.style.border='2px solid #ffd700';
+} else if(
+(tier==='jigyasu'&&t==='sadhaka')||
+(tier==='sadhaka'&&t==='vidvan')
+){
+// Next tier — highlight as upgrade target
+col.style.border='2px solid #ffd700';
+if(badge) badge.style.display='block';
+} else if(
+(tier==='sadhaka'&&t==='jigyasu')||
+(tier==='vidvan'&&(t==='jigyasu'||t==='sadhaka'))
+){
+// Past tier — dim it
+col.style.opacity='0.4';
+}
+});
+
+// Show/hide payment form — only for Jigyasu
+var formBox=document.getElementById('upgrade-form-box');
+var howToPay=document.querySelector('#page-upgrade .card:has(.card-title)');
+var qrSection=document.querySelector('#page-upgrade [style*="GooglePay_QR"]');
+if(formBox) formBox.style.display=tier==='jigyasu'?'block':'none';
+}
+
+
+
+
+
+
+  
 async function submitUpgrade() {
 var txnId = document.getElementById('upgrade-txn-id').value.trim();
 var plan = document.getElementById('upgrade-plan').value.trim();
@@ -940,6 +999,7 @@ function nav(id,el){
   if(id==='sentences')renderSentences();
   if(id==='shlokaCards')fetchShlokaCards();
   if(id==='community')initCommunity();
+  if(id==='upgrade')initUpgradePage();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el&&el.classList)el.classList.add('active');
   document.getElementById('topbar-title').textContent=titles[id]||id;
@@ -1156,6 +1216,15 @@ function updateUserUI(){
     t==='sadhaka'?'<strong>✨ साधक (Sadhaka)</strong><br>15 Guru Ji questions/day · Community access · Unlimited shares':
     '<strong>जिज्ञासु (Jigyasu)</strong><br>8 questions/day · <span onclick="nav(\'upgrade\',getNav(\'upgrade\'))" style="color:#7a2800;cursor:pointer;font-weight:600;text-decoration:underline">Upgrade to Sadhaka</span>';
   }
+
+  // Update upgrade nav label based on tier
+    var navUpgrade=document.getElementById('nav-upgrade');
+    var t2=getTier();
+    if(navUpgrade){
+    navUpgrade.innerHTML='<span class="nav-icon">✨</span> '+(t2==='vidvan'?'My Plan · विद्वान्':t2==='sadhaka'?'My Plan · साधक':'Become Sadhaka');
+    }
+    // Update titles map dynamically
+    titles['upgrade']=t2==='vidvan'?'My Plan · Vidvan':t2==='sadhaka'?'My Plan · Sadhaka':'Become Sadhaka';
   var limitEl=document.getElementById('guru-limit-msg');
   if(limitEl){
     var limit=!_user?GURU_GUEST_LIMIT:isPremium()?GURU_PREMIUM_LIMIT:GURU_FREE_LIMIT;
