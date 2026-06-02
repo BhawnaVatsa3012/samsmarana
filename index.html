@@ -675,7 +675,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div-->
 
 <!-- RAZORPAY PAYMENT -->
-<div id="razorpay-payment-section">
+<div>
 <p style="text-align:center;font-size:1.05rem;margin-bottom:1.2rem;color:#2a1a08;">
 Choose your plan and pay securely
 </p>
@@ -706,14 +706,18 @@ Pay ₹1,999
 🔒 Secured by Razorpay · UPI, Cards, Net Banking accepted
 </p>
 </div>
-<script>
+<!--script>
 (function(){
 if(typeof getTier === 'function' && getTier() !== 'jigyasu'){
 var el = document.getElementById('razorpay-payment-section');
 if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05rem;margin:1rem 0;">✓ You are already a <strong>साधक Sadhaka</strong>. No payment needed. 🙏</p>';
 }
 })();
-</script>
+</script-->
+
+<div id="already-sadhaka-msg" style="display:none;text-align:center;color:#7a2800;font-size:1.05rem;margin:1rem 0;padding:1rem;background:#fff8f0;border-radius:10px;border:1px solid #c8922a;">
+✓ You are already a <strong>साधक Sadhaka</strong>. No payment needed. 🙏
+</div>
 
 
 <div id="payment-status" style="display:none;text-align:center;margin-top:1rem;padding:1rem;border-radius:10px;"></div>
@@ -958,7 +962,10 @@ if(howToPay) howToPay.style.display=tier==='jigyasu'?'block':'none';
 if(pricingBox) pricingBox.style.display=tier==='jigyasu'?'block':'none';
 if(qrBox&&qrBox.parentElement&&qrBox.parentElement.parentElement) qrBox.parentElement.parentElement.style.display=tier==='jigyasu'?'block':'none';
 if(vidvanBox) vidvanBox.style.display=tier==='sadhaka'?'block':'none';
-
+var paySection = document.getElementById('razorpay-payment-section');
+var alreadyMsg = document.getElementById('already-sadhaka-msg');
+if(paySection) paySection.style.display = tier==='jigyasu' ? 'block' : 'none';
+if(alreadyMsg) alreadyMsg.style.display = tier!=='jigyasu' ? 'block' : 'none';
 
 }, 200);
 }
@@ -969,7 +976,7 @@ var statusEl = document.getElementById('payment-status');
 statusEl.style.display = 'block';
 statusEl.style.background = '#fff8ee';
 statusEl.style.border = '1px solid #c8922a';
-statusEl.innerHTML = '🙏 Please <span onclick="showPage(\'auth\')" style="color:#7a2800;font-weight:600;cursor:pointer;text-decoration:underline;">sign in</span> first to upgrade.';
+statusEl.innerHTML = '🙏 Please <span onclick="openAuth(\'signin\')" style="color:#7a2800;font-weight:600;cursor:pointer;text-decoration:underline;">sign in</span> first to upgrade.';
 return;
 }
 
