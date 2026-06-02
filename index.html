@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <title>Samsmarana — संस्मरण | Bhawna Mishra</title>
 <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -673,35 +674,43 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div>
 </div>
 
-<!-- HOW TO PAY -->
-<div class="card" id="how-to-pay-box" style="margin-bottom:16px">
-<div class="card-title">How to Become a Sadhaka</div>
-<div style="font-family:'EB Garamond',serif;font-size:15px;color:#2a1a08;line-height:1.9">
-<div style="margin-bottom:8px">① Scan the QR or open any UPI app</div>
-<div style="margin-bottom:8px">② Pay <strong>₹299</strong> to <span style="font-family:monospace;background:#f0d0b0;padding:2px 6px;border-radius:4px;font-size:13px">vatsa.bhawna@okicici</span></div>
-<div style="margin-bottom:8px">③ Note your UPI transaction ID</div>
-<div>④ Submit below — upgrade within 24 hours 🙏</div>
-</div>
+<!-- RAZORPAY PAYMENT -->
+<div id="razorpay-payment-section">
+<p style="text-align:center;font-size:1.05rem;margin-bottom:1.2rem;color:#2a1a08;">
+Choose your plan and pay securely
+</p>
+
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;">
+
+<div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;">
+<div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Monthly</div>
+<div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹299</div>
+<div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">per month</div>
+<button onclick="startRazorpay('monthly')"
+style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
+Pay ₹299
+</button>
 </div>
 
-<!-- TRANSACTION ID FORM -->
-<div class="card" id="upgrade-form-box" style="margin-bottom:16px">
-<div class="card-title">Submit Transaction ID</div>
-<div id="upgrade-signin-msg" style="display:none;font-size:13px;color:#5a4020;margin-bottom:12px;font-family:'EB Garamond',serif">
-Please <span onclick="openAuth('signin')" style="color:#7a2800;cursor:pointer;font-weight:600;text-decoration:underline">sign in</span> first so we can upgrade the right account.
+<div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;position:relative;">
+<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#c8922a;color:#fff;font-size:0.7rem;padding:2px 10px;border-radius:20px;white-space:nowrap;">BEST VALUE</div>
+<div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Yearly</div>
+<div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹1,999</div>
+<div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">save ₹1,589</div>
+<button onclick="startRazorpay('yearly')"
+style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
+Pay ₹1,999
+</button>
 </div>
-<div id="upgrade-input-area">
-<input id="upgrade-txn-id" type="text" placeholder="UPI Transaction ID (e.g. 123456789012)" style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:11px 13px;color:#1a0f00;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:10px;box-sizing:border-box"/>
-<select id="upgrade-plan" style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:11px 13px;color:#1a0f00;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:10px;box-sizing:border-box">
-<option value="">Select plan...</option>
-<option value="monthly">Monthly — ₹299</option>
-<option value="yearly">Yearly — ₹1,999</option>
-</select>
-<div id="upgrade-error" style="font-size:12px;color:#8b0000;margin-bottom:8px;display:none"></div>
-<div id="upgrade-success" style="font-size:13px;color:#1a5c38;padding:10px 12px;background:#f2faf6;border-radius:6px;margin-bottom:8px;display:none;font-family:'EB Garamond',serif;line-height:1.7"></div>
-<button onclick="submitUpgrade()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Submit for Upgrade 🙏</button>
+
 </div>
+
+<p style="text-align:center;font-size:0.78rem;color:#aaa;">
+🔒 Secured by Razorpay · UPI, Cards, Net Banking accepted
+</p>
 </div>
+
+<div id="payment-status" style="display:none;text-align:center;margin-top:1rem;padding:1rem;border-radius:10px;"></div>
 
 <div id="vidvan-upgrade-box" style="display:none">
 <div class="card" style="margin-bottom:16px;background:#fdf3e0;border-color:#c8a870">
@@ -946,6 +955,95 @@ if(vidvanBox) vidvanBox.style.display=tier==='sadhaka'?'block':'none';
 
 
 }, 200);
+}
+
+async function startRazorpay(plan) {
+if (!_user) {
+showToast('Please sign in to upgrade 🙏');
+showPage('auth');
+return;
+}
+
+const statusEl = document.getElementById('payment-status');
+
+try {
+// 1. Create order on server
+const resp = await fetch('/api/razorpay?action=create-order', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ plan, userId: _user.id })
+});
+const order = await resp.json();
+if (!order.orderId) throw new Error(order.error || 'Order creation failed');
+
+// 2. Open Razorpay checkout
+const options = {
+key: 'rzp_test_SwjbX5ae9Z12NI', // ← replace with your RAZORPAY_KEY_ID
+amount: order.amount,
+currency: order.currency,
+order_id: order.orderId,
+name: 'Samsmarana',
+description: plan === 'yearly' ? 'Sadhaka — Yearly Plan' : 'Sadhaka — Monthly Plan',
+image: 'https://samsmarana.vercel.app/favicon.ico',
+prefill: {
+email: _user.email || '',
+},
+theme: { color: '#C8922A' },
+
+handler: async function (response) {
+// 3. Payment succeeded — refresh session silently
+statusEl.style.display = 'block';
+statusEl.style.background = '#fff8ee';
+statusEl.style.border = '1px solid var(--gold)';
+statusEl.innerHTML = '⏳ Activating your Sadhaka access...';
+
+try {
+// Refresh Supabase session to pick up new metadata
+const { data, error } = await _supabase.auth.refreshSession();
+if (!error && data?.user) {
+_user = data.user;
+}
+// Small delay to allow webhook to update metadata
+await new Promise(r => setTimeout(r, 2500));
+
+// Refresh one more time
+const { data: data2 } = await _supabase.auth.refreshSession();
+if (data2?.user) _user = data2.user;
+
+statusEl.innerHTML = '✅ You are now a Sadhaka! Welcome 🙏';
+statusEl.style.background = '#f0fff4';
+statusEl.style.border = '1px solid #4caf50';
+
+setTimeout(function () {
+updateTopbar();
+initUpgradePage();
+}, 1500);
+
+} catch (e) {
+statusEl.innerHTML = '✅ Payment received! Please sign out and sign back in to activate. 🙏';
+}
+},
+
+modal: {
+ondismiss: function () {
+statusEl.style.display = 'none';
+}
+}
+};
+
+const rzp = new Razorpay(options);
+rzp.on('payment.failed', function (response) {
+statusEl.style.display = 'block';
+statusEl.style.background = '#fff0f0';
+statusEl.style.border = '1px solid #e53935';
+statusEl.innerHTML = '❌ Payment failed: ' + (response.error?.description || 'Please try again.');
+});
+rzp.open();
+
+} catch (err) {
+showToast('Something went wrong. Please try again.');
+console.error('Razorpay error:', err);
+}
 }
 
 
