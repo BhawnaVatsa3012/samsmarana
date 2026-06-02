@@ -666,13 +666,13 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div>
 
 <!-- QR CODE -->
-<div style="text-align:center;margin-bottom:16px">
+<!--div style="text-align:center;margin-bottom:16px">
 <div style="display:inline-block;background:#ffffff;border:1px solid #c8b090;border-radius:12px;padding:16px">
 <img src="https://raw.githubusercontent.com/BhawnaVatsa3012/samsmarana/main/GooglePay_QR.png" style="width:200px;height:200px;display:block;border-radius:6px" alt="UPI QR Code">
 <div style="margin-top:10px;font-size:12px;color:#5a4020;font-family:'EB Garamond',serif">UPI ID: <strong>vatsa.bhawna@okicici</strong></div>
 <div style="font-size:11px;color:#7a6040;margin-top:2px">Scan with Google Pay, PhonePe, or any UPI app</div>
 </div>
-</div>
+</div-->
 
 <!-- RAZORPAY PAYMENT -->
 <div id="razorpay-payment-section">
@@ -680,8 +680,8 @@ Share the wisdom. Let it find the one who needs it. 🙏
 Choose your plan and pay securely
 </p>
 
+<div id="razorpay-payment-section">
 <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;">
-
 <div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;">
 <div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Monthly</div>
 <div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹299</div>
@@ -691,9 +691,8 @@ style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5r
 Pay ₹299
 </button>
 </div>
-
 <div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;position:relative;">
-<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#c8922a;color:#fff;font-size:0.7rem;padding:2px 10px;border-radius:20px;white-space:nowrap;">BEST VALUE</div>
+<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#c8922a;color:#fff;font-size:0.7rem;padding:2px 10px;border-radius:20px;">Best Value</div>
 <div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Yearly</div>
 <div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹1,999</div>
 <div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">save ₹1,589</div>
@@ -702,13 +701,20 @@ style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5r
 Pay ₹1,999
 </button>
 </div>
-
 </div>
-
 <p style="text-align:center;font-size:0.78rem;color:#aaa;">
 🔒 Secured by Razorpay · UPI, Cards, Net Banking accepted
 </p>
 </div>
+<script>
+(function(){
+if(typeof getTier === 'function' && getTier() !== 'jigyasu'){
+var el = document.getElementById('razorpay-payment-section');
+if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05rem;margin:1rem 0;">✓ You are already a <strong>साधक Sadhaka</strong>. No payment needed. 🙏</p>';
+}
+})();
+</script>
+
 
 <div id="payment-status" style="display:none;text-align:center;margin-top:1rem;padding:1rem;border-radius:10px;"></div>
 
