@@ -1372,7 +1372,7 @@ async function authSignUp(){
     var res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signup',email,password})});
     var data=await res.json();
     if(data.error){showAuthError('signup',data.error);return;}
-    showAuthSuccess('signup','Account created! Please check your email to confirm.');
+    showAuthSuccess('signup','Account created! You can now Sign In directly.');
   }catch(e){showAuthError('signup','Connection error. Try again.');}
 }
 
