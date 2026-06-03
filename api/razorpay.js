@@ -69,5 +69,32 @@ if (error) return res.status(500).json({ error: error.message });
 return res.status(200).json({ received: true });
 }
 
+// ── UPGRADE TIER ─────────────────────────────────────────
+if (req.method === 'POST' && action === 'upgrade-tier') {
+const { userId, paymentId, orderId, signature } = req.body;
+if (!userId || !paymentId || !orderId || !signature) {
+return res.status(400).json({ error: 'Missing fields' });
+}
+
+// Verify payment signature
+const expected = crypto
+.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+.update(orderId + '|' + paymentId)
+.digest('hex');
+
+if (signature !== expected) {
+return res.status(400).json({ error: 'Invalid signature' });
+}
+
+const { error } = await supabase.auth.admin.updateUserById(userId, {
+user_metadata: { tier: 'sadhaka', premium: true }
+});
+if (error) return res.status(500).json({ error: error.message });
+
+return res.status(200).json({ success: true });
+}
+
 return res.status(405).json({ error: 'Method not allowed' });
+
+
 };

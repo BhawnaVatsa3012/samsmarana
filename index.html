@@ -1026,38 +1026,36 @@ email: _user.email || '',
 theme: { color: '#C8922A' },
 
 handler: async function (response) {
-// 3. Payment succeeded — refresh session silently
 statusEl.style.display = 'block';
 statusEl.style.background = '#fff8ee';
 statusEl.style.border = '1px solid var(--gold)';
 statusEl.innerHTML = '⏳ Activating your Sadhaka access...';
-
 try {
-// Refresh Supabase session to pick up new metadata
-const { data, error } = await _supabase.auth.refreshSession();
-if (!error && data?.user) {
-_user = data.user;
-}
-// Small delay to allow webhook to update metadata
-await new Promise(r => setTimeout(r, 2500));
+const upgradeResp = await fetch('/api/razorpay?action=upgrade-tier', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+userId: _user.id,
+paymentId: response.razorpay_payment_id,
+orderId: response.razorpay_order_id,
+signature: response.razorpay_signature
+})
+});
+const upgradeData = await upgradeResp.json();
+if (!upgradeData.success) throw new Error(upgradeData.error || 'Upgrade failed');
 
-// Refresh one more time
-const { data: data2 } = await _supabase.auth.refreshSession();
-if (data2?.user) _user = data2.user;
+const { data } = await _supabase.auth.refreshSession();
+if (data?.user) _user = data.user;
 
 statusEl.innerHTML = '✅ You are now a Sadhaka! Welcome 🙏';
 statusEl.style.background = '#f0fff4';
 statusEl.style.border = '1px solid #4caf50';
-
-setTimeout(function () {
-updateTopbar();
-initUpgradePage();
-}, 1500);
-
+setTimeout(function () { updateTopbar(); initUpgradePage(); }, 1500);
 } catch (e) {
 statusEl.innerHTML = '✅ Payment received! Please sign out and sign back in to activate. 🙏';
 }
 },
+
 
 modal: {
 ondismiss: function () {
