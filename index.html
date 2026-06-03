@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <title>Samsmarana — संस्मरण | Bhawna Mishra</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#7a3010">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Samsmarana">
+
 <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1655,6 +1661,10 @@ function getTimeAgo(ts){
 }
 
 loadSession();
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+ 
 
 var _scIdx = 0;
 // ── SHLOKA CARDS ──
