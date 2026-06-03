@@ -20,5 +20,6 @@
   "homepage": "https://github.com/BhawnaVatsa3012/samsmarana#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2"
+    "razorpay":"^2.9.2"
   }
 }
