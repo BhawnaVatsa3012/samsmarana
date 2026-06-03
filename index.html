@@ -982,6 +982,7 @@ if(paySection) paySection.style.display = tier==='jigyasu' ? 'block' : 'none';
 }
 
 async function startRazorpay(plan) {
+const statusEl = document.getElementById('payment-status');
 if (!_user) {
 statusEl.style.display = 'block';
 statusEl.style.background = '#fff8ee';
@@ -990,7 +991,7 @@ statusEl.innerHTML = '🙏 Please <span onclick="openAuth(\'signin\')" style="co
 return;
 }
 
-const statusEl = document.getElementById('payment-status');
+
 
 try {
 // 1. Create order on server
