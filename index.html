@@ -649,6 +649,9 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <div style="font-size:12px;color:#5a4020;font-weight:600;margin-top:2px">Vidvan</div>
 <div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Learned</div>
 <div style="font-size:11px;color:#3a2a18;line-height:1.8;text-align:left;padding:0 4px">
+<div id="vidvan-jigyasu-note" style="display:none;margin-top:8px;font-size:10px;color:#7a6040;font-style:italic;font-family:'EB Garamond',serif;line-height:1.6;padding:0 4px;">
+Start with Sadhaka. Vidvan is the next step — for those who go deeper.
+</div>
 ✓ Unlimited<br>
 ✓ All features<br>
 ✓ Deep content<br>
@@ -972,7 +975,9 @@ if(howToPay) howToPay.style.display=tier==='jigyasu'?'block':'none';
 if(pricingBox) pricingBox.style.display=tier==='jigyasu'?'block':'none';
 if(qrBox&&qrBox.parentElement&&qrBox.parentElement.parentElement) qrBox.parentElement.parentElement.style.display=tier==='jigyasu'?'block':'none';
 var isAdmin=_user && _user.email==='vatsa.bhawna@gmail.com';
-if(vidvanBox) vidvanBox.style.display=(tier==='sadhaka'&& isAdmin)?'block':'none';
+if(vidvanBox) vidvanBox.style.display = (tier === 'sadhaka' && isAdmin) ? 'block' : 'none';
+var vidvanNoteBox = document.getElementById('vidvan-jigyasu-note');
+if(vidvanNoteBox) vidvanNoteBox.style.display = tier === 'jigyasu' ? 'block' : 'none';
 var paySection = document.getElementById('razorpay-payment-section');
 var alreadyMsg = document.getElementById('already-sadhaka-msg');
 if(paySection) paySection.style.display = tier==='jigyasu' ? 'block' : 'none';
