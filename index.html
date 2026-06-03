@@ -971,8 +971,8 @@ if(formBox) formBox.style.display=tier==='jigyasu'?'block':'none';
 if(howToPay) howToPay.style.display=tier==='jigyasu'?'block':'none';
 if(pricingBox) pricingBox.style.display=tier==='jigyasu'?'block':'none';
 if(qrBox&&qrBox.parentElement&&qrBox.parentElement.parentElement) qrBox.parentElement.parentElement.style.display=tier==='jigyasu'?'block':'none';
-var isAdmin=_use && _user.email==='vatsa.bhawna@gmail.com';
-if(vidvanBox) vidvanBox.style.display=(tier==='sadhaka'&& 'isAdmin')?'block':'none';
+var isAdmin=_user && _user.email==='vatsa.bhawna@gmail.com';
+if(vidvanBox) vidvanBox.style.display=(tier==='sadhaka'&& isAdmin)?'block':'none';
 var paySection = document.getElementById('razorpay-payment-section');
 var alreadyMsg = document.getElementById('already-sadhaka-msg');
 if(paySection) paySection.style.display = tier==='jigyasu' ? 'block' : 'none';
@@ -991,7 +991,7 @@ statusEl.innerHTML = '🙏 Please <span onclick="openAuth(\'signin\')" style="co
 return;
 }
 
-//const statusEl = document.getElementById('payment-status');
+const statusEl = document.getElementById('payment-status');
 
 try {
 // 1. Create order on server
