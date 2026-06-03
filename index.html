@@ -907,6 +907,9 @@ const sentences=[
 function initUpgradePage(){
 setTimeout(function(){
 var tier=getTier();
+// Clear any stale payment status message
+var statusElReset = document.getElementById('payment-status');
+if (statusElReset) { statusElReset.style.display = 'none'; statusElReset.innerHTML = ''; }
 
 var heading=document.getElementById('upgrade-heading');
 var desc=document.getElementById('upgrade-desc');
@@ -1073,7 +1076,10 @@ statusEl.innerHTML = '❌ Payment failed: ' + (response.error?.description || 'P
 rzp.open();
 
 } catch (err) {
-showToast('Something went wrong. Please try again.');
+statusEl.style.display = 'block';
+statusEl.style.background = '#fff0f0';
+statusEl.style.border = '1px solid #e53935';
+statusEl.innerHTML = '❌ Something went wrong: ' + (err.message || 'Please try again.');
 console.error('Razorpay error:', err);
 }
 }
