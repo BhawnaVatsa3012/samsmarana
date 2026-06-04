@@ -172,6 +172,17 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 </div>
 
 <body>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:#5c2a0a;border-top:2px solid #c8922a;padding:14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,.25)">
+<div style="flex:1">
+<div style="font-family:'EB Garamond',serif;font-size:16px;color:#f0e8d8;font-weight:600">Add Samsmarana to Home Screen</div>
+<div id="install-banner-sub" style="font-size:12px;color:#c8a87a;margin-top:2px">Learn Sanskrit anytime, even offline 🙏</div>
+</div>
+<button id="install-btn" onclick="installApp()" style="background:#c8922a;color:white;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Add</button>
+<button onclick="dismissInstallBanner()" style="background:none;border:none;color:#c8a87a;font-size:22px;cursor:pointer;padding:0 4px;line-height:1">×</button>
+</div>
+  
 <div id="overlay" onclick="closeSidebar()"></div>
 
 <div id="sidebar">
@@ -724,6 +735,61 @@ var el = document.getElementById('razorpay-payment-section');
 if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05rem;margin:1rem 0;">✓ You are already a <strong>साधक Sadhaka</strong>. No payment needed. 🙏</p>';
 }
 })();
+
+
+  // ── INSTALL BANNER ──────────────────────────────────
+var _installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+e.preventDefault();
+_installPrompt = e;
+// Show after 30s if not dismissed before
+if (!localStorage.getItem('install_dismissed')) {
+setTimeout(showInstallBanner, 30000);
+}
+});
+
+function showInstallBanner() {
+var banner = document.getElementById('install-banner');
+if (banner) banner.style.display = 'flex';
+}
+
+function installApp() {
+if (_installPrompt) {
+_installPrompt.prompt();
+_installPrompt.userChoice.then(function(result) {
+if (result.outcome === 'accepted') {
+localStorage.setItem('install_dismissed', '1');
+}
+dismissInstallBanner();
+_installPrompt = null;
+});
+}
+}
+
+function dismissInstallBanner() {
+var banner = document.getElementById('install-banner');
+if (banner) banner.style.display = 'none';
+localStorage.setItem('install_dismissed', '1');
+}
+
+// iOS — show once, manual instructions
+(function() {
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone = window.navigator.standalone === true;
+if (isIOS && !isStandalone && !localStorage.getItem('install_dismissed')) {
+setTimeout(function() {
+var banner = document.getElementById('install-banner');
+var sub = document.getElementById('install-banner-sub');
+var btn = document.getElementById('install-btn');
+if (!banner) return;
+if (sub) sub.textContent = 'Tap Share → "Add to Home Screen" 🙏';
+if (btn) btn.style.display = 'none'; // hide Add btn, X is enough
+banner.style.display = 'flex';
+}, 30000);
+}
+})();
+
 </script-->
 
 <div id="already-sadhaka-msg" style="display:none;text-align:center;color:#7a2800;font-size:1.05rem;margin:1rem 0;padding:1rem;background:#fff8f0;border-radius:10px;border:1px solid #c8922a;">
