@@ -128,6 +128,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .divider{text-align:center;margin:20px 0;color:var(--border);font-size:16px;letter-spacing:8px}
 </style>
 </head>
+<body>
 <!-- AUTH OVERLAY -->
 <div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
   <div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)">
@@ -171,7 +172,6 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   </div>
 </div>
 
-<body>
 
 <!-- INSTALL BANNER -->
 <div id="install-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#5c2a0a;border-top:2px solid #c8922a;padding:14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,.25)">
@@ -1401,9 +1401,10 @@ async function authSignIn(){
     var res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signin',email,password})});
     var data=await res.json();
     if(data.error){showAuthError('signin',data.error);return;}
-    _user=data.user;_session=data.session;
+       _user=data.user;_session=data.session;
     try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
-    closeAuth();updateUserUI();
+    closeAuth();updateUserUI();initDailyQuiz();
+
   }catch(e){showAuthError('signin','Connection error. Try again.');}
 }
 
