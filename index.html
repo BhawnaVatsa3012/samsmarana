@@ -1078,8 +1078,8 @@ signature: response.razorpay_signature
 const upgradeData = await upgradeResp.json();
 if (!upgradeData.success) throw new Error(upgradeData.error || 'Upgrade failed');
 
-const { data } = await _supabase.auth.refreshSession();
-if (data?.user) _user = data.user;
+// Session refresh handled via /api/auth getuser call instead
+
 
 statusEl.innerHTML = '✅ You are now a Sadhaka! Welcome 🙏';
 statusEl.style.background = '#f0fff4';
