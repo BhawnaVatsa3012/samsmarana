@@ -244,6 +244,19 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
     <div class="shloka-life" id="shloka-life"></div>
   </div>
   <div class="divider">· · ·</div>
+  <!-- DAILY QUIZ -->
+<div id="daily-quiz-section" style="margin-bottom:20px">
+  <div class="card" style="padding:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">🧠 Daily Quiz</div>
+        <div style="font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-top:2px">Test your Sanskrit</div>
+      </div>
+      <div id="quiz-score-pill" style="display:none;background:#faebd7;border:1px solid #c8b090;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;color:#7a2800"></div>
+    </div>
+    <div id="quiz-body"></div>
+  </div>
+</div>
   <div class="quick-grid">
     <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
     <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
@@ -1233,8 +1246,10 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
   document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
   document.getElementById('shloka-life').textContent=s.life;
   loadFC();
-  showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
+    showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
+  initDailyQuiz();
 })();
+
 
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open')}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
@@ -2059,6 +2074,331 @@ navigator.clipboard.writeText(text).then(function() {
 alert('Card text copied!');
 });
 }
+// ── DAILY QUIZ ──────────────────────────────────────
+var _quizState = { idx: 0, score: 0, answered: false, done: false };
+
+var QUIZ_BANK = {
+  jigyasu: [
+    {
+      type: 'shloka',
+      q: 'What does "विद्या ददाति विनयम्" mean?',
+      options: ['Knowledge gives humility', 'Wealth brings happiness', 'Truth always wins', 'Keep moving forward'],
+      answer: 0,
+      explain: 'विद्या = knowledge, ददाति = gives, विनयम् = humility. From Hitopadesha.'
+    },
+    {
+      type: 'shloka',
+      q: 'What is the meaning of "चरैवेति चरैवेति"?',
+      options: ['Rest and reflect', 'Keep moving, keep moving', 'Seek the truth', 'Know thyself'],
+      answer: 1,
+      explain: 'चर = move/walk, एव = indeed, इति = thus. Two words, the most powerful instruction in Sanskrit.'
+    },
+    {
+      type: 'shloka',
+      q: '"वसुधैव कुटुम्बकम्" comes from which text?',
+      options: ['Bhagavad Gita', 'Ramayana', 'Maha Upanishad', 'Arthashastra'],
+      answer: 2,
+      explain: 'This phrase appears in the Maha Upanishad. It means: the entire world is one family.'
+    },
+    {
+      type: 'general',
+      q: 'What does "नमस्ते" literally mean in Sanskrit?',
+      options: ['Hello friend', 'I bow to you', 'Peace be upon you', 'Good morning'],
+      answer: 1,
+      explain: 'नमस् = bow/salutation + ते = to you. It is also a Sandhi — namas + te.'
+    },
+    {
+      type: 'general',
+      q: 'Which of these is a Sanskrit word for "knowledge"?',
+      options: ['विद्या', 'धर्म', 'काम', 'मोक्ष'],
+      answer: 0,
+      explain: 'विद्या means knowledge or learning. धर्म = duty, काम = desire, मोक्ष = liberation.'
+    },
+    {
+      type: 'general',
+      q: 'What does "गुरु" mean in Sanskrit?',
+      options: ['Heavy / Teacher', 'Light / Student', 'Ancient / Elder', 'Wise / Scholar'],
+      answer: 0,
+      explain: 'गुरु literally means "heavy" — one who carries the weight of knowledge and removes the darkness of ignorance.'
+    },
+    {
+      type: 'general',
+      q: 'Which script is used to write Sanskrit?',
+      options: ['Gurmukhi', 'Devanagari', 'Brahmi only', 'Tamil'],
+      answer: 1,
+      explain: 'Sanskrit is written in Devanagari — देवनागरी — the script of the gods. Each letter has exactly one sound.'
+    },
+    {
+      type: 'general',
+      q: '"सत्यमेव जयते" means:',
+      options: ['God is truth', 'Truth alone triumphs', 'Speak the truth', 'Seek truth always'],
+      answer: 1,
+      explain: 'सत्यम् = truth, एव = alone/indeed, जयते = triumphs. From Mundaka Upanishad. India\'s national motto.'
+    },
+    {
+      type: 'shloka',
+      q: 'In "सर्वे भवन्तु सुखिनः", what does "सुखिनः" mean?',
+      options: ['Healthy', 'Happy', 'Peaceful', 'Wise'],
+      answer: 1,
+      explain: 'सुखिनः = happy ones. The prayer wishes: may all be happy, may all be free from illness.'
+    },
+    {
+      type: 'general',
+      q: 'What is the meaning of "धर्म"?',
+      options: ['Religion only', 'Duty, righteousness, right conduct', 'God', 'Karma'],
+      answer: 1,
+      explain: 'धर्म has no single English equivalent. It means duty, righteousness, natural law — what holds the world together.'
+    }
+  ],
+
+  sadhaka: [
+    {
+      type: 'grammar',
+      q: '"बालकः" is which Vibhakti of बालक?',
+      options: ['2nd — Object', '1st — Subject', '6th — Of', '7th — In/At'],
+      answer: 1,
+      explain: 'बालकः is Prathama Vibhakti (1st case), singular — the subject form. The ः (visarga) is the marker.'
+    },
+    {
+      type: 'grammar',
+      q: 'Which Lakar (tense) does "गच्छतु" belong to?',
+      options: ['लट् — Present', 'लृट् — Future', 'लोट् — Imperative', 'लङ् — Past'],
+      answer: 2,
+      explain: 'गच्छतु = "let him/her go" — Lot Lakar, used for commands and blessings. The Gita\'s "Arise!" uses this form.'
+    },
+    {
+      type: 'grammar',
+      q: '"राम + अयन = रामायण" is an example of which Sandhi?',
+      options: ['Vyanjan Sandhi', 'Visarga Sandhi', 'Dīrgha Swar Sandhi', 'YaN Sandhi'],
+      answer: 2,
+      explain: 'a + a = ā is Dīrgha (lengthening) Swar Sandhi. Two similar short vowels merge into one long vowel.'
+    },
+    {
+      type: 'grammar',
+      q: '"गुरवे नमः" — what Vibhakti is गुरवे?',
+      options: ['3rd — By/With', '4th — For/To', '5th — From', '6th — Of'],
+      answer: 1,
+      explain: 'गुरवे is 4th Vibhakti (Chaturthi / Sampradana) — "to the teacher". Used when offering, bowing, giving.'
+    },
+    {
+      type: 'shloka',
+      q: '"समत्वं योग उच्यते" — from which text?',
+      options: ['Upanishads', 'Hitopadesha', 'Bhagavad Gita', 'Arthashastra'],
+      answer: 2,
+      explain: 'Bhagavad Gita 2.48. Evenness of mind is called Yoga. One of the most precise definitions of yoga in all literature.'
+    },
+    {
+      type: 'grammar',
+      q: '"नीलकण्ठ" (blue-throated one, referring to Shiva) is which type of Samas?',
+      options: ['Tatpurusha', 'Dvandva', 'Bahuvrihi', 'Avyayibhava'],
+      answer: 2,
+      explain: 'Bahuvrihi — neither word is the subject. Together they describe a third entity (Shiva). The compound becomes an adjective.'
+    },
+    {
+      type: 'grammar',
+      q: 'In "बालकः पुस्तकम् पठति", what is the word order pattern?',
+      options: ['SVO — like English', 'SOV — Subject Object Verb', 'VSO — Verb first', 'OVS — Object first'],
+      answer: 1,
+      explain: 'Sanskrit follows SOV order — Subject (बालकः) → Object (पुस्तकम्) → Verb (पठति). The verb comes last.'
+    },
+    {
+      type: 'general',
+      q: 'What does "योगश्चित्तवृत्तिनिरोधः" define?',
+      options: ['Karma', 'Yoga', 'Dharma', 'Moksha'],
+      answer: 1,
+      explain: 'From Yoga Sutras 1.2. "Yoga is the cessation of the modifications of the mind." चित्तवृत्ति = mind\'s movements, निरोधः = cessation.'
+    },
+    {
+      type: 'grammar',
+      q: '"अभि + सेक = अभिषेक" is an example of:',
+      options: ['Dīrgha Sandhi', 'Vyanjan Sandhi — s → ṣ after i', 'Visarga Sandhi', 'YaN Sandhi'],
+      answer: 1,
+      explain: 'Vyanjan Sandhi rule: s becomes ṣ after i, u, r, or k. अभिषेक means coronation/ritual bathing.'
+    },
+    {
+      type: 'shloka',
+      q: '"श्रद्धावाँल्लभते ज्ञानम्" — what does श्रद्धा mean here?',
+      options: ['Blind faith', 'Trust earned through experience', 'Devotion to God', 'Obedience to teacher'],
+      answer: 1,
+      explain: 'श्रद्धा is not blind faith — it is trust born from lived experience, the willingness to move toward what is true. Gita 4.39.'
+    }
+  ],
+
+  vidvan: [
+    {
+      type: 'parsing',
+      q: 'Parse "भवेत्" — which Lakar, Purusha, and Vachana?',
+      options: ['लट्, Prathama, Eka', 'विधिलिङ्, Prathama, Eka', 'लोट्, Madhyama, Eka', 'लङ्, Prathama, Eka'],
+      answer: 1,
+      explain: 'भवेत् is Vidhiling Lakar (should/ought to), Prathama Purusha (he/she/it), Ekavachana. The grammar of ethics and possibility.'
+    },
+    {
+      type: 'etymology',
+      q: 'The word "उपनिषद्" literally means:',
+      options: ['Ancient wisdom text', 'Sitting near the teacher', 'Knowledge of Brahman', 'Secret scripture'],
+      answer: 1,
+      explain: 'upa (near) + ni (down) + shad (to sit) = sitting down near the teacher. The name itself encodes the learning method.'
+    },
+    {
+      type: 'parsing',
+      q: '"कर्मण्येवाधिकारस्ते" — what form is "अधिकारः"?',
+      options: ['6th Vibhakti, singular', '1st Vibhakti, singular — Subject', '4th Vibhakti, singular', '2nd Vibhakti, singular'],
+      answer: 1,
+      explain: 'अधिकारः is Prathama Vibhakti — the subject. "Your right/authority is only to action." The ः is the 1st case singular marker for masculine nouns.'
+    },
+    {
+      type: 'etymology',
+      q: 'The root धातु of "विद्या" is:',
+      options: ['वद् — to speak', 'विद् — to know', 'वि + द्या — to give light', 'दा — to give'],
+      answer: 1,
+      explain: 'विद्या comes from the root विद् (to know). Same root as Veda (वेद) — that which is known. Also related to Latin "video" — to see.'
+    },
+    {
+      type: 'parsing',
+      q: 'In "मौनात् प्रज्ञा जायते", what Vibhakti is "मौनात्"?',
+      options: ['3rd — instrument', '4th — recipient', '5th — source/separation', '7th — location'],
+      answer: 2,
+      explain: 'मौनात् is Panchamī (5th Vibhakti / Apādāna) — "from silence". The 5th case always shows the origin or point of departure.'
+    },
+    {
+      type: 'shloka',
+      q: '"तुरीय" in Mandukya Upanishad refers to:',
+      options: ['Deep sleep state', 'The dreaming state', 'The fourth — pure witness consciousness', 'Samadhi only'],
+      answer: 2,
+      explain: 'तुरीय = the fourth. Beyond waking (जाग्रत्), dreaming (स्वप्न), and deep sleep (सुषुप्ति) — the pure awareness that witnesses all three.'
+    },
+    {
+      type: 'grammar',
+      q: '"पूर्णमदः पूर्णमिदम्" — what Sandhi joins पूर्णम् + अदः?',
+      options: ['Dīrgha — a+a=ā', 'Yān — vowel+vowel', 'Visarga Sandhi', 'No Sandhi — they stay separate'],
+      answer: 0,
+      explain: 'पूर्णम् + अदः → the final म् becomes anusvara and the a+a merge: पूर्णमदः. Dīrgha Sandhi applies at the vowel boundary.'
+    },
+    {
+      type: 'etymology',
+      q: 'The word "अहिंसा" is formed as:',
+      options: ['अहि (snake) + सा', 'अ (not) + हिंसा (harm/violence)', 'आ + हिंस् + आ', 'Sanskrit borrowing from Prakrit'],
+      answer: 1,
+      explain: 'अ = not (negation prefix) + हिंसा = harm, violence. Ahimsa = non-violence. The same negative prefix appears in अधर्म, अज्ञान, अनित्य.'
+    },
+    {
+      type: 'parsing',
+      q: '"स्थितप्रज्ञ" (Gita 2.55) is which type of Samas?',
+      options: ['Tatpurusha', 'Dvandva', 'Bahuvrihi', 'Karmadharaya'],
+      answer: 2,
+      explain: 'Bahuvrihi — "one whose wisdom is steady." Neither word is the subject; together they describe a person. It is an adjectival compound pointing to a third entity.'
+    },
+    {
+      type: 'etymology',
+      q: 'Which root gives both "कर्म" (action) and "क्रिया" (activity)?',
+      options: ['कृ — to do/make', 'कर् — to move', 'गम् — to go', 'भू — to be'],
+      answer: 0,
+      explain: 'Both कर्म and क्रिया derive from the root कृ (to do, to make). कर्म is the noun of the act; क्रिया is the process of acting. Same root, different grammatical forms.'
+    }
+  ]
+};
+
+function getDailyQuizQuestions() {
+  var tier = getTier();
+  var bank = QUIZ_BANK[tier] || QUIZ_BANK.jigyasu;
+  var day = Math.floor(Date.now() / 86400000);
+  var start = (day * 3) % bank.length;
+  var qs = [];
+  for (var i = 0; i < 3; i++) {
+    qs.push(bank[(start + i) % bank.length]);
+  }
+  return qs;
+}
+
+var _quizQuestions = [];
+
+function initDailyQuiz() {
+  _quizQuestions = getDailyQuizQuestions();
+  _quizState = { idx: 0, score: 0, answered: false, done: false };
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  var body = document.getElementById('quiz-body');
+  var pill = document.getElementById('quiz-score-pill');
+  if (!body) return;
+
+  if (_quizState.done) {
+    var total = _quizQuestions.length;
+    var score = _quizState.score;
+    var msg = score === total ? '🌟 Perfect! You remembered well.' :
+              score >= 2 ? '🙏 Well done. Keep going.' :
+              '📖 Keep practicing. It comes with time.';
+    body.innerHTML =
+      '<div style="text-align:center;padding:10px 0">' +
+      '<div style="font-family:\'EB Garamond\',serif;font-size:48px;font-weight:600;color:#7a2800">' + score + '/' + total + '</div>' +
+      '<div style="font-family:\'EB Garamond\',serif;font-size:18px;color:#3a2a18;margin-top:6px;font-style:italic">' + msg + '</div>' +
+      '<div style="margin-top:16px;font-size:12px;color:var(--muted)">Come back tomorrow for new questions 🙏</div>' +
+      '</div>';
+    if (pill) { pill.textContent = score + '/' + total; pill.style.display = 'block'; }
+    return;
+  }
+
+  var q = _quizQuestions[_quizState.idx];
+  var html = '';
+
+  html += '<div style="display:flex;gap:6px;margin-bottom:16px">';
+  for (var i = 0; i < _quizQuestions.length; i++) {
+    var dotColor = i < _quizState.idx ? '#7a2800' : i === _quizState.idx ? '#c8922a' : '#e0c9a8';
+    html += '<div style="flex:1;height:3px;border-radius:2px;background:' + dotColor + '"></div>';
+  }
+  html += '</div>';
+
+  html += '<div style="font-family:\'EB Garamond\',serif;font-size:17px;font-weight:500;color:#1a0f00;line-height:1.7;margin-bottom:16px">' + q.q + '</div>';
+
+  for (var j = 0; j < q.options.length; j++) {
+    var style = 'width:100%;text-align:left;padding:11px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:\'DM Sans\',sans-serif;margin-bottom:8px;border:1.5px solid #c8b090;background:#ffffff;color:#1a0f00;display:block;';
+    if (_quizState.answered) {
+      if (j === q.answer) {
+        style += 'border-color:#2d6a4f;background:#f2faf6;color:#1a5c38;font-weight:600;';
+      } else if (j === _quizState.chosen && j !== q.answer) {
+        style += 'border-color:#c0392b;background:#fdf2f2;color:#8b0000;';
+      } else {
+        style += 'opacity:0.45;cursor:default;';
+      }
+    }
+    var clickFn = _quizState.answered ? '' : 'onclick="answerQuiz(' + j + ')"';
+    html += '<button ' + clickFn + ' style="' + style + '">' + q.options[j] + '</button>';
+  }
+
+  if (_quizState.answered) {
+    html += '<div style="background:#faebd7;border-radius:6px;padding:12px 14px;font-family:\'EB Garamond\',serif;font-size:14px;color:#2a1a08;line-height:1.8;margin-top:4px;border:1px solid #e0c8a0">' +
+            '💡 ' + q.explain + '</div>';
+    html += '<button onclick="nextQuizQuestion()" style="width:100%;margin-top:12px;background:#7a2800;color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">' +
+            (_quizState.idx < _quizQuestions.length - 1 ? 'Next Question →' : 'See Result') + '</button>';
+  }
+
+  body.innerHTML = html;
+}
+
+function answerQuiz(chosen) {
+  if (_quizState.answered) return;
+  var q = _quizQuestions[_quizState.idx];
+  _quizState.answered = true;
+  _quizState.chosen = chosen;
+  if (chosen === q.answer) _quizState.score++;
+  renderQuizQuestion();
+}
+
+function nextQuizQuestion() {
+  if (_quizState.idx < _quizQuestions.length - 1) {
+    _quizState.idx++;
+    _quizState.answered = false;
+    _quizState.chosen = -1;
+    renderQuizQuestion();
+  } else {
+    _quizState.done = true;
+    renderQuizQuestion();
+  }
+}
+// ── END DAILY QUIZ ───────────────────────────────────
+
+
 // ── INSTALL BANNER ──────────────────────────────────
 var _installPrompt = null;
 
