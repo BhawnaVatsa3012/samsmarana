@@ -204,6 +204,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
   <div class="nav-item" onclick="nav('shlokaCards',this)"><span class="nav-icon">🪔</span> Shloka Cards</div>
   <div class="nav-item" onclick="nav('community',this)"><span class="nav-icon">🌸</span> Community <span class="nav-badge">New</span></div>
+  <div class="nav-item" onclick="nav('progress',this)"><span class="nav-icon">📊</span> My Progress</div>
   <div class="nav-item" onclick="nav('upgrade',this)"><span class="nav-icon">✨</span> My Plan </div>
   
   <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
@@ -628,6 +629,64 @@ Share the wisdom. Let it find the one who needs it. 🙏
 </div>
 </div>
 
+<!-- PROGRESS PAGE -->
+<div class="page" id="page-progress">
+<div class="pill">अभ्यास · Progress</div>
+<div class="page-heading">My Progress — मेरी प्रगति</div>
+<div class="page-desc">Every question answered is a step deeper into Sanskrit. Your journey, recorded.</div>
+
+<!-- Sign in gate -->
+<div id="progress-signin-gate" class="card" style="display:none;text-align:center;padding:24px">
+<div style="font-size:36px;margin-bottom:12px">🙏</div>
+<div class="card-title" style="text-align:center">Sign in to track your progress</div>
+<div class="card-desc" style="text-align:center;margin-top:8px">Your scores, badges, and learning log are saved to your account.</div>
+<button onclick="openAuth('signin')" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px">Sign In / Sign Up</button>
+</div>
+
+<!-- Progress content (signed in) -->
+<div id="progress-content" style="display:none">
+
+<!-- Score + Badge card -->
+<div class="card" style="text-align:center;padding:24px;background:linear-gradient(135deg,#fff8f0,#faebd7);border-color:#c8a870">
+<div id="progress-badge-img" style="font-size:56px;margin-bottom:8px">🕉️</div>
+<div id="progress-badge-name" style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#7a6040;margin-bottom:16px">Keep going — your first badge awaits</div>
+<div style="font-family:'EB Garamond',serif;font-size:56px;font-weight:600;color:#7a2800;line-height:1" id="progress-score">0</div>
+<div style="font-size:12px;color:#5a4020;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Cumulative Points</div>
+
+<!-- Milestone progress bar -->
+<div style="margin-top:20px">
+<div style="display:flex;justify-content:space-between;font-size:11px;color:#7a6040;margin-bottom:6px">
+<span id="progress-bar-label">Progress to Bronze 🥉</span>
+<span id="progress-bar-fraction">0 / 10</span>
+</div>
+<div style="background:#e0c9a8;border-radius:4px;height:8px">
+<div id="progress-bar-fill" style="height:8px;border-radius:4px;background:linear-gradient(90deg,#7a2800,#c8922a);transition:width .6s;width:0%"></div>
+</div>
+</div>
+</div>
+
+<!-- Daily Quiz card -->
+<div class="card" style="padding:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+<div>
+<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">🧠 Daily Quiz</div>
+<div style="font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-top:2px">5 Questions · Once a Day</div>
+</div>
+<div id="progress-quiz-score-pill" style="display:none;background:#faebd7;border:1px solid #c8b090;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;color:#7a2800"></div>
+</div>
+<div id="progress-quiz-body"></div>
+</div>
+
+<!-- Incorrect answers log -->
+<div id="progress-incorrect-section" style="display:none">
+<div style="font-family:'EB Garamond',serif;font-size:20px;font-weight:600;color:#1a0f00;margin-bottom:4px">Learning Log 📖</div>
+<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#5a4020;margin-bottom:14px">Questions you got wrong — with explanations. These are your real teachers.</div>
+<div id="progress-incorrect-list"></div>
+</div>
+
+</div>
+</div>
+
 <!-- UPGRADE PAGE -->
 <div class="page" id="page-upgrade">
 <div class="pill">साधक · Upgrade</div>
@@ -853,7 +912,7 @@ const dhatu={
     {name:'पठ् — to read',rows:[['पठेत्','पठेताम्','पठेयुः'],['पठेः','पठेतम्','पठेत'],['पठेयम्','पठेव','पठेम']]},
   ]},
 };
-const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka'};
+const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka'};
 
 const sentences=[
   {
@@ -1264,6 +1323,7 @@ function nav(id,el){
   if(id==='shlokaCards')fetchShlokaCards();
   if(id==='community')initCommunity();
   if(id==='upgrade')initUpgradePage();
+  if(id==='progress')initProgressPage();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el&&el.classList)el.classList.add('active');
   document.getElementById('topbar-title').textContent=titles[id]||id;
@@ -2398,6 +2458,276 @@ function nextQuizQuestion() {
   }
 }
 // ── END DAILY QUIZ ───────────────────────────────────
+
+// ── MY PROGRESS PAGE ────────────────────────────────
+var _progressData = null;
+var _progressQuizState = { idx: 0, score: 0, answered: false, done: false, answers: [] };
+var _progressQuizQuestions = [];
+
+var BADGE_CONFIG = {
+none: { emoji: '🕉️', label: 'Keep going — your first badge awaits', next: 10, nextLabel: 'Progress to Bronze 🥉' },
+bronze: { emoji: '🥉', label: 'Bronze Badge — Sanskrit Journey Begun!', next: 30, nextLabel: 'Progress to Silver 🥈' },
+silver: { emoji: '🥈', label: 'Silver Badge — The Practitioner!', next: 50, nextLabel: 'Progress to Gold 🥇' },
+gold: { emoji: '🥇', label: 'Gold Badge — विद्वान् in the making!', next: 50, nextLabel: 'Maximum achieved 🙏' }
+};
+
+function getProgressQuizQuestions() {
+var tier = getTier();
+var bank = QUIZ_BANK[tier] || QUIZ_BANK.jigyasu;
+// Use a different offset than home quiz so questions differ
+var day = Math.floor(Date.now() / 86400000);
+var start = (day * 5 + 2) % bank.length;
+var qs = [];
+for (var i = 0; i < 5; i++) {
+qs.push(bank[(start + i) % bank.length]);
+}
+return qs;
+}
+
+async function initProgressPage() {
+if (!_user) {
+document.getElementById('progress-signin-gate').style.display = 'block';
+document.getElementById('progress-content').style.display = 'none';
+return;
+}
+document.getElementById('progress-signin-gate').style.display = 'none';
+document.getElementById('progress-content').style.display = 'block';
+
+// Fetch progress from server
+try {
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/progress', { headers: { 'Authorization': 'Bearer ' + token } });
+var data = await res.json();
+_progressData = data;
+renderProgressStats(data);
+renderProgressQuiz(data.attempted_today, data.today_score);
+renderIncorrectLog(data.incorrect_log);
+} catch(e) {
+console.error('Progress fetch error:', e);
+}
+}
+
+function renderProgressStats(data) {
+var progress = data.progress || {};
+var score = progress.cumulative_score || 0;
+var badge = progress.badge_level || 'none';
+var cfg = BADGE_CONFIG[badge] || BADGE_CONFIG.none;
+
+document.getElementById('progress-score').textContent = score;
+document.getElementById('progress-badge-img').textContent = cfg.emoji;
+document.getElementById('progress-badge-name').textContent = cfg.label;
+
+// Progress bar
+var next = cfg.next;
+var prev = badge === 'none' ? 0 : badge === 'bronze' ? 10 : badge === 'silver' ? 30 : 50;
+var fraction = badge === 'gold' ? 1 : Math.min((score - prev) / (next - prev), 1);
+document.getElementById('progress-bar-fill').style.width = (fraction * 100) + '%';
+document.getElementById('progress-bar-label').textContent = cfg.nextLabel;
+document.getElementById('progress-bar-fraction').textContent = badge === 'gold' ? '🙏' : score + ' / ' + next;
+}
+
+function renderProgressQuiz(attemptedToday, todayScore) {
+var body = document.getElementById('progress-quiz-body');
+var pill = document.getElementById('progress-quiz-score-pill');
+
+if (attemptedToday) {
+body.innerHTML =
+'<div style="text-align:center;padding:16px 0">' +
+'<div style="font-size:36px;margin-bottom:10px">✅</div>' +
+'<div style="font-family:\'EB Garamond\',serif;font-size:20px;font-weight:600;color:#1a0f00">Today\'s quiz complete!</div>' +
+'<div style="font-size:13px;color:var(--muted);margin-top:6px">You scored <strong>' + todayScore + '/5</strong> today.</div>' +
+'<div style="font-size:13px;color:var(--muted);margin-top:4px">Come back tomorrow for 5 new questions 🙏</div>' +
+'</div>';
+if (pill) { pill.textContent = todayScore + '/5'; pill.style.display = 'block'; }
+return;
+}
+
+// Load quiz questions
+_progressQuizQuestions = getProgressQuizQuestions();
+_progressQuizState = { idx: 0, score: 0, answered: false, done: false, answers: [], chosen: -1 };
+renderProgressQuizQuestion();
+}
+
+function renderProgressQuizQuestion() {
+var body = document.getElementById('progress-quiz-body');
+var pill = document.getElementById('progress-quiz-score-pill');
+if (!body) return;
+
+if (_progressQuizState.done) {
+var score = _progressQuizState.score;
+var total = _progressQuizQuestions.length;
+var msg = score === total ? '🌟 Perfect score today!' :
+score >= 3 ? '🙏 Well done. Keep going.' :
+'📖 Every wrong answer is a lesson.';
+body.innerHTML =
+'<div style="text-align:center;padding:10px 0">' +
+'<div style="font-family:\'EB Garamond\',serif;font-size:48px;font-weight:600;color:#7a2800">' + score + '/' + total + '</div>' +
+'<div style="font-family:\'EB Garamond\',serif;font-size:18px;color:#3a2a18;margin-top:6px;font-style:italic">' + msg + '</div>' +
+'<div style="margin-top:12px;font-size:12px;color:var(--muted)">Submitting your score...</div>' +
+'</div>';
+if (pill) { pill.textContent = score + '/' + total; pill.style.display = 'block'; }
+submitProgressQuiz();
+return;
+}
+
+var q = _progressQuizQuestions[_progressQuizState.idx];
+var html = '';
+
+// Progress dots
+html += '<div style="display:flex;gap:6px;margin-bottom:16px">';
+for (var i = 0; i < _progressQuizQuestions.length; i++) {
+var dotColor = i < _progressQuizState.idx ? '#7a2800' : i === _progressQuizState.idx ? '#c8922a' : '#e0c9a8';
+html += '<div style="flex:1;height:3px;border-radius:2px;background:' + dotColor + '"></div>';
+}
+html += '</div>';
+
+html += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Question ' + (_progressQuizState.idx + 1) + ' of ' + _progressQuizQuestions.length + '</div>';
+html += '<div style="font-family:\'EB Garamond\',serif;font-size:17px;font-weight:500;color:#1a0f00;line-height:1.7;margin-bottom:16px">' + q.q + '</div>';
+
+for (var j = 0; j < q.options.length; j++) {
+var style = 'width:100%;text-align:left;padding:11px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:\'DM Sans\',sans-serif;margin-bottom:8px;border:1.5px solid #c8b090;background:#ffffff;color:#1a0f00;display:block;';
+if (_progressQuizState.answered) {
+if (j === q.answer) style += 'border-color:#2d6a4f;background:#f2faf6;color:#1a5c38;font-weight:600;';
+else if (j === _progressQuizState.chosen && j !== q.answer) style += 'border-color:#c0392b;background:#fdf2f2;color:#8b0000;';
+else style += 'opacity:0.45;cursor:default;';
+}
+var clickFn = _progressQuizState.answered ? '' : 'onclick="answerProgressQuiz(' + j + ')"';
+html += '<button ' + clickFn + ' style="' + style + '">' + q.options[j] + '</button>';
+}
+
+if (_progressQuizState.answered) {
+html += '<div style="background:#faebd7;border-radius:6px;padding:12px 14px;font-family:\'EB Garamond\',serif;font-size:14px;color:#2a1a08;line-height:1.8;margin-top:4px;border:1px solid #e0c8a0">💡 ' + q.explain + '</div>';
+html += '<button onclick="nextProgressQuizQuestion()" style="width:100%;margin-top:12px;background:#7a2800;color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">' +
+(_progressQuizState.idx < _progressQuizQuestions.length - 1 ? 'Next Question →' : 'See My Score') + '</button>';
+}
+
+body.innerHTML = html;
+}
+
+function answerProgressQuiz(chosen) {
+if (_progressQuizState.answered) return;
+var q = _progressQuizQuestions[_progressQuizState.idx];
+var correct = chosen === q.answer;
+_progressQuizState.answered = true;
+_progressQuizState.chosen = chosen;
+if (correct) _progressQuizState.score++;
+_progressQuizState.answers.push({
+question: q.q,
+chosen: q.options[chosen],
+correctOption: q.options[q.answer],
+correct: correct,
+explain: q.explain
+});
+renderProgressQuizQuestion();
+}
+
+function nextProgressQuizQuestion() {
+if (_progressQuizState.idx < _progressQuizQuestions.length - 1) {
+_progressQuizState.idx++;
+_progressQuizState.answered = false;
+_progressQuizState.chosen = -1;
+renderProgressQuizQuestion();
+} else {
+_progressQuizState.done = true;
+renderProgressQuizQuestion();
+}
+}
+
+async function submitProgressQuiz() {
+try {
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/progress', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ answers: _progressQuizState.answers })
+});
+var data = await res.json();
+if (data.error === 'already_attempted') {
+document.getElementById('progress-quiz-body').innerHTML +=
+'<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px">Already submitted today.</div>';
+return;
+}
+// Update score display
+if (data.cumulative_score !== undefined) {
+document.getElementById('progress-score').textContent = data.cumulative_score;
+var badge = data.badge_level || 'none';
+var cfg = BADGE_CONFIG[badge] || BADGE_CONFIG.none;
+document.getElementById('progress-badge-img').textContent = cfg.emoji;
+document.getElementById('progress-badge-name').textContent = cfg.label;
+// Update topbar badge
+updateUserUI();
+}
+// Milestone celebration
+if (data.milestone_reached) {
+triggerCelebration(data.milestone_reached);
+}
+// Refresh incorrect log
+var res2 = await fetch('/api/progress', { headers: { 'Authorization': 'Bearer ' + token } });
+var data2 = await res2.json();
+renderIncorrectLog(data2.incorrect_log);
+// Update submit message
+var submitMsg = document.querySelector('#progress-quiz-body div:last-child');
+if (submitMsg && submitMsg.textContent.includes('Submitting')) {
+submitMsg.textContent = 'Score saved! 🙏';
+}
+} catch(e) {
+console.error('Submit error:', e);
+}
+}
+
+function renderIncorrectLog(log) {
+var section = document.getElementById('progress-incorrect-section');
+var list = document.getElementById('progress-incorrect-list');
+if (!log || log.length === 0) { if(section) section.style.display = 'none'; return; }
+section.style.display = 'block';
+list.innerHTML = log.map(function(item) {
+return '<div class="card" style="margin-bottom:12px;border-left:3px solid #c0392b">' +
+'<div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">' + item.date + '</div>' +
+'<div style="font-family:\'EB Garamond\',serif;font-size:16px;font-weight:500;color:#1a0f00;margin-bottom:10px">' + item.question + '</div>' +
+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
+'<span style="background:#fdf2f2;border:1px solid #c0392b;border-radius:4px;padding:4px 10px;font-size:12px;color:#8b0000">✗ ' + item.chosen + '</span>' +
+'<span style="background:#f2faf6;border:1px solid #2d6a4f;border-radius:4px;padding:4px 10px;font-size:12px;color:#1a5c38">✓ ' + item.correct + '</span>' +
+'</div>' +
+'<div style="background:#faebd7;border-radius:6px;padding:10px 12px;font-family:\'EB Garamond\',serif;font-size:14px;color:#2a1a08;line-height:1.8;border:1px solid #e0c8a0">💡 ' + item.explain + '</div>' +
+'</div>';
+}).join('');
+}
+
+function triggerCelebration(milestone) {
+var intensity = milestone === 10 ? 'light' : milestone === 30 ? 'medium' : 'full';
+var overlay = document.createElement('div');
+overlay.style.cssText = 'position:fixed;inset:0;z-index:999;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
+var msg = milestone === 10 ? '🥉 Bronze Badge Earned!\nYour Sanskrit journey has begun.' :
+milestone === 30 ? '🥈 Silver Badge Earned!\nचरैवेति चरैवेति 🙏' :
+'🥇 Gold Badge Earned!\nविद्या ददाति विनयम् 🙏';
+overlay.innerHTML = '<div style="background:rgba(90,20,0,.92);border:2px solid #c8922a;border-radius:16px;padding:28px 32px;text-align:center;color:white;font-family:\'EB Garamond\',serif;font-size:22px;line-height:1.8;white-space:pre-line;box-shadow:0 8px 32px rgba(0,0,0,.4)">' + msg + '</div>';
+
+// Confetti
+var colors = ['#c8922a','#7a2800','#ffd700','#fff8f0','#4a1000'];
+var count = intensity === 'light' ? 40 : intensity === 'medium' ? 80 : 150;
+for (var i = 0; i < count; i++) {
+(function(i) {
+setTimeout(function() {
+var dot = document.createElement('div');
+dot.style.cssText = 'position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:1000;';
+dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+dot.style.left = Math.random() * 100 + 'vw';
+dot.style.top = '-10px';
+document.body.appendChild(dot);
+var duration = 1500 + Math.random() * 1500;
+var endY = 80 + Math.random() * 40;
+dot.animate([
+{ transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+{ transform: 'translateY(' + endY + 'vh) rotate(720deg)', opacity: 0 }
+], { duration: duration, easing: 'ease-in' }).onfinish = function() { dot.remove(); };
+}, i * (intensity === 'full' ? 20 : 30));
+})(i);
+}
+
+document.body.appendChild(overlay);
+setTimeout(function() { overlay.remove(); }, 4000);
+}
+// ── END PROGRESS PAGE ────────────────────────────────
 
 
 // ── INSTALL BANNER ──────────────────────────────────
