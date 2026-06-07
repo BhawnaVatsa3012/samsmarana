@@ -1,9 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-process.env.SUPABASE_URL,
-process.env.SUPABASE_ANON_KEY
-);
+//const supabase = createClient(
+//process.env.SUPABASE_URL,
+//process.env.SUPABASE_ANON_KEY
+//);
 
 const MILESTONE_MESSAGES = {
 10: '🥉 {name} has just earned the Bronze Badge and begun their Sanskrit journey! वेदाहमेतम् — I have known this. 🙏',
@@ -25,6 +25,10 @@ likes: 0
 }
 
 module.exports = async function handler(req, res) {
+const supabase = createClient(
+process.env.SUPABASE_URL,
+process.env.SUPABASE_ANON_KEY
+);
 res.setHeader('Access-Control-Allow-Origin', '*');
 res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
