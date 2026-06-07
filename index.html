@@ -1495,7 +1495,7 @@ async function authSignOut(){
   _user=null;_session=null;
   localStorage.removeItem('samsmarana_session');
   closeAuth();updateUserUI();initQuiz();
-  if(document.getElementById{"page-progress').classList.contains('active'))initProgressPage();
+  if(document.getElementById("page-progress').classList.contains('active'))initProgressPage();
 }
 
 function showAuthError(view,msg){var el=document.getElementById('auth-error'+(view==='signup'?'-signup':''));if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
