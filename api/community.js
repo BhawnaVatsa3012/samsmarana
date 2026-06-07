@@ -3,7 +3,6 @@ res.setHeader('Access-Control-Allow-Origin', '*')
 res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
 res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 if (req.method === 'OPTIONS') return res.status(200).end()
-
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY
 
