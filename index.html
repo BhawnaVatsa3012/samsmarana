@@ -1246,15 +1246,15 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
   document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
   document.getElementById('shloka-life').textContent=s.life;
   loadFC();
-    showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
-  initDailyQuiz();
-})();
+  showDhatu('lat',document.querySelector('#page-dhaturoop .sub-tab'));
 
+})();
+setTimeout(initDailyQuiz,0);
 
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open')}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
 function getNav(id){return document.querySelector(`.nav-item[onclick*="'${id}'"]`)}
-let navHistory=[];
+var navHistory=[];
 function nav(id,el){
   const cur=document.querySelector('.page.active');
   if(cur&&cur.id!=='page-'+id) navHistory.push(cur.id.replace('page-',''));
