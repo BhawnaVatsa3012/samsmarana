@@ -80,12 +80,15 @@ audio-btn{display:inline-flex;align-items:center;gap:7px;background:#faebd7;bord
 .bk-btn{background:none;border:none;cursor:pointer;padding:6px;color:#c8a870;transition:color .15s;flex-shrink:0}
 .bk-btn:hover{color:#7a2800}
 .bk-btn svg{width:20px;height:20px;display:block}
-#profile-panel{position:fixed;top:0;left:0;right:0;z-index:60;background:#fff;border-bottom:1px solid #e0c9a8;box-shadow:0 4px 24px rgba(0,0,0,.12);transform:translateY(-100%);transition:transform .3s ease;max-height:90vh;overflow-y:auto}
-#profile-panel.open{transform:translateY(0)}
-.pp-section{padding:16px 20px;border-bottom:1px solid #f0e4d0}
-.pp-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#9a7850;font-weight:700;margin-bottom:10px}
-.pp-saved-card{background:#fdf8f2;border:1px solid #e0c9a8;border-radius:8px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
-.pp-saved-card:hover{border-color:#7a2800}
+#profile-panel{position:fixed;top:48px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:60;background:#fff;border:1px solid #e0c9a8;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);width:calc(100% - 32px);max-width:360px;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+#profile-panel.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.pp-tile{background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px}
+.pp-tile:hover{border-color:#7a2800;background:#fff5ec}
+.pp-tile-icon{font-size:20px;width:28px;text-align:center}
+.pp-tile-label{font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00}
+.pp-tile-sub{font-size:11px;color:#7a6040;margin-top:1px}
+.bm-card{background:#fdf8f2;border:1px solid #e0c9a8;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.bm-card:hover{border-color:#7a2800}
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
 .quick-card{background:#ffffff;border:1.5px solid #e0c9a8;border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
 .quick-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(139,69,19,.08);transform:translateY(-1px)}
@@ -142,51 +145,29 @@ audio-btn{display:inline-flex;align-items:center;gap:7px;background:#faebd7;bord
 </head>
 <body>
 <!-- PROFILE PANEL -->
+<div id="profile-panel-overlay" onclick="closeProfilePanel()" style="display:none;position:fixed;inset:0;z-index:59"></div>
 <div id="profile-panel">
-<div id="profile-panel-overlay" onclick="closeProfilePanel()" style="display:none;position:fixed;inset:0;z-index:59;background:rgba(0,0,0,0.4)"></div>
-<!-- Header -->
-<div style="background:#7a3010;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
-<div style="font-family:'EB Garamond',serif;font-size:18px;color:#fff;font-weight:600">My Profile</div>
-<button onclick="closeProfilePanel()" style="background:none;border:none;color:#fdf0e0;font-size:24px;cursor:pointer;line-height:1">×</button>
+<div style="padding:16px 18px 6px;border-bottom:1px solid #f0e4d0">
+<div id="pp-greeting" style="font-family:'EB Garamond',serif;font-size:18px;font-weight:600;color:#1a0f00"></div>
+<div id="pp-tier-line" style="font-size:11px;color:#9a7850;margin-top:2px"></div>
 </div>
-<!-- User Info -->
-<div class="pp-section">
-<div class="pp-label">Account</div>
-<div id="pp-name" style="font-family:'EB Garamond',serif;font-size:18px;font-weight:600;color:#1a0f00;margin-bottom:4px"></div>
-<div id="pp-email" style="font-size:13px;color:#5a4020;margin-bottom:10px"></div>
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-<span style="font-size:13px;color:#5a4020">Password:</span>
-<span style="font-size:15px;letter-spacing:3px;color:#3a2a18">••••••••</span>
-<span onclick="sendPasswordReset()" style="font-size:12px;color:#7a2800;cursor:pointer;text-decoration:underline;font-family:'EB Garamond',serif;font-style:italic">Forgot / Change</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 16px">
+<div class="pp-tile" onclick="closeProfilePanel();nav('profile-details',null);">
+<div class="pp-tile-icon">👤</div>
+<div><div class="pp-tile-label">Personal</div><div class="pp-tile-sub">Details & bio</div></div>
 </div>
-<div id="pp-reset-msg" style="display:none;font-size:12px;color:#1a5c38;padding:8px 12px;background:#f2faf6;border-radius:6px;margin-bottom:8px"></div>
-<button onclick="authSignOut();closeProfilePanel();" style="background:none;border:1px solid #c8b090;border-radius:6px;padding:6px 16px;font-size:12px;color:#5a4020;cursor:pointer;font-family:'DM Sans',sans-serif">Sign Out</button>
+<div class="pp-tile" onclick="closeProfilePanel();nav('upgrade',getNav('upgrade'));">
+<div class="pp-tile-icon">✨</div>
+<div><div class="pp-tile-label">My Plan</div><div class="pp-tile-sub" id="pp-plan-sub">Jigyasu</div></div>
 </div>
-<!-- My Plan -->
-<div class="pp-section">
-<div class="pp-label">My Plan</div>
-<div id="pp-plan-badge" style="font-size:32px;margin-bottom:6px"></div>
-<div id="pp-plan-name" style="font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-bottom:4px"></div>
-<div id="pp-plan-desc" style="font-size:12px;color:#5a4020;margin-bottom:12px;line-height:1.7"></div>
-<div id="pp-upgrade-cta"></div>
+<div class="pp-tile" onclick="closeProfilePanel();nav('progress',getNav('progress'));">
+<div class="pp-tile-icon">📊</div>
+<div><div class="pp-tile-label">Progress</div><div class="pp-tile-sub" id="pp-progress-sub">View stats</div></div>
 </div>
-<!-- My Progress -->
-<div class="pp-section" onclick="closeProfilePanel();nav('progress',getNav('progress'));" style="cursor:pointer">
-<div class="pp-label">My Progress</div>
-<div style="display:flex;align-items:center;justify-content:space-between">
-<div>
-<div id="pp-score" style="font-family:'EB Garamond',serif;font-size:32px;font-weight:600;color:#7a2800"></div>
-<div id="pp-badge-name" style="font-size:12px;color:#5a4020;margin-top:2px"></div>
+<div class="pp-tile" onclick="closeProfilePanel();nav('bookmarks',null);">
+<div class="pp-tile-icon">🔖</div>
+<div><div class="pp-tile-label">Saved</div><div class="pp-tile-sub">My shlokas</div></div>
 </div>
-<div style="font-size:22px;color:#e0c9a8">›</div>
-</div>
-</div>
-<!-- My Saved Shlokas -->
-<div class="pp-section">
-<div class="pp-label">My Saved Shlokas</div>
-<div id="pp-bookmarks-list"></div>
-<div id="pp-bookmarks-empty" style="display:none;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#9a7850;text-align:center;padding:12px 0">No saved shlokas yet 🙏</div>
-<div id="pp-bookmarks-loading" style="font-size:12px;color:#9a7850;text-align:center;padding:12px 0">Loading...</div>
 </div>
 </div>
 
@@ -936,8 +917,67 @@ Questions? Write to <strong>vatsa.bhawna@gmail.com</strong>
 
   
   
+<!-- PAGE: PERSONAL DETAILS -->
+<div class="page" id="page-profile-details">
+<div class="pill">👤 Profile</div>
+<div class="page-heading" id="pd-greeting"></div>
+<div class="page-desc">How the Samsmarana community knows you.</div>
+
+<div class="card" style="margin-bottom:16px">
+<div class="card-title">Display Name</div>
+<input id="pd-name" type="text" maxlength="50"
+style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:10px 13px;font-size:14px;font-family:'DM Sans',sans-serif;color:#1a0f00;box-sizing:border-box;margin-top:6px"
+placeholder="Your name"/>
+<div style="font-size:11px;color:#9a7850;margin-top:6px">Shown on community posts</div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+<div class="card-title">Bio <span style="font-size:11px;color:#9a7850;font-weight:400">— 100 characters</span></div>
+<div style="font-size:13px;font-family:'EB Garamond',serif;font-style:italic;color:#5a4020;margin-bottom:8px;line-height:1.6">Describe yourself in one line. This appears alongside your name on every reflection you share.</div>
+<textarea id="pd-bio" maxlength="100"
+style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:10px 13px;font-size:14px;font-family:'EB Garamond',serif;color:#1a0f00;resize:none;height:80px;box-sizing:border-box;line-height:1.6"
+placeholder="e.g. Sanskrit lover from Mumbai · rediscovering roots"></textarea>
+<div style="display:flex;justify-content:space-between;margin-top:4px">
+<div id="pd-bio-preview" style="font-size:12px;color:#7a2800;font-family:'EB Garamond',serif;font-style:italic"></div>
+<div id="pd-bio-count" style="font-size:11px;color:#9a7850">0 / 100</div>
+</div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+<div class="card-title">Email</div>
+<div id="pd-email" style="font-size:14px;color:#5a4020;margin-top:6px"></div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+<div class="card-title">Password</div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+<span style="font-size:18px;letter-spacing:4px;color:#3a2a18">••••••••</span>
+<span onclick="sendPasswordReset()" style="font-size:13px;color:#7a2800;cursor:pointer;text-decoration:underline;font-family:'EB Garamond',serif;font-style:italic">Forgot / Change →</span>
+</div>
+<div id="pd-reset-msg" style="display:none;font-size:12px;color:#1a5c38;padding:8px 12px;background:#f2faf6;border-radius:6px;margin-top:8px"></div>
+</div>
+
+<button onclick="saveProfile()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:12px">Save Changes 🙏</button>
+<div id="pd-save-msg" style="display:none;text-align:center;font-size:13px;color:#1a5c38;font-family:'EB Garamond',serif;font-style:italic;margin-bottom:16px"></div>
+<button onclick="authSignOut()" style="width:100%;background:none;border:1px solid #c8b090;border-radius:8px;padding:11px;font-size:13px;color:#5a4020;cursor:pointer;font-family:'DM Sans',sans-serif">Sign Out</button>
+</div>
+
+<!-- PAGE: SAVED SHLOKAS -->
+<div class="page" id="page-bookmarks">
+<div class="pill">🔖 Saved</div>
+<div class="page-heading">My Saved Shlokas</div>
+<div class="page-desc">Shlokas you have bookmarked from Today's Shloka and Shloka Cards.</div>
+<div id="bm-loading" style="text-align:center;padding:30px;font-family:'EB Garamond',serif;font-style:italic;color:#9a7850">Loading...</div>
+<div id="bm-empty" style="display:none;text-align:center;padding:40px 20px">
+<div style="font-size:36px;margin-bottom:12px">🔖</div>
+<div style="font-family:'EB Garamond',serif;font-size:18px;color:#5a4020">No saved shlokas yet</div>
+<div style="font-size:13px;color:#9a7850;margin-top:6px">Tap the bookmark icon on any shloka to save it here</div>
+</div>
+<div id="bm-list"></div>
+</div>
+
 <script>
-const vowels=[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
+const vowels==[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
 const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'}];
 const shlokas=[
   {text:'विद्या ददाति विनयं विनयाद् याति पात्रताम् । पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम् ॥',source:'Hitopadesha',meaning:'Knowledge gives humility. Humility brings worthiness. Worthiness brings wealth. Wealth enables righteousness. And from righteousness comes happiness.',meaningHi:'विद्या विनम्रता देती है। विनम्रता से पात्रता आती है। पात्रता से धन मिलता है। धन से धर्म और धर्म से सुख।',life:'We spent years chasing wealth before wisdom. Sanskrit knew the right order all along.'},
@@ -987,8 +1027,7 @@ const dhatu={
     {name:'पठ् — to read',rows:[['पठेत्','पठेताम्','पठेयुः'],['पठेः','पठेतम्','पठेत'],['पठेयम्','पठेव','पठेम']]},
   ]},
 };
-const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka'};
-
+const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
 const sentences=[
   {
     english:'The boy reads the book.',
@@ -1394,11 +1433,13 @@ function nav(id,el){
   if(cur&&cur.id!=='page-'+id) navHistory.push(cur.id.replace('page-',''));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(id==='sentences')renderSentences();
-  if(id==='shlokaCards')fetchShlokaCards();
-  if(id==='community')initCommunity();
-  if(id==='upgrade')initUpgradePage();
-  if(id==='progress')initProgressPage();
+ if(id==='sentences')renderSentences();
+if(id==='shlokaCards')fetchShlokaCards();
+if(id==='community')initCommunity();
+if(id==='upgrade')initUpgradePage();
+if(id==='progress')initProgressPage();
+if(id==='profile-details')initProfileDetails();
+if(id==='bookmarks')initBookmarksPage();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el&&el.classList)el.classList.add('active');
   document.getElementById('topbar-title').textContent=titles[id]||id;
@@ -1770,7 +1811,8 @@ function renderReflections(){
     html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
     html+='<div style="display:flex;align-items:center;gap:10px">';
     html+='<div style="width:36px;height:36px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7a2800">'+r.user_initials+'</div>';
-    html+='<div><div style="font-size:13px;font-weight:600;color:#1a0f00">'+r.user_name+'</div>';
+    var displayName = r.user_bio ? r.user_name + ' | ' + r.user_bio : r.user_name;
+    html+='<div><div style="font-size:13px;font-weight:600;color:#1a0f00">'+displayName+'</div>';
     html+='<div style="font-size:11px;color:var(--muted)">'+timeAgo+'</div></div></div>';
     if(isOwn)html+='<button onclick="deleteReflection(\'' +r.id+ '\')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">×</button>';
     html+='</div>';
@@ -2808,9 +2850,17 @@ setTimeout(function() { overlay.remove(); }, 4000);
 
 
 // ── PROFILE PANEL ─────────────────────────────────────────────────
+var _userProfile = null;
+
 function openProfilePanel() {
 if (!_user) { openAuth('signin'); return; }
-populateProfilePanel();
+var meta = _user.user_metadata || {};
+var fullName = (_userProfile && _userProfile.display_name) || meta.full_name || meta.name || _user.email.split('@')[0];
+var tier = getTier();
+var tierNames = { jigyasu: 'जज्ञासु · Jigyasu', sadhaka: 'साधक · Sadhaka', vidvan: 'विद्वान् · Vidvan' };
+document.getElementById('pp-greeting').textContent = 'Namaste, ' + fullName + ' 🙏';
+document.getElementById('pp-tier-line').textContent = tierNames[tier] || tier;
+document.getElementById('pp-plan-sub').textContent = tierNames[tier] || tier;
 document.getElementById('profile-panel').classList.add('open');
 document.getElementById('profile-panel-overlay').style.display = 'block';
 }
@@ -2820,46 +2870,83 @@ document.getElementById('profile-panel').classList.remove('open');
 document.getElementById('profile-panel-overlay').style.display = 'none';
 }
 
-function populateProfilePanel() {
+// ── PERSONAL DETAILS PAGE ─────────────────────────────────────────
+async function initProfileDetails() {
+if (!_user) { nav('home', null); return; }
 var meta = _user.user_metadata || {};
-var fullName = meta.full_name || meta.name || _user.email.split('@')[0];
-document.getElementById('pp-name').textContent = fullName;
-document.getElementById('pp-email').textContent = _user.email;
+var fullName = (_userProfile && _userProfile.display_name) || meta.full_name || meta.name || _user.email.split('@')[0];
+var bio = (_userProfile && _userProfile.bio) || '';
 
-// Plan
-var tier = getTier();
-var badges = { jigyasu: '🔍', sadhaka: '✨', vidvan: '📖' };
-var names = { jigyasu: 'जिज्ञासु — Jigyasu', sadhaka: 'साधक — Sadhaka', vidvan: 'विद्वान् — Vidvan' };
-var descs = {
-jigyasu: '5 questions/day · 1 card share/day · Basic access',
-sadhaka: '15 questions/day · Community access · Unlimited shares · Audio & Bookmarks',
-vidvan: 'All features · Deep content · Priority support'
+document.getElementById('pd-greeting').textContent = 'Namaste, ' + fullName + ' 🙏';
+document.getElementById('pd-email').textContent = _user.email;
+document.getElementById('pd-name').value = fullName;
+document.getElementById('pd-bio').value = bio;
+updateBioPreview(fullName, bio);
+
+document.getElementById('pd-bio').oninput = function() {
+var count = this.value.length;
+document.getElementById('pd-bio-count').textContent = count + ' / 100';
+updateBioPreview(document.getElementById('pd-name').value, this.value);
 };
-document.getElementById('pp-plan-badge').textContent = badges[tier] || '🔍';
-document.getElementById('pp-plan-name').textContent = names[tier] || tier;
-document.getElementById('pp-plan-desc').textContent = descs[tier] || '';
-var cta = document.getElementById('pp-upgrade-cta');
-if (tier === 'jigyasu') {
-cta.innerHTML = '<button onclick="closeProfilePanel();nav(\'upgrade\',getNav(\'upgrade\'));" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">Upgrade to Sadhaka →</button>';
-} else { cta.innerHTML = ''; }
+document.getElementById('pd-name').oninput = function() {
+updateBioPreview(this.value, document.getElementById('pd-bio').value);
+};
 
-// Progress
-if (_progressData && _progressData.progress) {
-var p = _progressData.progress;
-document.getElementById('pp-score').textContent = p.cumulative_score || 0;
-var BADGE_LABELS = { none: 'No badge yet', bronze: '🥉 Bronze', silver: '🥈 Silver', gold: '🥇 Gold' };
-document.getElementById('pp-badge-name').textContent = BADGE_LABELS[p.badge_level || 'none'];
-} else {
-document.getElementById('pp-score').textContent = '—';
-document.getElementById('pp-badge-name').textContent = 'Visit My Progress to load';
+// Load from Supabase if not cached
+if (!_userProfile) await fetchUserProfile();
+if (_userProfile) {
+document.getElementById('pd-name').value = _userProfile.display_name || fullName;
+document.getElementById('pd-bio').value = _userProfile.bio || '';
+var b = _userProfile.bio || '';
+document.getElementById('pd-bio-count').textContent = b.length + ' / 100';
+updateBioPreview(_userProfile.display_name || fullName, b);
+}
 }
 
-// Bookmarks
-loadBookmarks();
+function updateBioPreview(name, bio) {
+var preview = document.getElementById('pd-bio-preview');
+if (!preview) return;
+preview.textContent = bio ? (name || '') + ' | ' + bio : '';
+}
+
+async function fetchUserProfile() {
+try {
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/profile', { headers: { 'Authorization': 'Bearer ' + token } });
+var data = await res.json();
+if (data.profile) _userProfile = data.profile;
+} catch(e) {}
+}
+
+async function saveProfile() {
+var name = document.getElementById('pd-name').value.trim();
+var bio = document.getElementById('pd-bio').value.trim();
+var msgEl = document.getElementById('pd-save-msg');
+if (!name) { msgEl.textContent = 'Please enter a display name.'; msgEl.style.color='#8b0000'; msgEl.style.display='block'; return; }
+try {
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/profile', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ display_name: name, bio: bio })
+});
+var data = await res.json();
+if (data.error) { msgEl.textContent = '⚠ ' + data.error; msgEl.style.color='#8b0000'; msgEl.style.display='block'; return; }
+_userProfile = data.profile;
+document.getElementById('pd-greeting').textContent = 'Namaste, ' + name + ' 🙏';
+msgEl.textContent = 'Saved 🙏';
+msgEl.style.color = '#1a5c38';
+msgEl.style.display = 'block';
+setTimeout(function() { msgEl.style.display = 'none'; }, 3000);
+} catch(e) {
+msgEl.textContent = 'Could not save. Try again.';
+msgEl.style.color = '#8b0000';
+msgEl.style.display = 'block';
+}
 }
 
 async function sendPasswordReset() {
-var msgEl = document.getElementById('pp-reset-msg');
+var msgEl = document.getElementById('pd-reset-msg') || document.getElementById('pp-reset-msg');
 if (!_user || !_user.email) return;
 try {
 var res = await fetch('/api/auth', {
@@ -2868,9 +2955,7 @@ headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ action: 'resetpassword', email: _user.email })
 });
 var data = await res.json();
-msgEl.textContent = data.error
-? '⚠ ' + data.error
-: '✓ Reset link sent to ' + _user.email + '. Check your inbox 🙏';
+msgEl.textContent = data.error ? '⚠ ' + data.error : '✓ Reset link sent to ' + _user.email + ' 🙏';
 msgEl.style.display = 'block';
 } catch(e) {
 msgEl.textContent = 'Could not send reset email. Try again.';
@@ -2878,13 +2963,26 @@ msgEl.style.display = 'block';
 }
 }
 
-async function loadBookmarks() {
-var list = document.getElementById('pp-bookmarks-list');
-var empty = document.getElementById('pp-bookmarks-empty');
-var loading = document.getElementById('pp-bookmarks-loading');
-list.innerHTML = '';
-empty.style.display = 'none';
+// ── BOOKMARKS PAGE ────────────────────────────────────────────────
+async function initBookmarksPage() {
+if (!_user) { nav('home', null); return; }
+if (!isPremium()) {
+document.getElementById('bm-loading').style.display = 'none';
+document.getElementById('bm-list').innerHTML =
+'<div class="card" style="text-align:center;padding:24px">' +
+'<div style="font-size:32px;margin-bottom:12px">🔖</div>' +
+'<div class="card-title" style="text-align:center">Sadhaka Feature</div>' +
+'<div class="card-desc" style="text-align:center;margin-top:8px">Upgrade to save and revisit your favourite shlokas.</div>' +
+'<button onclick="nav(\'upgrade\',getNav(\'upgrade\'))" style="margin-top:16px;background:#7a2800;color:white;border:none;border-radius:8px;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Sadhaka →</button>' +
+'</div>';
+return;
+}
+var loading = document.getElementById('bm-loading');
+var empty = document.getElementById('bm-empty');
+var list = document.getElementById('bm-list');
 loading.style.display = 'block';
+empty.style.display = 'none';
+list.innerHTML = '';
 try {
 var token = _session ? _session.access_token : '';
 var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
@@ -2893,12 +2991,12 @@ loading.style.display = 'none';
 if (!data.bookmarks || data.bookmarks.length === 0) { empty.style.display = 'block'; return; }
 data.bookmarks.forEach(function(b) {
 var card = document.createElement('div');
-card.className = 'pp-saved-card';
+card.className = 'bm-card card';
 card.innerHTML =
-'<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:15px;color:#4a1000;line-height:1.9;margin-bottom:4px">' + b.sanskrit + '</div>' +
-'<div style="font-family:\'EB Garamond\',serif;font-style:italic;font-size:12px;color:#9a6800;margin-bottom:6px">' + b.source + '</div>' +
-'<div style="font-size:12px;color:#3a2a18;line-height:1.6">' + (b.meaning || '') + '</div>' +
-'<button onclick="removeBookmark(\'' + b.id + '\',this)" style="margin-top:8px;background:none;border:none;font-size:11px;color:#c0392b;cursor:pointer;padding:0">✕ Remove</button>';
+'<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:17px;color:#4a1000;line-height:2;margin-bottom:6px">' + b.sanskrit + '</div>' +
+'<div style="font-family:\'EB Garamond\',serif;font-style:italic;font-size:13px;color:#9a6800;margin-bottom:8px">' + b.source + '</div>' +
+'<div style="font-size:13px;color:#3a2a18;line-height:1.7;margin-bottom:10px">' + (b.meaning || '') + '</div>' +
+'<button onclick="removeBookmarkAndRefresh(\'' + b.id + '\')" style="background:none;border:none;font-size:12px;color:#c0392b;cursor:pointer;padding:0">✕ Remove</button>';
 list.appendChild(card);
 });
 } catch(e) {
@@ -2907,7 +3005,7 @@ empty.style.display = 'block';
 }
 }
 
-async function removeBookmark(id, btn) {
+async function removeBookmarkAndRefresh(id) {
 var token = _session ? _session.access_token : '';
 try {
 await fetch('/api/bookmarks', {
@@ -2915,29 +3013,36 @@ method: 'POST',
 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
 body: JSON.stringify({ action: 'remove', id: id })
 });
-loadBookmarks();
+initBookmarksPage();
 } catch(e) {}
 }
 
-// ── BOOKMARK — SHLOKA OF THE DAY ───────────────────────────────────
+async function removeBookmark(id) {
+var token = _session ? _session.access_token : '';
+try {
+await fetch('/api/bookmarks', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ action: 'remove', id: id })
+});
+} catch(e) {}
+}
+
+// ── BOOKMARK — SHLOKA OF THE DAY ──────────────────────────────────
 var _sotdBookmarked = false;
 
 async function toggleBookmarkSOTD() {
 if (!_user) { openAuth('signin'); return; }
-if (!isPremium()) {
-alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏');
-return;
-}
+if (!isPremium()) { alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏'); return; }
 var s = window._shloka;
 if (!s) return;
 var token = _session ? _session.access_token : '';
 if (_sotdBookmarked) {
-// find and remove by source
 try {
 var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
 var data = await res.json();
 var match = (data.bookmarks || []).find(function(b) { return b.source === s.source && b.sanskrit === s.text; });
-if (match) await removeBookmark(match.id, null);
+if (match) { await removeBookmark(match.id); }
 _sotdBookmarked = false;
 updateSOTDBookmarkIcon(false);
 } catch(e) {}
@@ -2957,24 +3062,16 @@ updateSOTDBookmarkIcon(true);
 function updateSOTDBookmarkIcon(saved) {
 var icon = document.getElementById('sotd-bk-icon');
 if (!icon) return;
-if (saved) {
-icon.setAttribute('fill', '#7a2800');
-icon.setAttribute('stroke', '#7a2800');
-} else {
-icon.setAttribute('fill', 'none');
-icon.setAttribute('stroke', 'currentColor');
-}
+icon.setAttribute('fill', saved ? '#7a2800' : 'none');
+icon.setAttribute('stroke', saved ? '#7a2800' : 'currentColor');
 }
 
-// ── BOOKMARK — SHLOKA CARDS ────────────────────────────────────────
+// ── BOOKMARK — SHLOKA CARDS ───────────────────────────────────────
 var _scBookmarked = false;
 
 async function toggleBookmarkSC() {
 if (!_user) { openAuth('signin'); return; }
-if (!isPremium()) {
-alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏');
-return;
-}
+if (!isPremium()) { alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏'); return; }
 var card = _scCards[_scIdx];
 if (!card) return;
 var token = _session ? _session.access_token : '';
@@ -2983,7 +3080,7 @@ try {
 var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
 var data = await res.json();
 var match = (data.bookmarks || []).find(function(b) { return b.sanskrit === card.sanskrit; });
-if (match) await removeBookmark(match.id, null);
+if (match) { await removeBookmark(match.id); }
 _scBookmarked = false;
 updateSCBookmarkIcon(false);
 } catch(e) {}
@@ -3003,15 +3100,10 @@ updateSCBookmarkIcon(true);
 function updateSCBookmarkIcon(saved) {
 var icon = document.getElementById('sc-bk-icon');
 if (!icon) return;
-if (saved) {
-icon.setAttribute('fill', '#7a2800');
-icon.setAttribute('stroke', '#7a2800');
-} else {
-icon.setAttribute('fill', 'none');
-icon.setAttribute('stroke', 'currentColor');
+icon.setAttribute('fill', saved ? '#7a2800' : 'none');
+icon.setAttribute('stroke', saved ? '#7a2800' : 'currentColor');
 }
-}
-// ── END PROFILE PANEL & BOOKMARKS ──────────────────────────────────
+// ── END PROFILE PANEL & BOOKMARKS ────────────────────────────────
 
 // ── SHLOKA AUDIO ───────────────────────────────────────────────────
 var _shlokaAudio = null;
@@ -3105,7 +3197,7 @@ var label = document.getElementById('shloka-play-label');
 if (!icon || !label) return;
 if (playing) {
 icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
-label.textContent = 'Pause';
+label.textContent = 'Stop';
 } else {
 icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
 label.textContent = 'Listen';
