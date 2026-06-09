@@ -30,11 +30,18 @@ try {
 // GET reflections
 if (req.method === 'GET') {
 const r = await fetch(
-SUPABASE_URL + '/rest/v1/reflections?select=*&order=created_at.desc&limit=50',
+SUPABASE_URL + '/rest/v1/reflections?select=*,profiles(display_name,bio)&order=created_at.desc&limit=50',
 { headers }
 )
+
 const data = await r.json()
-return res.status(200).json({ reflections: Array.isArray(data) ? data : [] })
+const mapped = (Array.isArray(data) ? data : []).map(function(row) {
+return Object.assign({}, row, {
+user_name: (row.profiles && row.profiles.display_name) || row.user_name,
+user_bio: (row.profiles && row.profiles.bio) || ''
+});
+});
+return res.status(200).json({ reflections: mapped })
 }
 
 if (req.method === 'POST') {
