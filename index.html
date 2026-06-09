@@ -2800,9 +2800,24 @@ function stopShlokaAudio() {
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
 if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; }
-if (_ambientAudio) { _ambientAudio.pause(); _ambientAudio.currentTime = 0; }
 _audioPlaying = false;
 updateAudioBtn(false);
+// Fade out ambient over 1.5 seconds
+if (_ambientAudio && !_ambientAudio.paused) {
+var fadeAudio = _ambientAudio;
+var fadeStep = fadeAudio.volume / 15;
+var fade = setInterval(function() {
+if (fadeAudio.volume > fadeStep) {
+fadeAudio.volume = Math.max(0, fadeAudio.volume - fadeStep);
+} else {
+fadeAudio.volume = 0;
+fadeAudio.pause();
+fadeAudio.currentTime = 0;
+fadeAudio.volume = 0.20;
+clearInterval(fade);
+}
+}, 100);
+}
 }
 
 function updateAudioBtn(playing) {
