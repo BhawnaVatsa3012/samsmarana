@@ -2743,12 +2743,12 @@ setTimeout(function() { overlay.remove(); }, 4000);
 var _shlokaAudio = null;
 var _ambientAudio = null;
 var _audioPlaying = false;
+var _voiceDelay = null;
+var _outroTimeout = null;
 
-// Map shlokas array index (0-based) → mp3 file number (1-based)
-// Matches the order in the shlokas[] array
 function getShlokaAudioFile() {
 var day = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
-var idx = day % shlokas.length; // same logic as init()
+var idx = day % shlokas.length;
 return '/audio/shloka-' + (idx + 1) + '.mp3';
 }
 
@@ -2763,31 +2763,42 @@ playShlokaAudio();
 function playShlokaAudio() {
 var src = getShlokaAudioFile();
 
-// Ambient layer — start at low volume, fail silently if absent
+// Clear any pending timers
+if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
+if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
+
+// Ambient starts immediately
 if (!_ambientAudio) {
 _ambientAudio = new Audio('/audio/ambient.mp3');
 _ambientAudio.loop = true;
 _ambientAudio.volume = 0.20;
 }
-  _ambientAudio.currentTime=20;
-  _ambientAudio.play().catch(function(){});
+_ambientAudio.currentTime = 0;
+_ambientAudio.play().catch(function(){});
 
-// Voice layer
+// Voice starts after 5 second intro
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio = null; }
 _shlokaAudio = new Audio(src);
 _shlokaAudio.volume = 1.0;
+
+_voiceDelay = setTimeout(function() {
 _shlokaAudio.play().catch(function(e) {
 console.warn('Audio play failed:', e);
 stopShlokaAudio();
-return;
 });
-_shlokaAudio.addEventListener('ended', stopShlokaAudio);
+_shlokaAudio.addEventListener('ended', function() {
+// Ambient plays for 5 more seconds after voice ends
+_outroTimeout = setTimeout(stopShlokaAudio, 5000);
+});
+}, 5000);
 
 _audioPlaying = true;
 updateAudioBtn(true);
 }
 
 function stopShlokaAudio() {
+if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
+if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; }
 if (_ambientAudio) { _ambientAudio.pause(); _ambientAudio.currentTime = 0; }
 _audioPlaying = false;
@@ -2807,6 +2818,7 @@ label.textContent = 'Listen';
 }
 }
 // ── END SHLOKA AUDIO ───────────────────────────────────────────────
+
 
 // ── INSTALL BANNER ────────────────────────────────────────────────
 var _installPrompt = null;
