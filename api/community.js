@@ -30,18 +30,38 @@ try {
 // GET reflections
 if (req.method === 'GET') {
 const r = await fetch(
-SUPABASE_URL + '/rest/v1/reflections?select=*,profiles(display_name,bio)&order=created_at.desc&limit=50',
+SUPABASE_URL + '/rest/v1/reflections?select=*&order=created_at.desc&limit=50',
 { headers }
 )
 
 const data = await r.json()
-const mapped = (Array.isArray(data) ? data : []).map(function(row) {
+const reflections = Array.isArray(data) ? data : [];
+
+// Fetch profiles for all user_ids in one call
+const userIds = [...new Set(reflections.map(function(r) { return r.user_id; }))];
+let profileMap = {};
+if (userIds.length > 0) {
+try {
+const pRes = await fetch(
+SUPABASE_URL + '/rest/v1/profiles?select=id,display_name,bio&id=in.(' + userIds.join(',') + ')',
+{ headers }
+);
+const profiles = await pRes.json();
+if (Array.isArray(profiles)) {
+profiles.forEach(function(p) { profileMap[p.id] = p; });
+}
+} catch(e) {}
+}
+
+const mapped = reflections.map(function(row) {
+const p = profileMap[row.user_id];
 return Object.assign({}, row, {
-user_name: (row.profiles && row.profiles.display_name) || row.user_name,
-user_bio: (row.profiles && row.profiles.bio) || ''
+user_name: (p && p.display_name) || row.user_name,
+user_bio: (p && p.bio) || ''
 });
 });
 return res.status(200).json({ reflections: mapped })
+
 }
 
 if (req.method === 'POST') {
