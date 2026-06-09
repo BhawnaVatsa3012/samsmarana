@@ -74,9 +74,18 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .shloka-source{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--gold);text-align:center;margin-bottom:14px}
 .shloka-meaning{font-family:'EB Garamond',serif;font-size:16px;color:#1a0f00;line-height:1.8;border-top:1px solid #e0c9a8;padding-top:14px;margin-bottom:10px;font-weight:500}
 .shloka-life{background:#faebd7;border-radius:6px;padding:12px 14px;font-size:13px;color:#2a1a08;line-height:1.7;font-style:italic;font-family:'EB Garamond',serif;border:1px solid #e0c8a0}
-.audio-btn{display:inline-flex;align-items:center;gap:7px;background:#faebd7;border:1.5px solid #c8a870;border-radius:20px;padding:7px 16px;font-size:13px;color:#7a2800;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;margin-top:14px;transition:background .15s}
+audio-btn{display:inline-flex;align-items:center;gap:7px;background:#faebd7;border:1.5px solid #c8a870;border-radius:20px;padding:7px 16px;font-size:13px;color:#7a2800;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;margin-top:14px;transition:background .15s}
 .audio-btn:hover{background:#f0d0b0}
 .audio-btn svg{width:16px;height:16px;flex-shrink:0}
+.bk-btn{background:none;border:none;cursor:pointer;padding:6px;color:#c8a870;transition:color .15s;flex-shrink:0}
+.bk-btn:hover{color:#7a2800}
+.bk-btn svg{width:20px;height:20px;display:block}
+#profile-panel{position:fixed;top:0;left:0;right:0;z-index:60;background:#fff;border-bottom:1px solid #e0c9a8;box-shadow:0 4px 24px rgba(0,0,0,.12);transform:translateY(-100%);transition:transform .3s ease;max-height:90vh;overflow-y:auto}
+#profile-panel.open{transform:translateY(0)}
+.pp-section{padding:16px 20px;border-bottom:1px solid #f0e4d0}
+.pp-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#9a7850;font-weight:700;margin-bottom:10px}
+.pp-saved-card{background:#fdf8f2;border:1px solid #e0c9a8;border-radius:8px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.pp-saved-card:hover{border-color:#7a2800}
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
 .quick-card{background:#ffffff;border:1.5px solid #e0c9a8;border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
 .quick-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(139,69,19,.08);transform:translateY(-1px)}
@@ -132,6 +141,55 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 </style>
 </head>
 <body>
+<!-- PROFILE PANEL -->
+<div id="profile-panel">
+<div id="profile-panel-overlay" onclick="closeProfilePanel()" style="display:none;position:fixed;inset:0;z-index:59;background:rgba(0,0,0,0.4)"></div>
+<!-- Header -->
+<div style="background:#7a3010;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+<div style="font-family:'EB Garamond',serif;font-size:18px;color:#fff;font-weight:600">My Profile</div>
+<button onclick="closeProfilePanel()" style="background:none;border:none;color:#fdf0e0;font-size:24px;cursor:pointer;line-height:1">×</button>
+</div>
+<!-- User Info -->
+<div class="pp-section">
+<div class="pp-label">Account</div>
+<div id="pp-name" style="font-family:'EB Garamond',serif;font-size:18px;font-weight:600;color:#1a0f00;margin-bottom:4px"></div>
+<div id="pp-email" style="font-size:13px;color:#5a4020;margin-bottom:10px"></div>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+<span style="font-size:13px;color:#5a4020">Password:</span>
+<span style="font-size:15px;letter-spacing:3px;color:#3a2a18">••••••••</span>
+<span onclick="sendPasswordReset()" style="font-size:12px;color:#7a2800;cursor:pointer;text-decoration:underline;font-family:'EB Garamond',serif;font-style:italic">Forgot / Change</span>
+</div>
+<div id="pp-reset-msg" style="display:none;font-size:12px;color:#1a5c38;padding:8px 12px;background:#f2faf6;border-radius:6px;margin-bottom:8px"></div>
+<button onclick="authSignOut();closeProfilePanel();" style="background:none;border:1px solid #c8b090;border-radius:6px;padding:6px 16px;font-size:12px;color:#5a4020;cursor:pointer;font-family:'DM Sans',sans-serif">Sign Out</button>
+</div>
+<!-- My Plan -->
+<div class="pp-section">
+<div class="pp-label">My Plan</div>
+<div id="pp-plan-badge" style="font-size:32px;margin-bottom:6px"></div>
+<div id="pp-plan-name" style="font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-bottom:4px"></div>
+<div id="pp-plan-desc" style="font-size:12px;color:#5a4020;margin-bottom:12px;line-height:1.7"></div>
+<div id="pp-upgrade-cta"></div>
+</div>
+<!-- My Progress -->
+<div class="pp-section" onclick="closeProfilePanel();nav('progress',getNav('progress'));" style="cursor:pointer">
+<div class="pp-label">My Progress</div>
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div>
+<div id="pp-score" style="font-family:'EB Garamond',serif;font-size:32px;font-weight:600;color:#7a2800"></div>
+<div id="pp-badge-name" style="font-size:12px;color:#5a4020;margin-top:2px"></div>
+</div>
+<div style="font-size:22px;color:#e0c9a8">›</div>
+</div>
+</div>
+<!-- My Saved Shlokas -->
+<div class="pp-section">
+<div class="pp-label">My Saved Shlokas</div>
+<div id="pp-bookmarks-list"></div>
+<div id="pp-bookmarks-empty" style="display:none;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#9a7850;text-align:center;padding:12px 0">No saved shlokas yet 🙏</div>
+<div id="pp-bookmarks-loading" style="font-size:12px;color:#9a7850;text-align:center;padding:12px 0">Loading...</div>
+</div>
+</div>
+
 <!-- AUTH OVERLAY -->
 <div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
   <div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)">
@@ -246,10 +304,15 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
     <div class="shloka-source serif" id="shloka-source"></div>
     <div class="shloka-meaning" id="shloka-meaning"></div>
    <div class="shloka-life" id="shloka-life"></div>
-<button class="audio-btn" id="shloka-play-btn" onclick="toggleShlokaAudio()">
+<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+<button class="audio-btn" id="shloka-play-btn" onclick="toggleShlokaAudio()" style="margin-top:0">
 <svg id="shloka-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
 <span id="shloka-play-label">Listen</span>
 </button>
+<button class="bk-btn" id="sotd-bk-btn" onclick="toggleBookmarkSOTD()" title="Save shloka">
+<svg id="sotd-bk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+</button>
+</div>
 </div>
 <div class="divider">· · ·</div>
   <!-- DAILY QUIZ -->
@@ -620,13 +683,18 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <button onclick="scNav(1)" style="flex:1;background:#7a2800;border:none;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600">Next →</button>
 </div>
 
+<!-- Bookmark + Share row -->
+<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+<button class="bk-btn" id="sc-bk-btn" onclick="toggleBookmarkSC()" title="Save shloka" style="background:#fdf8f2;border:1.5px solid #c8b090;border-radius:10px;padding:13px;flex-shrink:0">
+<svg id="sc-bk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+</button>
 <!-- Share on WhatsApp -->
-<button onclick="shareWhatsApp()" id="share-btn" style="width:100%;background:#25D366;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;box-shadow:0 2px 8px rgba(37,211,102,.25)">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+<button onclick="shareWhatsApp()" id="share-btn"<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 Share Shloka Card
 </button>
-
+</div>
 <!-- Copy text -->
+<button onclick="copyCard()" id="copy-btn"
 <button onclick="copyCard()" id="copy-btn" style="width:100%;background:#ffffff;border:1.5px solid #c8b090;border-radius:10px;padding:13px;font-size:14px;cursor:pointer;color:#5a4020;font-family:'DM Sans',sans-serif;font-weight:500">
 📋 Copy Card Text
 </button>
@@ -1537,7 +1605,7 @@ function updateUserUI(){
     var pill=document.createElement('div');
     pill.id='user-pill';
     pill.style.cssText='display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer';
-    pill.onclick=function(){openAuth('profile');};
+    pill.onclick=function(){openProfilePanel();};
     var tier=getTier();
     var tierBadge=tier==='vidvan'?'<span style="background:#c0a000;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">V</span>':tier==='sadhaka'?'<span style="background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">S</span>':'<span style="background:#5a7a50;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">J</span>';
     pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div><span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+tierBadge;topbar.appendChild(pill);
@@ -2739,6 +2807,212 @@ setTimeout(function() { overlay.remove(); }, 4000);
 // ── END PROGRESS PAGE ────────────────────────────────
 
 
+// ── PROFILE PANEL ─────────────────────────────────────────────────
+function openProfilePanel() {
+if (!_user) { openAuth('signin'); return; }
+populateProfilePanel();
+document.getElementById('profile-panel').classList.add('open');
+document.getElementById('profile-panel-overlay').style.display = 'block';
+}
+
+function closeProfilePanel() {
+document.getElementById('profile-panel').classList.remove('open');
+document.getElementById('profile-panel-overlay').style.display = 'none';
+}
+
+function populateProfilePanel() {
+var meta = _user.user_metadata || {};
+var fullName = meta.full_name || meta.name || _user.email.split('@')[0];
+document.getElementById('pp-name').textContent = fullName;
+document.getElementById('pp-email').textContent = _user.email;
+
+// Plan
+var tier = getTier();
+var badges = { jigyasu: '🔍', sadhaka: '✨', vidvan: '📖' };
+var names = { jigyasu: 'जिज्ञासु — Jigyasu', sadhaka: 'साधक — Sadhaka', vidvan: 'विद्वान् — Vidvan' };
+var descs = {
+jigyasu: '5 questions/day · 1 card share/day · Basic access',
+sadhaka: '15 questions/day · Community access · Unlimited shares · Audio & Bookmarks',
+vidvan: 'All features · Deep content · Priority support'
+};
+document.getElementById('pp-plan-badge').textContent = badges[tier] || '🔍';
+document.getElementById('pp-plan-name').textContent = names[tier] || tier;
+document.getElementById('pp-plan-desc').textContent = descs[tier] || '';
+var cta = document.getElementById('pp-upgrade-cta');
+if (tier === 'jigyasu') {
+cta.innerHTML = '<button onclick="closeProfilePanel();nav(\'upgrade\',getNav(\'upgrade\'));" style="background:#7a2800;color:white;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">Upgrade to Sadhaka →</button>';
+} else { cta.innerHTML = ''; }
+
+// Progress
+if (_progressData && _progressData.progress) {
+var p = _progressData.progress;
+document.getElementById('pp-score').textContent = p.cumulative_score || 0;
+var BADGE_LABELS = { none: 'No badge yet', bronze: '🥉 Bronze', silver: '🥈 Silver', gold: '🥇 Gold' };
+document.getElementById('pp-badge-name').textContent = BADGE_LABELS[p.badge_level || 'none'];
+} else {
+document.getElementById('pp-score').textContent = '—';
+document.getElementById('pp-badge-name').textContent = 'Visit My Progress to load';
+}
+
+// Bookmarks
+loadBookmarks();
+}
+
+async function sendPasswordReset() {
+var msgEl = document.getElementById('pp-reset-msg');
+if (!_user || !_user.email) return;
+try {
+var res = await fetch('/api/auth', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ action: 'resetpassword', email: _user.email })
+});
+var data = await res.json();
+msgEl.textContent = data.error
+? '⚠ ' + data.error
+: '✓ Reset link sent to ' + _user.email + '. Check your inbox 🙏';
+msgEl.style.display = 'block';
+} catch(e) {
+msgEl.textContent = 'Could not send reset email. Try again.';
+msgEl.style.display = 'block';
+}
+}
+
+async function loadBookmarks() {
+var list = document.getElementById('pp-bookmarks-list');
+var empty = document.getElementById('pp-bookmarks-empty');
+var loading = document.getElementById('pp-bookmarks-loading');
+list.innerHTML = '';
+empty.style.display = 'none';
+loading.style.display = 'block';
+try {
+var token = _session ? _session.access_token : '';
+var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
+var data = await res.json();
+loading.style.display = 'none';
+if (!data.bookmarks || data.bookmarks.length === 0) { empty.style.display = 'block'; return; }
+data.bookmarks.forEach(function(b) {
+var card = document.createElement('div');
+card.className = 'pp-saved-card';
+card.innerHTML =
+'<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:15px;color:#4a1000;line-height:1.9;margin-bottom:4px">' + b.sanskrit + '</div>' +
+'<div style="font-family:\'EB Garamond\',serif;font-style:italic;font-size:12px;color:#9a6800;margin-bottom:6px">' + b.source + '</div>' +
+'<div style="font-size:12px;color:#3a2a18;line-height:1.6">' + (b.meaning || '') + '</div>' +
+'<button onclick="removeBookmark(\'' + b.id + '\',this)" style="margin-top:8px;background:none;border:none;font-size:11px;color:#c0392b;cursor:pointer;padding:0">✕ Remove</button>';
+list.appendChild(card);
+});
+} catch(e) {
+loading.style.display = 'none';
+empty.style.display = 'block';
+}
+}
+
+async function removeBookmark(id, btn) {
+var token = _session ? _session.access_token : '';
+try {
+await fetch('/api/bookmarks', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ action: 'remove', id: id })
+});
+loadBookmarks();
+} catch(e) {}
+}
+
+// ── BOOKMARK — SHLOKA OF THE DAY ───────────────────────────────────
+var _sotdBookmarked = false;
+
+async function toggleBookmarkSOTD() {
+if (!_user) { openAuth('signin'); return; }
+if (!isPremium()) {
+alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏');
+return;
+}
+var s = window._shloka;
+if (!s) return;
+var token = _session ? _session.access_token : '';
+if (_sotdBookmarked) {
+// find and remove by source
+try {
+var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
+var data = await res.json();
+var match = (data.bookmarks || []).find(function(b) { return b.source === s.source && b.sanskrit === s.text; });
+if (match) await removeBookmark(match.id, null);
+_sotdBookmarked = false;
+updateSOTDBookmarkIcon(false);
+} catch(e) {}
+} else {
+try {
+await fetch('/api/bookmarks', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ action: 'add', source: s.source, sanskrit: s.text, meaning: s.meaning })
+});
+_sotdBookmarked = true;
+updateSOTDBookmarkIcon(true);
+} catch(e) {}
+}
+}
+
+function updateSOTDBookmarkIcon(saved) {
+var icon = document.getElementById('sotd-bk-icon');
+if (!icon) return;
+if (saved) {
+icon.setAttribute('fill', '#7a2800');
+icon.setAttribute('stroke', '#7a2800');
+} else {
+icon.setAttribute('fill', 'none');
+icon.setAttribute('stroke', 'currentColor');
+}
+}
+
+// ── BOOKMARK — SHLOKA CARDS ────────────────────────────────────────
+var _scBookmarked = false;
+
+async function toggleBookmarkSC() {
+if (!_user) { openAuth('signin'); return; }
+if (!isPremium()) {
+alert('Save shlokas is a Sadhaka feature. Upgrade to unlock 🙏');
+return;
+}
+var card = _scCards[_scIdx];
+if (!card) return;
+var token = _session ? _session.access_token : '';
+if (_scBookmarked) {
+try {
+var res = await fetch('/api/bookmarks', { headers: { 'Authorization': 'Bearer ' + token } });
+var data = await res.json();
+var match = (data.bookmarks || []).find(function(b) { return b.sanskrit === card.sanskrit; });
+if (match) await removeBookmark(match.id, null);
+_scBookmarked = false;
+updateSCBookmarkIcon(false);
+} catch(e) {}
+} else {
+try {
+await fetch('/api/bookmarks', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ action: 'add', source: card.source || '', sanskrit: card.sanskrit, meaning: card.english })
+});
+_scBookmarked = true;
+updateSCBookmarkIcon(true);
+} catch(e) {}
+}
+}
+
+function updateSCBookmarkIcon(saved) {
+var icon = document.getElementById('sc-bk-icon');
+if (!icon) return;
+if (saved) {
+icon.setAttribute('fill', '#7a2800');
+icon.setAttribute('stroke', '#7a2800');
+} else {
+icon.setAttribute('fill', 'none');
+icon.setAttribute('stroke', 'currentColor');
+}
+}
+// ── END PROFILE PANEL & BOOKMARKS ──────────────────────────────────
+
 // ── SHLOKA AUDIO ───────────────────────────────────────────────────
 var _shlokaAudio = null;
 var _ambientAudio = null;
@@ -2753,6 +3027,11 @@ return '/audio/shloka-' + (idx + 1) + '.mp3';
 }
 
 function toggleShlokaAudio() {
+if (!_user) { openAuth('signin'); return; }
+if (!isPremium()) {
+alert('Audio is a Sadhaka feature. Upgrade to unlock 🙏');
+return;
+}
 if (_audioPlaying) {
 stopShlokaAudio();
 } else {
