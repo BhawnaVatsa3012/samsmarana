@@ -2769,7 +2769,8 @@ _ambientAudio = new Audio('/audio/ambient.mp3');
 _ambientAudio.loop = true;
 _ambientAudio.volume = 0.20;
 }
-_ambientAudio.play().catch(function(){});
+  _ambientAudio.currentTime=10;
+  _ambientAudio.play().catch(function(){});
 
 // Voice layer
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio = null; }
