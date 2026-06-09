@@ -68,7 +68,16 @@ export default async function handler(req, res) {
       return res.json({ user: data.user, session: data })
     }
 
-    if (action === 'signout') {
+    if (action === 'resetpassword') {
+const { email } = req.body;
+const { error } = await supabase.auth.resetPasswordForEmail(email, {
+redirectTo: 'https://samsmarana.vercel.app'
+});
+if (error) return res.status(400).json({ error: error.message });
+return res.json({ success: true });
+}
+
+if (action === 'signout') {
       await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${body.token}`, 'apikey': SUPABASE_KEY }
