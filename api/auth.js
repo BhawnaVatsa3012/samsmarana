@@ -77,6 +77,15 @@ if (error) return res.status(400).json({ error: error.message });
 return res.json({ success: true });
 }
 
+if (action === 'resetpassword') {
+const { email } = req.body;
+const { error } = await supabase.auth.resetPasswordForEmail(email, {
+redirectTo: 'https://samsmarana.vercel.app'
+});
+if (error) return res.status(400).json({ error: error.message });
+return res.json({ success: true });
+}
+
 if (action === 'signout') {
       await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
         method: 'POST',
