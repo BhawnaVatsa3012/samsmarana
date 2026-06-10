@@ -3137,40 +3137,53 @@ if (_ambientAudio) { _ambientAudio.pause(); _ambientAudio = null; }
 
 _ambientAudio = new Audio('/audio/ambient.mp3');
 _ambientAudio.loop = true;
-_ambientAudio.volume = 0.20;
+_ambientAudio.volume = 0.35;
 
 _shlokaAudio = new Audio(src);
 _shlokaAudio.volume = 1.0;
+_shlokaAudio.preload = 'auto';
 
-// iOS unlock: play+pause both within the user gesture to unlock deferred play
-_ambientAudio.play().then(function() {
-_ambientAudio.currentTime = 0;
-}).catch(function(){});
+var _voiceStarted = false;
 
-_shlokaAudio.play().then(function() {
-_shlokaAudio.pause();
-_shlokaAudio.currentTime = 0;
-}).catch(function(){});
-
-// Now set state and show Stop button immediately
-_audioPlaying = true;
-updateAudioBtn(true);
-
-// Ambient plays right away (already started above)
-_ambientAudio.currentTime = 0;
-
-// Voice starts after 5s intro
-_voiceDelay = setTimeout(function() {
-if (!_audioPlaying) return;
+// Use timeupdate to trigger voice after 5s — stays in audio event chain (iOS safe)
+_ambientAudio.addEventListener('timeupdate', function() {
+if (!_voiceStarted && _ambientAudio.currentTime >= 5) {
+_voiceStarted = true;
 _shlokaAudio.play().catch(function(e) {
-console.warn('Audio play failed:', e);
+console.warn('Voice play failed:', e);
 stopShlokaAudio();
 });
+}
+});
+
 _shlokaAudio.addEventListener('ended', function() {
 _outroTimeout = setTimeout(stopShlokaAudio, 5000);
 });
-}, 5000);
+
+// Both started within the direct user gesture
+var ambientPromise = _ambientAudio.play();
+var voicePromise = _shlokaAudio.play();
+
+if (ambientPromise !== undefined) {
+ambientPromise.catch(function(e) {
+console.warn('Ambient play failed:', e);
+stopShlokaAudio();
+return;
+});
 }
+
+// Immediately pause voice — it was just unlocked, not meant to play yet
+if (voicePromise !== undefined) {
+voicePromise.then(function() {
+_shlokaAudio.pause();
+_shlokaAudio.currentTime = 0;
+}).catch(function(){});
+}
+
+_audioPlaying = true;
+updateAudioBtn(true);
+}
+
 
 
 function stopShlokaAudio() {
