@@ -3131,34 +3131,47 @@ var src = getShlokaAudioFile();
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
 if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
 
-// Ambient starts immediately
-if (!_ambientAudio) {
+// Create audio objects fresh each time
+if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio = null; }
+if (_ambientAudio) { _ambientAudio.pause(); _ambientAudio = null; }
+
 _ambientAudio = new Audio('/audio/ambient.mp3');
 _ambientAudio.loop = true;
 _ambientAudio.volume = 0.20;
-}
-_ambientAudio.currentTime = 0;
-_ambientAudio.play().catch(function(){});
 
-// Voice starts after 5 second intro
-if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio = null; }
 _shlokaAudio = new Audio(src);
 _shlokaAudio.volume = 1.0;
 
+// iOS unlock: play+pause both within the user gesture to unlock deferred play
+_ambientAudio.play().then(function() {
+_ambientAudio.currentTime = 0;
+}).catch(function(){});
+
+_shlokaAudio.play().then(function() {
+_shlokaAudio.pause();
+_shlokaAudio.currentTime = 0;
+}).catch(function(){});
+
+// Now set state and show Stop button immediately
+_audioPlaying = true;
+updateAudioBtn(true);
+
+// Ambient plays right away (already started above)
+_ambientAudio.currentTime = 0;
+
+// Voice starts after 5s intro
 _voiceDelay = setTimeout(function() {
+if (!_audioPlaying) return;
 _shlokaAudio.play().catch(function(e) {
 console.warn('Audio play failed:', e);
 stopShlokaAudio();
 });
 _shlokaAudio.addEventListener('ended', function() {
-// Ambient plays for 5 more seconds after voice ends
 _outroTimeout = setTimeout(stopShlokaAudio, 5000);
 });
 }, 5000);
-
-_audioPlaying = true;
-updateAudioBtn(true);
 }
+
 
 function stopShlokaAudio() {
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
