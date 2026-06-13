@@ -1574,7 +1574,7 @@ async function authSignIn(){
     if(data.error){showAuthError('signin',data.error);return;}
        _user=data.user;_session=data.session;
     try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
-    closeAuth();updateUserUI();initDailyQuiz();
+    closeAuth();updateUserUI();initDailyQuiz();fetchUserProfile();
     if(document.getElementById('page-progress').classList.contains('active'))initProgressPage();
 
   }catch(e){showAuthError('signin','Connection error. Try again.');}
@@ -1700,7 +1700,7 @@ function loadSession(){
             _user=data.user;
             _session={access_token:accessToken,refresh_token:refreshToken};
             try{localStorage.setItem('samsmarana_session',JSON.stringify({user:data.user,session:{access_token:accessToken,refresh_token:refreshToken}}));}catch(e){}
-            updateUserUI();
+            updateUserUI(); fetchUserProfile();
             var urlParams=new URLSearchParams(window.location.search);
             var returnPage=urlParams.get('return');
             if(returnPage&&returnPage!=='home'){
