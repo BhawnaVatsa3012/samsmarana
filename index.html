@@ -3406,10 +3406,9 @@ updateAudioBtn(true);
 function stopShlokaAudio() {
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
 if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
-if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; }
+if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; _shlokaAudio = null; }
 _audioPlaying = false;
 updateAudioBtn(false);
-// Fade out ambient over 1.5 seconds
 if (_ambientAudio) {
 var fadeAudio = _ambientAudio;
 _ambientAudio = null;
