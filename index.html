@@ -3193,22 +3193,14 @@ if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; }
 _audioPlaying = false;
 updateAudioBtn(false);
 // Fade out ambient over 1.5 seconds
-if (_ambientAudio && !_ambientAudio.paused) {
+if (_ambientAudio) {
 var fadeAudio = _ambientAudio;
-var fadeStep = fadeAudio.volume / 15;
-var fade = setInterval(function() {
-if (fadeAudio.volume > fadeStep) {
-fadeAudio.volume = Math.max(0, fadeAudio.volume - fadeStep);
-} else {
-fadeAudio.volume = 0;
+_ambientAudio = null;
 fadeAudio.pause();
 fadeAudio.currentTime = 0;
-fadeAudio.volume = 0.20;
-clearInterval(fade);
-}
-}, 100);
 }
 }
+
 
 function updateAudioBtn(playing) {
 var icon = document.getElementById('shloka-play-icon');
