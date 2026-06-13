@@ -1576,7 +1576,6 @@ async function authSignIn(){
     try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
     closeAuth();updateUserUI();initDailyQuiz();fetchUserProfile();
     if(document.getElementById('page-progress').classList.contains('active'))initProgressPage();
-
   }catch(e){showAuthError('signin','Connection error. Try again.');}
 }
 
