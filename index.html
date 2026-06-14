@@ -1512,10 +1512,11 @@ async function sendMsg(){
   document.getElementById('send-btn').disabled=true;
   const t=document.createElement('div');t.className='msg typing';t.textContent='Guru Ji is reflecting...';
   document.getElementById('chat-box').appendChild(t);scrollChat();
-  chatHistory.push({role:'user',parts:[{text}]});
 if (_user && !_userProfile) { await fetchUserProfile(); }
   var _guruName = (_userProfile && _userProfile.display_name) || ((_user && _user.user_metadata) ? (_user.user_metadata.full_name || _user.user_metadata.name || '') : '');
-var _guroBio = (_userProfile && _userProfile.bio) ? 'Their bio: ' + _userProfile.bio + '.' : '';
+var _guroBio = (_userProfile && _userProfile.bio) ? ' My bio: ' + _userProfile.bio + '.' : '';
+var _enrichedText = (chatHistory.length === 0 && _guruName) ? '[My name is ' + _guruName + '.' + _guroBio + '] ' + text : text;
+  chatHistory.push({role:'user',parts:[{text: _enrichedText}]});
 const sys=`You are Guru Ji — a wise Sanskrit teacher in the app Samsmarana (Remembrance).
 
 Your students are educated adults 30+ who studied Sanskrit in CBSE Class 8-10 but never understood its depth. They return now with life experience.
