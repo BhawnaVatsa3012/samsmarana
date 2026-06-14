@@ -173,6 +173,15 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 </div>
 
 <!-- AUTH OVERLAY -->
+<div id="guru-upgrade-popup" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px">
+<div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center">
+<div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:#7a2800;margin-bottom:8px">गुरु जी</div>
+<div style="font-family:'EB Garamond',serif;font-size:20px;font-weight:600;color:#1a0f00;margin-bottom:8px">Ask Guru Ji</div>
+<p style="font-family:'EB Garamond',serif;font-size:15px;color:#3a2a18;line-height:1.7;margin-bottom:20px;font-style:italic">This is a Sadhaka feature. Upgrade to ask Guru Ji about any shloka — your personal Sanskrit teacher, always ready.</p>
+<button onclick="document.getElementById('guru-upgrade-popup').style.display='none';nav('upgrade',null);" style="width:100%;background:linear-gradient(135deg,#7a2800,#c8922a);border:none;border-radius:24px;padding:12px 20px;font-size:15px;color:#fff;cursor:pointer;font-family:'EB Garamond',serif;font-weight:500;font-style:italic;letter-spacing:.4px;margin-bottom:10px">Upgrade to Sadhaka 🙏</button>
+<button onclick="document.getElementById('guru-upgrade-popup').style.display='none';" style="width:100%;background:none;border:1.5px solid #e0c9a8;border-radius:24px;padding:11px 20px;font-size:14px;color:#5a4020;cursor:pointer;font-family:'EB Garamond',serif">Not now</button>
+</div>
+</div>
 <div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
   <div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)">
     <div id="auth-signin-view">
@@ -1511,6 +1520,18 @@ function nextFC(got){
   fcIdx=(fcIdx+1)%cards.length;loadFC();
 }
 function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
+function askGuruJiAbout(sanskritText, meaning){
+  if(!isPremium()){
+    document.getElementById('guru-upgrade-popup').style.display='flex';
+    return;
+  }
+  var msg = 'Tell me more about this shloka: ' + sanskritText + '. Meaning: ' + meaning;
+  nav('tutor',null);
+  setTimeout(function(){
+    document.getElementById('chat-input').value = msg;
+    sendMsg();
+  }, 100);
+}
 function askGuruJiAbout(sanskritText, meaning){
   if(!isPremium()){
     nav('upgrade',null);
