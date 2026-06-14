@@ -295,6 +295,13 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <svg id="sotd-bk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
 </button>
 </div>
+<div style="margin-top:10px" id="sotd-guru-btn-wrap">
+<button class="audio-btn" style="margin-top:0;width:100%;justify-content:center;opacity:1" onclick="askGuruJiAbout(document.getElementById('shloka-text').textContent, document.getElementById('shloka-meaning').textContent)" id="sotd-guru-btn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+Ask Guru Ji about this Shloka
+</button>
+<div id="sotd-guru-lock" style="display:none;text-align:center;font-size:12px;color:#9a7850;margin-top:6px;font-family:'EB Garamond',serif;font-style:italic">🔒 Sadhaka feature — <span style="color:#7a2800;cursor:pointer;text-decoration:underline" onclick="nav('upgrade',null)">Upgrade to unlock</span></div>
+</div>
 </div>
 <div class="divider">· · ·</div>
   <!-- DAILY QUIZ -->
@@ -665,6 +672,14 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <button onclick="scNav(1)" style="flex:1;background:#7a2800;border:none;border-radius:8px;padding:11px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600">Next →</button>
 </div>
 
+<!-- Ask Guru Ji row -->
+<div style="margin-bottom:10px" id="sc-guru-btn-wrap">
+<button class="audio-btn" style="margin-top:0;width:100%;justify-content:center" onclick="askGuruJiAbout(document.getElementById('sc-text').textContent, document.getElementById('sc-english').textContent)" id="sc-guru-btn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+Ask Guru Ji about this Shloka
+</button>
+<div id="sc-guru-lock" style="display:none;text-align:center;font-size:12px;color:#9a7850;margin-top:6px;font-family:'EB Garamond',serif;font-style:italic">🔒 Sadhaka feature — <span style="color:#7a2800;cursor:pointer;text-decoration:underline" onclick="nav('upgrade',null)">Upgrade to unlock</span></div>
+</div>
 <!-- Bookmark + Share row -->
 <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
 <button class="bk-btn" id="sc-bk-btn" onclick="toggleBookmarkSC()" title="Save shloka" style="background:#fdf8f2;border:1.5px solid #c8b090;border-radius:10px;padding:13px;flex-shrink:0">
@@ -1496,6 +1511,18 @@ function nextFC(got){
   fcIdx=(fcIdx+1)%cards.length;loadFC();
 }
 function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
+function askGuruJiAbout(sanskritText, meaning){
+  if(!isPremium()){
+    nav('upgrade',null);
+    return;
+  }
+  var msg = 'Tell me more about this shloka: ' + sanskritText + '. Meaning: ' + meaning;
+  nav('tutor',null);
+  setTimeout(function(){
+    document.getElementById('chat-input').value = msg;
+    sendMsg();
+  }, 100);
+}
 async function sendMsg(){
   const input=document.getElementById('chat-input');
   const text=input.value.trim();
