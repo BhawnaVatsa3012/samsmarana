@@ -601,7 +601,10 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
     </div>
     <div id="reflection-error" style="font-size:12px;color:#8b0000;margin-top:8px;display:none"></div>
   </div>
-  <div id="reflection-signin-prompt" class="card">
+  <div id="reflection-upgrade-nudge" style="display:none;background:#fdf8f2;border:1px solid #e0c9a8;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:none;align-items:center;gap:12px">
+  <div style="flex:1;font-family:'EB Garamond',serif;font-size:15px;color:#3a2a18;line-height:1.6;font-style:italic">🌸 You can read all reflections. To share your own, <span onclick="nav('upgrade',getNav('upgrade'))" style="color:#7a2800;font-weight:600;cursor:pointer;text-decoration:underline">upgrade to Sadhaka</span>.</div>
+</div>
+<div id="reflection-signin-prompt" class="card">
     <div style="text-align:center;padding:10px 0 16px">
       <div style="font-size:36px;margin-bottom:12px">🌸</div>
       <div class="card-title" style="text-align:center;font-size:20px">Community is a Premium feature</div>
@@ -1821,13 +1824,20 @@ function initCommunity(){
 function updateCommunityAccess(){
   var postBox=document.getElementById('reflection-post-box');
   var prompt=document.getElementById('reflection-signin-prompt');
+  var nudge=document.getElementById('reflection-upgrade-nudge');
   if(!postBox||!prompt)return;
   if(isPremium()){
     postBox.style.display='block';
     prompt.style.display='none';
+    if(nudge)nudge.style.display='none';
+  } else if(_user){
+    postBox.style.display='none';
+    prompt.style.display='none';
+    if(nudge)nudge.style.display='flex';
   } else {
     postBox.style.display='none';
     prompt.style.display='block';
+    if(nudge)nudge.style.display='none';
   }
 }
 
