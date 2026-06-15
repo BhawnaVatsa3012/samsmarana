@@ -1523,7 +1523,7 @@ function askSug(btn){document.getElementById('chat-input').value=btn.textContent
 
 function askGuruJiAbout(sanskritText, meaning){
   if(!isPremium()){
-    nav('upgrade',null);
+    document.getElementById('guru-upgrade-popup').style.display='flex';
     return;
   }
   var msg = 'Tell me more about this shloka: ' + sanskritText + '. Meaning: ' + meaning;
