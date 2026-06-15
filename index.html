@@ -579,6 +579,10 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
   <div class="chat-row">
     <input type="text" id="chat-input" placeholder="What would you like to understand?" onkeydown="if(event.key==='Enter')sendMsg()"/>
     <button id="send-btn" onclick="sendMsg()">Ask</button>
+  <div style="margin-top:8px;text-align:center;font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:#9a7850;line-height:1.6;padding:0 4px;">
+    Guru Ji uses AI and may occasionally err. For serious study, verify with a qualified Sanskrit teacher.
+  
+  
   </div>
   
 </div>
@@ -1577,10 +1581,21 @@ Your students are educated adults 30+ who studied Sanskrit in CBSE Class 8-10 bu
     addMsg('ai','Could not reach Guru Ji.\n\nError: '+e.message+'\n\nPlease check:\n1. GEMINI_API_KEY is set in Vercel Environment Variables\n2. You have redeployed after adding the key\n3. The api/guru.js file is in your GitHub repo');
   }
   document.getElementById('send-btn').disabled=false;
-}
 function addMsg(role,text){
   const box=document.getElementById('chat-box');
   const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
+  if(role==='ai'){
+    const flag=document.createElement('button');
+    flag.title='Flag this response as potentially inaccurate';
+    flag.style.cssText='display:block;margin-top:6px;background:none;border:none;cursor:pointer;font-size:11px;color:#c8a870;font-family:\'EB Garamond\',serif;font-style:italic;padding:0;';
+    flag.textContent='⚑ Flag as inaccurate';
+    flag.onclick=function(){
+      flag.textContent='⚑ Flagged — thank you 🙏';
+      flag.style.color='#8b0000';
+      flag.onclick=null;
+    };
+    d.appendChild(flag);
+  }
   box.appendChild(d);scrollChat();
 }
 function scrollChat(){const b=document.getElementById('chat-box');b.scrollTop=b.scrollHeight}
