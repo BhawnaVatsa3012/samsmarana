@@ -1583,6 +1583,8 @@ Your students are educated adults 30+ who studied Sanskrit in CBSE Class 8-10 bu
     addMsg('ai','Could not reach Guru Ji.\n\nError: '+e.message+'\n\nPlease check:\n1. GEMINI_API_KEY is set in Vercel Environment Variables\n2. You have redeployed after adding the key\n3. The api/guru.js file is in your GitHub repo');
   }
   document.getElementById('send-btn').disabled=false;
+}
+  }
 function addMsg(role,text){
   const box=document.getElementById('chat-box');
   const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
