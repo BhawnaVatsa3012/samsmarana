@@ -1520,18 +1520,7 @@ function nextFC(got){
   fcIdx=(fcIdx+1)%cards.length;loadFC();
 }
 function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
-function askGuruJiAbout(sanskritText, meaning){
-  if(!isPremium()){
-    document.getElementById('guru-upgrade-popup').style.display='flex';
-    return;
-  }
-  var msg = 'Tell me more about this shloka: ' + sanskritText + '. Meaning: ' + meaning;
-  nav('tutor',null);
-  setTimeout(function(){
-    document.getElementById('chat-input').value = msg;
-    sendMsg();
-  }, 100);
-}
+
 function askGuruJiAbout(sanskritText, meaning){
   if(!isPremium()){
     nav('upgrade',null);
