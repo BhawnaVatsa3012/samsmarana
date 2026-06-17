@@ -14,7 +14,8 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "24.x",
+    "node": "24.x"
+  },
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/BhawnaVatsa3012/samsmarana/issues"
@@ -22,7 +23,7 @@
   "homepage": "https://github.com/BhawnaVatsa3012/samsmarana#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
-    "razorpay":"^2.9.2"
+    "razorpay": "^2.9.2",
     "web-push": "^3.6.7"
   }
 }
