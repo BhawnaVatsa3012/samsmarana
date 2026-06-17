@@ -40,3 +40,35 @@ self.addEventListener('fetch', function(e) {
       })
   );
 });
+
+self.addEventListener('push', function(e) {
+  if (!e.data) return;
+  const data = e.data.json();
+  e.waitUntil(
+    self.registration.showNotification(data.title || 'आज का श्लोक', {
+      body: data.body,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      tag: 'daily-shloka',
+      renotify: true,
+      data: { url: data.url || '/' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', function(e) {
+  e.notification.close();
+  const target = (e.notification.data && e.notification.data.url) || '/';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].url.includes('samsmarana.vercel.app')) {
+          list[i].focus();
+          list[i].postMessage({ type: 'NAVIGATE', url: target });
+          return;
+        }
+      }
+      return clients.openWindow('https://samsmarana.vercel.app' + target);
+    })
+  );
+});
