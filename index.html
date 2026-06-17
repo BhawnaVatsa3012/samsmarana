@@ -1982,7 +1982,11 @@ async function togglePushSubscription() {
   var existing = await reg.pushManager.getSubscription();
   if (existing) {
     await existing.unsubscribe();
-    await _supabaseClient.from('subscriptions').delete().eq('endpoint', existing.endpoint);
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'unsubscribe', endpoint: existing.endpoint })
+    });
     updateNotifTile(null);
     return;
   }
@@ -1995,12 +1999,17 @@ async function togglePushSubscription() {
     applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
   });
   var subJson = sub.toJSON();
-  await _supabaseClient.from('subscriptions').upsert({
-    user_id: _user.id,
-    endpoint: subJson.endpoint,
-    p256dh: subJson.keys.p256dh,
-    auth: subJson.keys.auth
-  }, { onConflict: 'endpoint' });
+  await fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'subscribe',
+      user_id: _user.id,
+      endpoint: subJson.endpoint,
+      p256dh: subJson.keys.p256dh,
+      auth: subJson.keys.auth
+    })
+  });
   updateNotifTile(sub);
 }
  
