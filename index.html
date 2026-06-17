@@ -169,8 +169,14 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <div class="pp-tile-icon">🔖</div>
 <div><div class="pp-tile-label">Saved</div><div class="pp-tile-sub">My shlokas</div></div>
 </div>
+<div class="pp-tile" id="pp-notif-tile" onclick="togglePushSubscription()">
+<div class="pp-tile-icon" id="pp-notif-icon">🔔</div>
+<div><div class="pp-tile-label">Notifications</div><div class="pp-tile-sub" id="pp-notif-sub">Daily shloka</div></div>
 </div>
 </div>
+</div>
+
+
 
 <!-- AUTH OVERLAY -->
 <div id="guru-upgrade-popup" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px">
@@ -1933,6 +1939,69 @@ function getTimeAgo(ts){
 loadSession();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'NAVIGATE') {
+      var section = (e.data.url || '/').replace('/?section=', '');
+      if (section === 'shloka-of-day') nav('home', null);
+    }
+  });
+}
+
+const VAPID_PUBLIC_KEY = 'BOWosPtSzJDXf1SlUIG4u0VdMnkD1djoC_JEQ7tm_KfxjT4TaN54pgEQ84FLdRWqvlikja4DJGef3oQBd9p53qI';
+
+function urlBase64ToUint8Array(base64String) {
+  var padding = '='.repeat((4 - base64String.length % 4) % 4);
+  var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  var rawData = window.atob(base64);
+  var output = new Uint8Array(rawData.length);
+  for (var i = 0; i < rawData.length; ++i) output[i] = rawData.charCodeAt(i);
+  return output;
+}
+
+async function updateNotifTile(sub) {
+  var icon = document.getElementById('pp-notif-icon');
+  var label = document.getElementById('pp-notif-sub');
+  if (!icon || !label) return;
+  if (sub) { icon.textContent = '🔕'; label.textContent = 'Tap to unsubscribe'; }
+  else { icon.textContent = '🔔'; label.textContent = 'Daily shloka'; }
+}
+
+async function initNotifTile() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  var reg = await navigator.serviceWorker.ready;
+  var sub = await reg.pushManager.getSubscription();
+  updateNotifTile(sub);
+}
+
+async function togglePushSubscription() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Push notifications are not supported on this device.'); return;
+  }
+  if (!_user) { alert('Please sign in to enable notifications.'); return; }
+  var reg = await navigator.serviceWorker.ready;
+  var existing = await reg.pushManager.getSubscription();
+  if (existing) {
+    await existing.unsubscribe();
+    await _supabaseClient.from('subscriptions').delete().eq('endpoint', existing.endpoint);
+    updateNotifTile(null);
+    return;
+  }
+  var permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    alert('Notification permission denied. Please enable it in your browser settings.'); return;
+  }
+  var sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+  });
+  var subJson = sub.toJSON();
+  await _supabaseClient.from('subscriptions').upsert({
+    user_id: _user.id,
+    endpoint: subJson.endpoint,
+    p256dh: subJson.keys.p256dh,
+    auth: subJson.keys.auth
+  }, { onConflict: 'endpoint' });
+  updateNotifTile(sub);
 }
  
 
@@ -2923,6 +2992,7 @@ document.getElementById('pp-tier-line').textContent = tierNames[tier] || tier;
 document.getElementById('pp-plan-sub').textContent = tierNames[tier] || tier;
 document.getElementById('profile-panel').classList.add('open');
 document.getElementById('profile-panel-overlay').style.display = 'block';
+initNotifTile();
 }
 
 function closeProfilePanel() {
