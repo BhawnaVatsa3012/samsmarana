@@ -21,5 +21,6 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
     "razorpay":"^2.9.2"
+    "web-push": "^3.6.7"
   }
 }
