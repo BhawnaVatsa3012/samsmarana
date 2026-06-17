@@ -1,0 +1,19 @@
+name: Daily Shloka Push Notification
+
+on:
+  schedule:
+    - cron: '30 2 * * *'  # 2:30am UTC = 8:00am IST every day
+  workflow_dispatch:        # allows manual trigger for testing
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send daily shloka push notification
+        run: |
+          curl -X POST https://samsmarana.vercel.app/api/push \
+            -H "Authorization: Bearer samsmarana-daily-push-2026" \
+            -H "Content-Type: application/json" \
+            --fail \
+            --silent \
+            --show-error
