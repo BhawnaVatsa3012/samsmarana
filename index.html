@@ -188,6 +188,16 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <button onclick="document.getElementById('guru-upgrade-popup').style.display='none';" style="width:100%;background:none;border:1.5px solid #e0c9a8;border-radius:24px;padding:11px 20px;font-size:14px;color:#5a4020;cursor:pointer;font-family:'EB Garamond',serif">Not now</button>
 </div>
 </div>
+  <div id="reset-password-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
+  <div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)">
+    <h2 style="font-family:'EB Garamond',serif;font-size:24px;font-weight:600;color:#1a0f00;margin-bottom:4px">Set New Password 🙏</h2>
+    <p style="font-size:13px;color:#5a4020;margin-bottom:20px;line-height:1.6">Choose a new password for your account.</p>
+    <div id="reset-pw-error" style="font-size:12px;color:#8b0000;margin-bottom:10px;padding:8px 12px;background:#fdf2f2;border-radius:6px;display:none"></div>
+    <div id="reset-pw-success" style="font-size:12px;color:#1a5c38;margin-bottom:10px;padding:8px 12px;background:#f2faf6;border-radius:6px;display:none"></div>
+    <input type="password" id="reset-pw-input" placeholder="New password (min 6 characters)" style="width:100%;background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:8px;padding:11px 13px;color:#1a0f00;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:12px;box-sizing:border-box"/>
+    <button onclick="submitNewPassword()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Update Password</button>
+  </div>
+</div>
 <div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.7);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
   <div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)">
     <div id="auth-signin-view">
@@ -1756,6 +1766,13 @@ function loadSession(){
       var params=new URLSearchParams(hash.substring(1));
       var accessToken=params.get('access_token');
       var refreshToken=params.get('refresh_token');
+      var tokenType=params.get('type');
+      if(accessToken&&tokenType==='recovery'){
+        window.history.replaceState({},document.title,window.location.pathname);
+        _resetToken=accessToken;
+        openResetPasswordModal();
+        return;
+      }
       if(accessToken){
         window.history.replaceState({},document.title,window.location.pathname);
         fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:accessToken})})
@@ -3084,7 +3101,30 @@ msgEl.style.color = '#8b0000';
 msgEl.style.display = 'block';
 }
 }
+var _resetToken = null;
 
+function openResetPasswordModal() {
+  document.getElementById('reset-password-overlay').style.display = 'flex';
+}
+
+async function submitNewPassword() {
+  var pw = document.getElementById('reset-pw-input').value.trim();
+  var errEl = document.getElementById('reset-pw-error');
+  var sucEl = document.getElementById('reset-pw-success');
+  errEl.style.display = 'none';
+  sucEl.style.display = 'none';
+  if (!pw || pw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  try {
+    var res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updatepassword', token: _resetToken, password: pw }) });
+    var data = await res.json();
+    if (data.error) { errEl.textContent = data.error; errEl.style.display = 'block'; return; }
+    sucEl.textContent = '✓ Password updated! You can now sign in. 🙏';
+    sucEl.style.display = 'block';
+    setTimeout(function() { document.getElementById('reset-password-overlay').style.display = 'none'; openAuth('signin'); }, 2000);
+  } catch(e) { errEl.textContent = 'Could not update password. Try again.'; errEl.style.display = 'block'; }
+}
+
+  
 async function sendForgotPassword() {
   var email = document.getElementById('auth-email').value.trim();
   if (!email) { showAuthError('signin', 'Please enter your email address first.'); return; }
