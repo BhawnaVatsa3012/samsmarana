@@ -79,6 +79,17 @@ if (error) return res.status(400).json({ error: error.message });
 return res.json({ success: true });
 }
 
+    if (action === 'updatepassword') {
+  const { createClient } = require('@supabase/supabase-js');
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+  const { data: { user }, error: userError } = await supabase.auth.getUser(req.body.token);
+  if (userError) return res.status(400).json({ error: 'Invalid or expired reset link.' });
+  const adminSupabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  const { error } = await adminSupabase.auth.admin.updateUserById(user.id, { password: req.body.password });
+  if (error) return res.status(400).json({ error: error.message });
+  return res.json({ success: true });
+}
+
 
 if (action === 'signout') {
       await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
