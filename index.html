@@ -1636,7 +1636,8 @@ async function authSignIn(){
   try{
     var res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signin',email,password})});
     var data=await res.json();
-    if(data.error){showAuthError('signin',data.error);return;}
+    if(data.error||data.message&&!data.user){showAuthError('signin',data.error||data.message||'Incorrect email or password. Please try again.');return;}
+    if(!data.user){showAuthError('signin','Incorrect email or password. Please try again.');return;}
        _user=data.user;_session=data.session;
     try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
     closeAuth();updateUserUI();initDailyQuiz();fetchUserProfile();
