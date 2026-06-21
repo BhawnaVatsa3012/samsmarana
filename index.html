@@ -1772,12 +1772,7 @@ function loadSession(){
       var accessToken=params.get('access_token');
       var refreshToken=params.get('refresh_token');
       var tokenType=params.get('type');
-      if(accessToken&&tokenType==='recovery'){
-        window.history.replaceState({},document.title,window.location.pathname);
-        _resetToken=accessToken;
-        openResetPasswordModal();
-        return;
-      }
+      
       if(accessToken){
         window.history.replaceState({},document.title,window.location.pathname);
         fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:accessToken})})
