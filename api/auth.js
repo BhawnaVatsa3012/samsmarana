@@ -71,10 +71,7 @@ export default async function handler(req, res) {
  if (action === 'resetpassword') {
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-const { email } = req.body;
-const { error } = await supabase.auth.resetPasswordForEmail(email, {
-redirectTo: 'https://samsmarana.vercel.app'
-});
+const { error } = await supabase.auth.signInWithOtp({ email: body.email, options: { shouldCreateUser: false } });
 if (error) return res.status(400).json({ error: error.message });
 return res.json({ success: true });
 }
@@ -93,7 +90,7 @@ return res.json({ success: true });
 if (action === 'verifyotp') {
   const { createClient } = require('@supabase/supabase-js');
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-  const { data, error } = await supabase.auth.verifyOtp({ email: body.email, token: body.token, type: 'recovery' });
+  const { data, error } = await supabase.auth.verifyOtp({ email: body.email, token: body.token, type: 'email' });
   if (error) return res.status(400).json({ error: error.message });
   return res.json({ access_token: data.session.access_token });
 }
