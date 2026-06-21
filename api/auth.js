@@ -90,8 +90,15 @@ return res.json({ success: true });
   return res.json({ success: true });
 }
 
-
+if (action === 'verifyotp') {
+  const { createClient } = require('@supabase/supabase-js');
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+  const { data, error } = await supabase.auth.verifyOtp({ email: body.email, token: body.token, type: 'recovery' });
+  if (error) return res.status(400).json({ error: error.message });
+  return res.json({ access_token: data.session.access_token });
+}
 if (action === 'signout') {
+
       await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${body.token}`, 'apikey': SUPABASE_KEY }
