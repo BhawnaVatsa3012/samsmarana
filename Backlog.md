@@ -62,6 +62,24 @@ Last updated: Chat 25
 | P12 | Audio — option without ambient music | 0.50 | 🟡 Med | All tiers |
 | P13 | Architecture modular refactor plan | 0.45 | ⚪ Low/Parked | Risk — single index.html getting large |
 
+
+## ✨ Feature Backlog
+
+| # | Status | Feature |
+|---|--------|---------|
+| P1 | ✅ Done | Ask Guru Ji on Shloka Cards |
+| P2 | ✅ Done | Web Push Notifications |
+| P3 | ✅ Done | Read-only community for Jigyasu users |
+| B1 | ✅ Done | Daily Shloka Quiz |
+| B2 | ✅ Done | My Progress / daily quiz tracking |
+| B4 | ✅ Done | Bookmark / Save Shlokas |
+| B5 | ✅ Done | Pronunciation Audio |
+| B6a | ✅ Done | Guru Ji personalisation |
+| B7 | ⬜ Pending | Expanded Shabd/Dhatu Roop (gated by tier) |
+| — | ⬜ Pending | Vidvan tier launch |
+| — | ⬜ Pending | Razorpay live keys |
+| — | ⬜ Pending | Google Play Store via Capacitor |
+
 ---
 
 ## Bug Backlog (current sprint)
@@ -74,6 +92,16 @@ Last updated: Chat 25
 | Bug 4 | ⬜ | Community reflections card design — too informal | Need more structured, formal card layout |
 | Bug 5 | ⬜ | New user profile shows cached values on first load | Should be empty/blank on first load |
 | Bug 6 | ⬜ | Sign-out is three levels deep | Embed sign-out icon directly in topbar pill or profile panel |
+
+
+| Bug 1 | ✅ Fixed | Sign-in shows no error on wrong password |
+| Bug 1b | ✅ Fixed | Password reset — Gmail bot consuming link; switched to 6-digit OTP flow |
+| Bug 2 | 🔄 Unverified | Jigyasu read-only community — needs fresh Jigyasu test account to verify |
+| Bug 3 | ⬜ Open | Guru Ji disclaimer sitting beside Ask button instead of below it |
+| Bug 4 | ⬜ Open | Community reflections need more formal card design |
+| Bug 5 | ⬜ Open | New user profile shows cached values on first load |
+| Bug 6 | ⬜ Open | Sign-out buried three levels deep — surface in topbar/profile panel |
+| Bug 7 | ✅ Fixed | Sign-up page unreachable — "No account?" span was malformed HTML |
 
 ---
 
