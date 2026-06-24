@@ -1495,34 +1495,34 @@ function showDhatu(tenseId, btn) {
 }
 async function loadGrammarData() {
   try {
-    var tier = getTier();
     var premium = isPremium();
-    var shabdRes = await fetch('/api/grammar?type=shabd&tier=' + tier);
+    var shabdRes = await fetch('/api/grammar?type=shabd');
     var shabdJson = await shabdRes.json();
     var allShabd = shabdJson.shabd || [];
-    window._shabdData = allShabd;
+    var visibleShabd = premium ? allShabd : allShabd.filter(function(w) { return w.is_free; });
+    window._shabdData = visibleShabd;
 
     // Build sub-tabs dynamically
     var tabsHtml = '';
-    allShabd.forEach(function(w, i) {
+    visibleShabd.forEach(function(w, i) {
       var genderLabel = w.gender === 'Masculine' ? 'm' : w.gender === 'Feminine' ? 'f' : 'n';
       tabsHtml += '<button class="sub-tab' + (i === 0 ? ' active' : '') + '" onclick="showShabd(\'' + w.word_roman + '\',this)">' + w.word_devanagari + ' (' + genderLabel + ')</button>';
     });
     document.getElementById('shabd-sub-tabs').innerHTML = tabsHtml;
 
     // Show first word by default
-    if (allShabd.length) showShabd(allShabd[0].word_roman, null);
+    if (visibleShabd.length) showShabd(visibleShabd[0].word_roman, null);
 
-    // Show upgrade tile for Jigyasu
+    // Show upgrade tile for Jigyasu only
     var lockedCount = allShabd.filter(function(w) { return !w.is_free; }).length;
     var upgradeTile = document.getElementById('shabd-upgrade-tile');
     if (upgradeTile) upgradeTile.style.display = (!premium && lockedCount > 0) ? 'block' : 'none';
 
     // Load dhatu
-    var dhatuRes = await fetch('/api/grammar?type=dhatu&tier=' + tier);
+    var dhatuRes = await fetch('/api/grammar?type=dhatu');
     var dhatuJson = await dhatuRes.json();
     var allDhatu = dhatuJson.dhatu || [];
-    window._dhatuData = allDhatu;
+    window._dhatuData = premium ? allDhatu : allDhatu.filter(function(d) { return d.is_free; });
 
     // Show first tense by default
     showDhatu('lat', document.querySelector('#page-dhaturoop .sub-tab'));
