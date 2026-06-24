@@ -1505,14 +1505,14 @@ async function loadGrammarData() {
 
     // Build sub-tabs dynamically
     var tabsHtml = '';
-    visibleShabd.forEach(function(w, i) {
+    allShabd.forEach(function(w, i) {
       var genderLabel = w.gender === 'Masculine' ? 'm' : w.gender === 'Feminine' ? 'f' : 'n';
       tabsHtml += '<button class="sub-tab' + (i === 0 ? ' active' : '') + '" onclick="showShabd(\'' + w.word_roman + '\',this)">' + w.word_devanagari + ' (' + genderLabel + ')</button>';
     });
     document.getElementById('shabd-sub-tabs').innerHTML = tabsHtml;
 
     // Show first word by default
-    if (visibleShabd.length) showShabd(visibleShabd[0].word_roman, null);
+    if (allShabd.length) showShabd(allShabd[0].word_roman, null);
 
     // Show upgrade tile for Jigyasu
     var lockedCount = allShabd.filter(function(w) { return !w.is_free; }).length;
