@@ -1496,12 +1496,12 @@ function showDhatu(tenseId, btn) {
 }
 async function loadGrammarData() {
   try {
-    var shabdRes = await fetch('/api/grammar?type=shabd');
+    var tier = getTier();
+    var premium = isPremium();
+    var shabdRes = await fetch('/api/grammar?type=shabd&tier=' + tier);
     var shabdJson = await shabdRes.json();
     var allShabd = shabdJson.shabd || [];
-    var premium = isPremium();
-    var visibleShabd = premium ? allShabd : allShabd.filter(function(w) { return w.is_free; });
-    window._shabdData = visibleShabd;
+    window._shabdData = allShabd;
 
     // Build sub-tabs dynamically
     var tabsHtml = '';
@@ -1520,10 +1520,10 @@ async function loadGrammarData() {
     if (upgradeTile) upgradeTile.style.display = (!premium && lockedCount > 0) ? 'block' : 'none';
 
     // Load dhatu
-    var dhatuRes = await fetch('/api/grammar?type=dhatu');
+    var dhatuRes = await fetch('/api/grammar?type=dhatu&tier=' + tier);
     var dhatuJson = await dhatuRes.json();
     var allDhatu = dhatuJson.dhatu || [];
-    window._dhatuData = premium ? allDhatu : allDhatu.filter(function(d) { return d.is_free; });
+    window._dhatuData = allDhatu;
 
     // Show first tense by default
     showDhatu('lat', document.querySelector('#page-dhaturoop .sub-tab'));

@@ -14,21 +14,21 @@ module.exports = async function handler(req, res) {
   const type = req.query.type;
 
   try {
+    const tier = req.query.tier || 'jigyasu';
+    const isPremium = tier === 'sadhaka' || tier === 'vidvan';
+
     if (type === 'shabd') {
-      const { data, error } = await supabase
-        .from('shabd_roop')
-        .select('*')
-        .order('sort_order');
+      let query = supabase.from('shabd_roop').select('*').order('sort_order');
+      if (!isPremium) query = query.eq('is_free', true);
+      const { data, error } = await query;
       if (error) throw error;
       return res.status(200).json({ shabd: data });
     }
 
     if (type === 'dhatu') {
-      const { data, error } = await supabase
-        .from('dhatu_roop')
-        .select('*')
-        .order('tense_id')
-        .order('sort_order');
+      let query = supabase.from('dhatu_roop').select('*').order('tense_id').order('sort_order');
+      if (!isPremium) query = query.eq('is_free', true);
+      const { data, error } = await query;
       if (error) throw error;
       return res.status(200).json({ dhatu: data });
     }
