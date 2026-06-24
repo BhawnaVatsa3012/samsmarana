@@ -1406,7 +1406,6 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
   document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
   document.getElementById('shloka-life').textContent=s.life;
   loadFC();
-  loadGrammarData();
 
 })();
 setTimeout(initDailyQuiz,0);
@@ -1658,7 +1657,7 @@ async function authSignIn(){
     if(!data.user){showAuthError('signin','Incorrect email or password. Please try again.');return;}
        _user=data.user;_session=data.session;
     try{localStorage.setItem('samsmarana_session',JSON.stringify(data));}catch(e){}
-    closeAuth();updateUserUI();initDailyQuiz();fetchUserProfile();
+    closeAuth();updateUserUI();initDailyQuiz();fetchUserProfile();loadGrammarData();
     if(document.getElementById('page-progress').classList.contains('active'))initProgressPage();
   }catch(e){showAuthError('signin','Connection error. Try again.');}
 }
@@ -1805,6 +1804,7 @@ function loadSession(){
         _user=stored.user;
         _session=stored.session;
         updateUserUI();
+        loadGrammarData();
         // Always refresh user from server to get latest metadata (premium status etc)
         if(stored.session.access_token){
           fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getuser',token:stored.session.access_token})})
@@ -1814,6 +1814,7 @@ function loadSession(){
               _user=fresh.user;
               try{localStorage.setItem('samsmarana_session',JSON.stringify({user:fresh.user,session:stored.session}));}catch(e){}
               updateUserUI();
+              loadGrammarData();
             } else {
               // Token expired - clear session
               localStorage.removeItem('samsmarana_session');
