@@ -1426,6 +1426,7 @@ function nav(id,el){
   document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
   var TAB_MAP={'home':'home','learn':'learn','tutor':'tutor','community':'community','progress':'progress','shabdroop':'learn','dhaturoop':'learn','sandhi':'learn','samas':'learn','karaka':'learn','script':'learn','flashcards':'learn','sentences':'learn','shlokaCards':'learn','upgrade':'progress','profile-details':'home','bookmarks':'home'};
 var activeTab=TAB_MAP[id]||null;
+console.log('[TAB DEBUG] id='+id+' activeTab='+activeTab);
   if(activeTab){var tb=document.getElementById('btab-'+activeTab);if(tb)tb.classList.add('active');}
   closeAccountDropdown();
   window.scrollTo(0,0);
