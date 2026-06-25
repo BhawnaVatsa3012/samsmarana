@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/stotrams-data.js"></script>
 <title>Samsmarana — संस्मरण | Bhawna Mishra</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#7a3010">
@@ -351,6 +352,11 @@ Ask Guru Ji about this Shloka
       <div class="learn-tile-icon">◻</div>
       <div class="learn-tile-title">Vocabulary</div>
       <div class="learn-tile-sub">Word flashcards</div>
+    </div>
+    <div class="learn-tile" onclick="nav('stotrams',null)">
+      <div class="learn-tile-icon">🕉</div>
+      <div class="learn-tile-title">Stotrams</div>
+      <div class="learn-tile-sub">Sacred Sanskrit verses</div>
     </div>
     <div class="learn-tile" onclick="nav('sentences',null)" style="grid-column:1/-1">
       <div class="learn-tile-icon">✎</div>
@@ -1012,7 +1018,7 @@ const cards=[
   {d:'प्रज्ञा',r:'Prajna',m:'Wisdom settled into the bones — not what you know, but what you have irreversibly become.',shloka:'प्रजहाति यदा कामान्सर्वान्पार्थ मनोगतान् । आत्मन्येवात्मना तुष्टः स्थितप्रज्ञस्तदोच्यते ॥',slokaMeaning:'When one abandons all desires of the mind and is content in the self alone — they are called Sthitaprajna.',source:'Bhagavad Gita 2.55'},
 ];
 
-const titles={home:'Samsmarana',learn:'पाठ · Learn',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
+const titles={home:'Samsmarana',learn:'पाठ · Learn',stotrams:'स्तोत्र · Stotrams','stotra-detail':'',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
 const sentences=[
   {
     english:'The boy reads the book.',
@@ -1422,9 +1428,10 @@ function nav(id,el){
   if(id==='progress')initProgressPage();
   if(id==='profile-details')initProfileDetails();
   if(id==='bookmarks')initBookmarksPage();
+  if(id==='stotrams')initStotramsList();
   document.getElementById('topbar-title').textContent=titles[id]||id;
   document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
-  var TAB_MAP={'home':'home','learn':'learn','tutor':'tutor','community':'community','progress':'progress','shabdroop':'learn','dhaturoop':'learn','sandhi':'learn','samas':'learn','karaka':'learn','script':'learn','flashcards':'learn','sentences':'learn','shlokaCards':'learn','upgrade':'progress','profile-details':'home','bookmarks':'home'};
+  var TAB_MAP={'home':'home','learn':'learn','tutor':'tutor','community':'community','progress':'progress','shabdroop':'learn','dhaturoop':'learn','sandhi':'learn','samas':'learn','karaka':'learn','script':'learn','flashcards':'learn','sentences':'learn','shlokaCards':'learn','stotrams':'learn','stotra-detail':'learn','upgrade':'progress','profile-details':'home','bookmarks':'home'};
 var activeTab=TAB_MAP[id]||null;
 console.log('[TAB DEBUG] id='+id+' activeTab='+activeTab);
   if(activeTab){var tb=document.getElementById('btab-'+activeTab);if(tb)tb.classList.add('active');}
@@ -1953,7 +1960,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=3');
+  navigator.serviceWorker.register('/sw.js?v=4');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3486,11 +3493,186 @@ banner.style.display = 'flex';
 }
 })();
 
+// ── STOTRAMS ─────────────────────────────────────────────────────
+var _currentStotraId = null;
+var _currentVerseIdx = 0;
+var _stotraAudioCache = {};
+var _stotraAudio = null;
+
+function initStotramsList() {
+  if (typeof STOTRAMS === 'undefined') return;
+  var tier = getTier();
+  var html = '';
+  STOTRAMS.forEach(function(s) {
+    var badge = '';
+    if (tier === 'jigyasu') badge = '<span style="background:#f0d0b0;color:#5a1000;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;border:1px solid #c89060;margin-left:8px">SADHAKA+</span>';
+    else if (tier === 'sadhaka') badge = '<span style="background:#e8f0fe;color:#1a3a8a;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;border:1px solid #a8c0f0;margin-left:8px">VIDVAN for full</span>';
+    html += '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px" onclick="openStotra(\''+s.id+'\')">'+
+      '<div style="font-size:32px;width:44px;text-align:center">🕉</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:17px;color:#4a1000;margin-bottom:2px">'+s.nameDevanagari+'</div>'+
+        '<div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#5a4020">'+s.name+'</div>'+
+        '<div style="font-size:11px;color:#9a7850;margin-top:3px">'+s.verseCount+' verses · '+s.author+badge+'</div>'+
+      '</div>'+
+      '<div style="color:#c8a870;font-size:20px">›</div>'+
+    '</div>';
+  });
+  var el = document.getElementById('stotrams-list');
+  if (el) el.innerHTML = html;
+}
+
+function openStotra(id) {
+  var tier = getTier();
+  if (tier === 'jigyasu') {
+    openAuth('signin');
+    return;
+  }
+  _currentStotraId = id;
+  _currentVerseIdx = 0;
+  nav('stotra-detail', null);
+  setTimeout(renderStotraDetail, 0);
+}
+
+function renderStotraDetail() {
+  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
+  if (!stotra) return;
+  var tier = getTier();
+  var verse = stotra.verses[_currentVerseIdx];
+  var isLocked = (tier === 'sadhaka') && (_currentVerseIdx > 0);
+  var isVidvan = (tier === 'vidvan');
+
+  // Update topbar title dynamically
+  var titleEl = document.getElementById('topbar-title');
+  if (titleEl) titleEl.textContent = stotra.nameDevanagari;
+
+  var linesHtml = '';
+  verse.lines.forEach(function(line, i) {
+    linesHtml +=
+      '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">'+
+        '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:18px;color:#4a1000;line-height:2.1;flex:1">'+line+'</div>'+
+        '<button onclick="playStoraLine(\''+line.replace(/'/g,"\\'")+'\')" style="background:none;border:1.5px solid #e0c9a8;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:16px;flex-shrink:0;margin-top:8px" title="Listen">🔊</button>'+
+      '</div>';
+  });
+
+  var gateHtml = '';
+  if (isLocked) {
+    gateHtml =
+      '<div style="background:#fdf8f2;border:1px solid #e0c9a8;border-radius:12px;padding:24px 20px;text-align:center;margin-top:8px">'+
+        '<div style="font-size:32px;margin-bottom:10px">🔒</div>'+
+        '<div style="font-family:\'EB Garamond\',serif;font-size:18px;font-weight:600;color:#1a0f00;margin-bottom:6px">Verse '+(_currentVerseIdx+1)+' — Vidvan Only</div>'+
+        '<div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#5a4020;margin-bottom:16px;line-height:1.7">Upgrade to Vidvan for access to all '+stotra.verseCount+' verses, full audio recitation, and line-by-line highlighting.</div>'+
+        '<button onclick="nav(\'upgrade\',null)" style="background:linear-gradient(135deg,#7a2800,#c8922a);border:none;border-radius:24px;padding:11px 24px;font-size:14px;color:#fff;cursor:pointer;font-family:\'EB Garamond\',serif;font-style:italic;letter-spacing:.3px">Upgrade to Vidvan 🙏</button>'+
+      '</div>';
+  }
+
+  var recitationBtn = '';
+  if (isVidvan) {
+    recitationBtn =
+      '<button class="audio-btn" style="width:100%;justify-content:center;margin-top:12px" onclick="playFullRecitation()">'+
+        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'+
+        ' Full Recitation'+
+      '</button>';
+  } else if (tier === 'sadhaka') {
+    recitationBtn =
+      '<div style="text-align:center;margin-top:12px;font-size:12px;color:#9a7850">🔒 Full recitation — Vidvan only</div>';
+  }
+
+  var navHtml =
+    '<div style="display:flex;gap:10px;margin-top:16px">'+
+      '<button onclick="stotraNavVerse(-1)" style="flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:\'EB Garamond\',serif;font-size:15px;cursor:pointer;color:#5a4020" '+((_currentVerseIdx===0)?'disabled style="opacity:.4;cursor:default"':'')+'>← Prev</button>'+
+      '<div style="flex:0;font-size:12px;color:#9a7850;align-self:center;text-align:center;min-width:60px">'+(_currentVerseIdx+1)+' / '+stotra.verseCount+'</div>'+
+      '<button onclick="stotraNavVerse(1)" style="flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:\'EB Garamond\',serif;font-size:15px;cursor:pointer;color:#5a4020" '+((_currentVerseIdx===stotra.verseCount-1)?'disabled style="opacity:.4;cursor:default"':'')+'>Next →</button>'+
+    '</div>';
+
+  var html =
+    '<div style="margin-bottom:16px">'+
+      '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:22px;color:#7a2800;margin-bottom:2px">'+stotra.nameDevanagari+'</div>'+
+      '<div style="font-size:12px;color:#9a7850">'+stotra.author+' · verse '+(_currentVerseIdx+1)+' of '+stotra.verseCount+'</div>'+
+    '</div>'+
+    (isLocked ? gateHtml :
+      '<div class="card" style="margin-bottom:0">'+
+        linesHtml+
+        '<div style="border-top:1px solid #f0e4d0;margin-top:12px;padding-top:12px;font-family:\'EB Garamond\',serif;font-size:15px;color:#3a2a18;line-height:1.8;font-style:italic">'+verse.meaning+'</div>'+
+      '</div>'+
+      recitationBtn
+    )+
+    navHtml;
+
+  var el = document.getElementById('stotra-detail-content');
+  if (el) el.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function stotraNavVerse(dir) {
+  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
+  if (!stotra) return;
+  var next = _currentVerseIdx + dir;
+  if (next < 0 || next >= stotra.verseCount) return;
+  _currentVerseIdx = next;
+  renderStotraDetail();
+}
+
+async function playStoraLine(lineText) {
+  if (!lineText) return;
+  var cacheKey = lineText.trim();
+  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  try {
+    var b64;
+    if (_stotraAudioCache[cacheKey]) {
+      b64 = _stotraAudioCache[cacheKey];
+    } else {
+      var resp = await fetch('/api/grammar?type=tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cacheKey })
+      });
+      var data = await resp.json();
+      if (data.error) { console.error('TTS error:', data.error); return; }
+      b64 = data.audio_base64;
+      _stotraAudioCache[cacheKey] = b64;
+    }
+    var blob = new Blob([Uint8Array.from(atob(b64), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
+    _stotraAudio = new Audio(URL.createObjectURL(blob));
+    _stotraAudio.play();
+  } catch(e) { console.error('playStoraLine error:', e); }
+}
+
+async function playFullRecitation() {
+  if (getTier() !== 'vidvan') return;
+  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
+  if (!stotra) return;
+  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  var allLines = [];
+  stotra.verses.forEach(function(v){ v.lines.forEach(function(l){ allLines.push(l); }); });
+  for (var i = 0; i < allLines.length; i++) {
+    await new Promise(function(resolve) {
+      playStoraLine(allLines[i]).then(function() {
+        if (!_stotraAudio) { resolve(); return; }
+        _stotraAudio.onended = resolve;
+        _stotraAudio.onerror = resolve;
+      });
+    });
+  }
+}
 
 
-
-  
 </script>
+<!-- STOTRAMS LIST -->
+<div class="page" id="page-stotrams">
+  <div class="pill">स्तोत्र</div>
+  <div class="page-heading">Stotrams</div>
+  <div class="page-desc">Sacred Sanskrit hymns for daily recitation and meditation.</div>
+  <div id="stotrams-list"></div>
+</div>
+
+<!-- STOTRA DETAIL -->
+<div class="page" id="page-stotra-detail">
+  <div id="stotra-detail-content"></div>
+</div>
+
   <div id="bottom-tabbar">
     <div class="btab active" id="btab-home" onclick="navTab('home')">
       <span class="btab-icon">🏠</span>
