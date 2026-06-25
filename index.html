@@ -18,33 +18,22 @@
   --bg:#fdf8f2;--surface:#ffffff;--card:#ffffff;--border:#e0c9a8;
   --ink:#1a0f00;--muted:#5a4020;--accent:#7a2800;--gold:#9a6800;
   --light-accent:#faebd7;--green:#1a5c38;--red:#8b0000;
-  --sidebar-bg:#5c2a0a;--sidebar-text:#fdf0e0;--sidebar-muted:#e0b87a;
 }
 body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-height:100vh;overflow-x:hidden}
 .deva{font-family:'Tiro Devanagari Sanskrit',serif}
 .serif{font-family:'EB Garamond',serif}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none}
-#overlay.open{display:block}
-#sidebar{position:fixed;left:-290px;top:0;width:290px;height:100%;background:#5c2a0a;z-index:50;transition:left .3s ease;overflow-y:auto;display:flex;flex-direction:column}
-#sidebar.open{left:0}
-.sidebar-brand{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
-.brand-deva{font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:var(--gold);display:block}
-.brand-name{font-family:'EB Garamond',serif;font-size:20px;color:#fdf0e0;margin-top:4px;letter-spacing:.5px}
-.brand-tag{font-size:11px;color:var(--sidebar-muted);margin-top:4px;font-style:italic;font-family:'EB Garamond',serif}
-.sidebar-section{padding:18px 20px 6px;font-size:9px;color:#c8a87a;text-transform:uppercase;letter-spacing:2px;font-weight:600}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-size:13px;color:var(--sidebar-muted);transition:all .15s;border-left:3px solid transparent}
-.nav-item:hover{color:#f0e8d8;background:rgba(255,255,255,.04)}
-.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(200,134,10,.08)}
-.nav-icon{font-size:14px;width:18px;text-align:center}
-.nav-badge{margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600}
-.sidebar-footer{margin-top:auto;padding:18px 20px;border-top:1px solid rgba(255,255,255,.08)}
-.sidebar-footer p{font-size:12px;color:#d4b896;font-style:italic;font-family:'EB Garamond',serif;line-height:1.6;margin-bottom:12px}
-
-#topbar{position:sticky;top:0;z-index:30;background:#7a3010;display:flex;align-items:center;gap:10px;padding:13px 16px}
-#menu-btn{background:none;border:none;color:#ffffff;font-size:22px;cursor:pointer;line-height:1;padding:0 2px}
-#back-btn{background:none;border:none;color:#fdf0e0;font-size:14px;cursor:pointer;line-height:1;padding:0 2px;display:none;align-items:center;gap:4px;font-family:'EB Garamond',serif}
-#back-btn svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#topbar{position:sticky;top:0;z-index:30;background:#7a3010;display:flex;align-items:center;gap:10px;padding:10px 16px}
 #topbar-title{font-family:'EB Garamond',serif;font-size:17px;color:#ffffff;flex:1;letter-spacing:.3px;font-weight:500}
+#bottom-tabbar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:#fff;border-top:1.5px solid #e0c9a8;display:flex;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,6px);box-shadow:0 -2px 12px rgba(0,0,0,.07)}
+.btab{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;cursor:pointer;padding:4px 0;color:#9a7850;transition:color .15s}
+.btab.active{color:#7a2800}
+.btab-icon{font-size:20px;line-height:1}
+.btab-label{font-size:9px;font-weight:600;letter-spacing:.3px;font-family:'DM Sans',sans-serif}
+.learn-tile{background:#fff;border:1.5px solid #e0c9a8;border-radius:12px;padding:16px 14px;cursor:pointer;transition:all .15s;text-align:center}
+.learn-tile:hover{border-color:#7a2800;background:#fff5ec}
+.learn-tile-icon{font-size:22px;margin-bottom:6px}
+.learn-tile-title{font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00}
+.learn-tile-sub{font-size:11px;color:#7a6040;margin-top:2px}
 
 
 
@@ -81,13 +70,6 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .bk-btn{background:none;border:none;cursor:pointer;padding:6px;color:#c8a870;transition:color .15s;flex-shrink:0}
 .bk-btn:hover{color:#7a2800}
 .bk-btn svg{width:20px;height:20px;display:block}
-#profile-panel{position:fixed;top:48px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:60;background:#fff;border:1px solid #e0c9a8;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);width:calc(100% - 32px);max-width:360px;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
-#profile-panel.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-.pp-tile{background:#fdf8f2;border:1.5px solid #e0c9a8;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px}
-.pp-tile:hover{border-color:#7a2800;background:#fff5ec}
-.pp-tile-icon{font-size:20px;width:28px;text-align:center}
-.pp-tile-label{font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00}
-.pp-tile-sub{font-size:11px;color:#7a6040;margin-top:1px}
 .bm-card{background:#fdf8f2;border:1px solid #e0c9a8;border-radius:8px;padding:12px 14px;margin-bottom:10px}
 .bm-card:hover{border-color:#7a2800}
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
@@ -145,40 +127,6 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 </style>
 </head>
 <body>
-<!-- PROFILE PANEL -->
-<div id="profile-panel-overlay" onclick="closeProfilePanel()" style="display:none;position:fixed;inset:0;z-index:59"></div>
-<div id="profile-panel">
-<div style="padding:16px 18px 6px;border-bottom:1px solid #f0e4d0">
-<div id="pp-greeting" style="font-family:'EB Garamond',serif;font-size:18px;font-weight:600;color:#1a0f00"></div>
-<div id="pp-tier-line" style="font-size:11px;color:#9a7850;margin-top:2px"></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 16px">
-<div class="pp-tile" onclick="closeProfilePanel();nav('profile-details',null);">
-<div class="pp-tile-icon">👤</div>
-<div><div class="pp-tile-label">Personal</div><div class="pp-tile-sub">Details & bio</div></div>
-</div>
-<div class="pp-tile" onclick="closeProfilePanel();nav('upgrade',getNav('upgrade'));">
-<div class="pp-tile-icon">✨</div>
-<div><div class="pp-tile-label">My Plan</div><div class="pp-tile-sub" id="pp-plan-sub">Jigyasu</div></div>
-</div>
-<div class="pp-tile" onclick="closeProfilePanel();nav('progress',getNav('progress'));">
-<div class="pp-tile-icon">📊</div>
-<div><div class="pp-tile-label">Progress</div><div class="pp-tile-sub" id="pp-progress-sub">View stats</div></div>
-</div>
-<div class="pp-tile" onclick="closeProfilePanel();nav('bookmarks',null);">
-<div class="pp-tile-icon">🔖</div>
-<div><div class="pp-tile-label">Saved</div><div class="pp-tile-sub">My shlokas</div></div>
-</div>
-<div class="pp-tile" id="pp-notif-tile" onclick="togglePushSubscription()">
-<div class="pp-tile-icon" id="pp-notif-icon">🔔</div>
-<div><div class="pp-tile-label">Notifications</div><div class="pp-tile-sub" id="pp-notif-sub">Daily shloka</div></div>
-</div>
-        <div class="pp-tile" onclick="closeProfilePanel();authSignOut();" style="grid-column:1/-1;">
-        <div class="pp-tile-icon">🚪</div>
-        <div><div class="pp-tile-label" style="color:#8b0000">Sign Out</div><div class="pp-tile-sub">See you soon 🙏</div></div>
-        </div>
-</div>
-</div>
 
 
 
@@ -261,51 +209,46 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <button onclick="dismissInstallBanner()" style="background:none;border:none;color:#c8a87a;font-size:22px;cursor:pointer;padding:0 4px;line-height:1">×</button>
 </div>
   
-<div id="overlay" onclick="closeSidebar()"></div>
-
-<div id="sidebar">
-  <div class="sidebar-brand">
-    <span class="brand-deva">संस्मरण</span>
-    <div class="brand-name">Samsmarana</div>
-    <div class="brand-tag">Rediscover the Sanskrit you once knew</div>
-  </div>
-  <div class="sidebar-section">Begin Here</div>
-  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">☀</span> Today's Shloka</div>
-  <div class="nav-item" onclick="nav('tutor',this)"><span class="nav-icon">◎</span> Ask Guru Ji <span class="nav-badge">AI</span></div>
-  <div class="sidebar-section">Grammar (व्याकरण)</div>
-  <div class="nav-item" onclick="nav('shabdroop',this)"><span class="nav-icon">—</span> Shabd Roop</div>
-  <div class="nav-item" onclick="nav('dhaturoop',this)"><span class="nav-icon">↻</span> Dhatu Roop</div>
-  <div class="nav-item" onclick="nav('sandhi',this)"><span class="nav-icon">∞</span> Sandhi</div>
-  <div class="nav-item" onclick="nav('samas',this)"><span class="nav-icon">⊕</span> Samas</div>
-  <div class="nav-item" onclick="nav('karaka',this)"><span class="nav-icon">△</span> Karaka & Vibhakti</div>
-  <div class="sidebar-section">Script & Practice</div>
-  <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">अ</span> Devanagari</div>
-  <div class="nav-item" onclick="nav('shlokaCards',this)"><span class="nav-icon">🪔</span> Shloka Cards</div>
-  <div class="nav-item" onclick="nav('community',this)"><span class="nav-icon">🌸</span> Community <span class="nav-badge">New</span></div>
-  <div class="nav-item" onclick="nav('progress',this)"><span class="nav-icon">📊</span> My Progress</div>
-  <div class="nav-item" onclick="nav('upgrade',this)"><span class="nav-icon">✨</span> My Plan </div>
-  
-  <div class="nav-item" onclick="nav('flashcards',this)"><span class="nav-icon">◻</span> Vocabulary</div>
-  <div class="nav-item" onclick="nav('sentences',this)"><span class="nav-icon">✎</span> Sentence Practice</div>
-  <div class="sidebar-footer">
-    <p>"That which is remembered<br>is never truly forgotten."</p>
-    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-bottom:14px">
-      <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#4a3a28;margin-bottom:4px">Created by</div>
-      <div style="font-family:'EB Garamond',serif;font-size:16px;color:#c8a87a;letter-spacing:.5px">Bhawna Mishra</div>
-    </div>
-  </div>
-</div>
-</div>
 
 <div id="topbar">
-  <button id="menu-btn" onclick="toggleSidebar()">☰</button>
-  <button id="back-btn" onclick="goBack()">
-    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </button>
   <div id="topbar-title">Samsmarana</div>
   <button onclick="openAuth('signin')" id="signin-btn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Sign In</button>
 </div>
+
+<!-- Account dropdown — inline below topbar, hidden by default -->
+<div id="account-dropdown" style="display:none;position:absolute;top:48px;right:0;left:0;z-index:61;background:#fff;border-bottom:1.5px solid #e0c9a8;box-shadow:0 4px 16px rgba(0,0,0,0.10);">
+  <div id="acct-greeting" style="padding:14px 20px 10px;font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;border-bottom:1px solid #f0e4d0;"></div>
+  <div id="acct-tier-line" style="padding:6px 20px 10px;font-size:11px;color:#9a7850;border-bottom:1px solid #f0e4d0;"></div>
+  <div onclick="closeAccountDropdown();nav('profile-details',null);" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
+    <span style="font-size:18px">👤</span>
+    <div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Personal Details</div>
+      <div style="font-size:11px;color:#7a6040">Name, bio & preferences</div>
+    </div>
+  </div>
+  <div onclick="closeAccountDropdown();nav('upgrade',null);" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
+    <span style="font-size:18px">✨</span>
+    <div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">My Plan</div>
+      <div style="font-size:11px;color:#7a6040" id="acct-plan-sub">Jigyasu</div>
+    </div>
+  </div>
+  <div id="acct-notif-row" onclick="togglePushSubscription();" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
+    <span style="font-size:18px" id="acct-notif-icon">🔔</span>
+    <div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Notifications</div>
+      <div style="font-size:11px;color:#7a6040" id="acct-notif-sub">Daily shloka reminders</div>
+    </div>
+  </div>
+  <div onclick="closeAccountDropdown();authSignOut();" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;">
+    <span style="font-size:18px">🚪</span>
+    <div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#8b0000">Sign Out</div>
+      <div style="font-size:11px;color:#7a6040">See you soon 🙏</div>
+    </div>
+  </div>
+</div>
+<div id="account-dropdown-overlay" onclick="closeAccountDropdown()" style="display:none;position:fixed;inset:0;z-index:60;"></div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
@@ -359,6 +302,61 @@ Ask Guru Ji about this Shloka
     <div class="quick-card" onclick="nav('samas',getNav('samas'))"><div class="qc-icon">🧩</div><div class="qc-title">Samas</div><div class="qc-sub">Compound words</div></div>
     <div class="quick-card" onclick="nav('flashcards',getNav('flashcards'))"><div class="qc-icon">🃏</div><div class="qc-title">Vocabulary</div><div class="qc-sub">Words with meaning</div></div>
     <div class="quick-card" onclick="nav('tutor',getNav('tutor'))"><div class="qc-icon">◎</div><div class="qc-title">Ask Guru Ji</div><div class="qc-sub">AI powered</div></div>
+  </div>
+</div>
+
+<!-- LEARN LANDING -->
+<div class="page" id="page-learn">
+  <div style="padding:20px 16px 8px">
+    <div class="page-heading">पाठ · Learn</div>
+    <div class="page-desc">Choose a topic to continue your Sanskrit journey.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 100px">
+    <div class="learn-tile" onclick="nav('shabdroop',null)">
+      <div class="learn-tile-icon">—</div>
+      <div class="learn-tile-title">Shabd Roop</div>
+      <div class="learn-tile-sub">Noun declensions</div>
+    </div>
+    <div class="learn-tile" onclick="nav('dhaturoop',null)">
+      <div class="learn-tile-icon">↻</div>
+      <div class="learn-tile-title">Dhatu Roop</div>
+      <div class="learn-tile-sub">Verb conjugations</div>
+    </div>
+    <div class="learn-tile" onclick="nav('sandhi',null)">
+      <div class="learn-tile-icon">∞</div>
+      <div class="learn-tile-title">Sandhi</div>
+      <div class="learn-tile-sub">Sound combinations</div>
+    </div>
+    <div class="learn-tile" onclick="nav('samas',null)">
+      <div class="learn-tile-icon">⊕</div>
+      <div class="learn-tile-title">Samas</div>
+      <div class="learn-tile-sub">Compound words</div>
+    </div>
+    <div class="learn-tile" onclick="nav('karaka',null)">
+      <div class="learn-tile-icon">△</div>
+      <div class="learn-tile-title">Karaka</div>
+      <div class="learn-tile-sub">Cases & Vibhakti</div>
+    </div>
+    <div class="learn-tile" onclick="nav('script',null)">
+      <div class="learn-tile-icon">अ</div>
+      <div class="learn-tile-title">Devanagari</div>
+      <div class="learn-tile-sub">Script practice</div>
+    </div>
+    <div class="learn-tile" onclick="nav('shlokaCards',null)">
+      <div class="learn-tile-icon">🪔</div>
+      <div class="learn-tile-title">Shloka Cards</div>
+      <div class="learn-tile-sub">Read & reflect</div>
+    </div>
+    <div class="learn-tile" onclick="nav('flashcards',null)">
+      <div class="learn-tile-icon">◻</div>
+      <div class="learn-tile-title">Vocabulary</div>
+      <div class="learn-tile-sub">Word flashcards</div>
+    </div>
+    <div class="learn-tile" onclick="nav('sentences',null)" style="grid-column:1/-1">
+      <div class="learn-tile-icon">✎</div>
+      <div class="learn-tile-title">Sentence Practice</div>
+      <div class="learn-tile-sub">Build & translate sentences</div>
+    </div>
   </div>
 </div>
 
@@ -1014,7 +1012,7 @@ const cards=[
   {d:'प्रज्ञा',r:'Prajna',m:'Wisdom settled into the bones — not what you know, but what you have irreversibly become.',shloka:'प्रजहाति यदा कामान्सर्वान्पार्थ मनोगतान् । आत्मन्येवात्मना तुष्टः स्थितप्रज्ञस्तदोच्यते ॥',slokaMeaning:'When one abandons all desires of the mind and is content in the self alone — they are called Sthitaprajna.',source:'Bhagavad Gita 2.55'},
 ];
 
-const titles={home:'Samsmarana',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
+const titles={home:'Samsmarana',learn:'पाठ · Learn',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
 const sentences=[
   {
     english:'The boy reads the book.',
@@ -1410,39 +1408,31 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
 })();
 setTimeout(initDailyQuiz,0);
 
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
-function getNav(id){return document.querySelector(`.nav-item[onclick*="'${id}'"]`)}
 var navHistory=[];
+var TAB_IDS=['home','learn','tutor','community','progress'];
 function nav(id,el){
   const cur=document.querySelector('.page.active');
   if(cur&&cur.id!=='page-'+id) navHistory.push(cur.id.replace('page-',''));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
- if(id==='sentences')renderSentences();
-if(id==='shlokaCards')fetchShlokaCards();
-if(id==='community')initCommunity();
-if(id==='upgrade')initUpgradePage();
-if(id==='progress')initProgressPage();
-if(id==='profile-details')initProfileDetails();
-if(id==='bookmarks')initBookmarksPage();
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  if(el&&el.classList)el.classList.add('active');
+  if(id==='sentences')renderSentences();
+  if(id==='shlokaCards')fetchShlokaCards();
+  if(id==='community')initCommunity();
+  if(id==='upgrade')initUpgradePage();
+  if(id==='progress')initProgressPage();
+  if(id==='profile-details')initProfileDetails();
+  if(id==='bookmarks')initBookmarksPage();
   document.getElementById('topbar-title').textContent=titles[id]||id;
-  var bb=document.getElementById('back-btn');
-  var mb=document.getElementById('menu-btn');
-  if(id==='home'){bb.style.display='none';mb.style.display='block';}
-  else{bb.style.display='flex';mb.style.display='none';}
-  closeSidebar();window.scrollTo(0,0);
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+  var activeTab=TAB_IDS.includes(id)?id:null;
+  if(activeTab){var tb=document.getElementById('btab-'+activeTab);if(tb)tb.classList.add('active');}
+  closeAccountDropdown();
+  window.scrollTo(0,0);
 }
+function navTab(id){nav(id,null);}
 function goBack(){
   var prev=navHistory.length>0?navHistory.pop():'home';
-  var items=document.querySelectorAll('.nav-item');
-  var el=null;
-  items.forEach(function(item){
-    if(item.getAttribute('onclick')&&item.getAttribute('onclick').indexOf("'"+prev+"'")>-1) el=item;
-  });
-  nav(prev,el);
+  nav(prev,null);
 }
 
 
@@ -1722,8 +1712,9 @@ function updateUserUI(){
     var initial=nameParts.length>=2?(nameParts[0][0]+nameParts[nameParts.length-1][0]).toUpperCase():nameParts[0][0].toUpperCase();
     var pill=document.createElement('div');
     pill.id='user-pill';
+    pill.className='user-pill-btn';
     pill.style.cssText='display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer';
-    pill.onclick=function(){openProfilePanel();};
+    pill.setAttribute('onclick','openAccountDropdown()');
     var tier=getTier();
     var tierBadge=tier==='vidvan'?'<span style="background:#c0a000;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">V</span>':tier==='sadhaka'?'<span style="background:var(--gold);color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">S</span>':'<span style="background:#5a7a50;color:white;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:4px">J</span>';
     pill.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#faebd7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a2800">'+initial+'</div><span style="font-size:12px;color:white;font-weight:500">'+nameParts[0]+'</span>'+tierBadge;topbar.appendChild(pill);
@@ -1980,11 +1971,11 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 async function updateNotifTile(sub) {
-  var icon = document.getElementById('pp-notif-icon');
-  var label = document.getElementById('pp-notif-sub');
+  var icon = document.getElementById('acct-notif-icon');
+  var label = document.getElementById('acct-notif-sub');
   if (!icon || !label) return;
   if (sub) { icon.textContent = '🔕'; label.textContent = 'Tap to unsubscribe'; }
-  else { icon.textContent = '🔔'; label.textContent = 'Daily shloka'; }
+  else { icon.textContent = '🔔'; label.textContent = 'Daily shloka reminders'; }
 }
 
 async function initNotifTile() {
@@ -3008,26 +2999,28 @@ setTimeout(function() { overlay.remove(); }, 4000);
 // ── END PROGRESS PAGE ────────────────────────────────
 
 
-// ── PROFILE PANEL ─────────────────────────────────────────────────
+// ── ACCOUNT DROPDOWN ──────────────────────────────────────────────
 var _userProfile = null;
 
-function openProfilePanel() {
-if (!_user) { openAuth('signin'); return; }
-var meta = _user.user_metadata || {};
-var fullName = (_userProfile && _userProfile.display_name) || meta.full_name || meta.name || _user.email.split('@')[0];
-var tier = getTier();
-var tierNames = { jigyasu: 'जज्ञासु · Jigyasu', sadhaka: 'साधक · Sadhaka', vidvan: 'विद्वान् · Vidvan' };
-document.getElementById('pp-greeting').textContent = 'Namaste, ' + fullName + ' 🙏';
-document.getElementById('pp-tier-line').textContent = tierNames[tier] || tier;
-document.getElementById('pp-plan-sub').textContent = tierNames[tier] || tier;
-document.getElementById('profile-panel').classList.add('open');
-document.getElementById('profile-panel-overlay').style.display = 'block';
-initNotifTile();
+function openAccountDropdown() {
+  if (!_user) { openAuth('signin'); return; }
+  var meta = _user.user_metadata || {};
+  var fullName = (_userProfile && _userProfile.display_name) || meta.full_name || meta.name || _user.email.split('@')[0];
+  var tier = getTier();
+  var tierNames = { jigyasu: 'जज्ञासु · Jigyasu', sadhaka: 'साधक · Sadhaka', vidvan: 'विद्वान् · Vidvan' };
+  document.getElementById('acct-greeting').textContent = 'Namaste, ' + fullName + ' 🙏';
+  document.getElementById('acct-tier-line').textContent = tierNames[tier] || tier;
+  document.getElementById('acct-plan-sub').textContent = tierNames[tier] || tier;
+  document.getElementById('account-dropdown').style.display = 'block';
+  document.getElementById('account-dropdown-overlay').style.display = 'block';
+  initNotifTile();
 }
 
-function closeProfilePanel() {
-document.getElementById('profile-panel').classList.remove('open');
-document.getElementById('profile-panel-overlay').style.display = 'none';
+function closeAccountDropdown() {
+  var dd = document.getElementById('account-dropdown');
+  var ov = document.getElementById('account-dropdown-overlay');
+  if (dd) dd.style.display = 'none';
+  if (ov) ov.style.display = 'none';
 }
 
 // ── PERSONAL DETAILS PAGE ─────────────────────────────────────────
@@ -3493,5 +3486,28 @@ banner.style.display = 'flex';
 
   
 </script>
+  <div id="bottom-tabbar">
+    <div class="btab active" id="btab-home" onclick="navTab('home')">
+      <span class="btab-icon">🏠</span>
+      <span class="btab-label">गृह</span>
+    </div>
+    <div class="btab" id="btab-learn" onclick="navTab('learn')">
+      <span class="btab-icon">📖</span>
+      <span class="btab-label">पाठ</span>
+    </div>
+    <div class="btab" id="btab-tutor" onclick="navTab('tutor')">
+      <span class="btab-icon">🪔</span>
+      <span class="btab-label">गुरु जी</span>
+    </div>
+    <div class="btab" id="btab-community" onclick="navTab('community')">
+      <span class="btab-icon">🌸</span>
+      <span class="btab-label">समाज</span>
+    </div>
+    <div class="btab" id="btab-progress" onclick="navTab('progress')">
+      <span class="btab-icon">📊</span>
+      <span class="btab-label">प्रगति</span>
+    </div>
+  </div>
+
 </body>
 </html>
