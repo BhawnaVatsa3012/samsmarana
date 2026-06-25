@@ -1431,6 +1431,7 @@ var activeTab=TAB_MAP[id]||null;
   window.scrollTo(0,0);
 }
 function navTab(id){nav(id,null);}
+function getNav(id){return null;}
 function goBack(){
   var prev=navHistory.length>0?navHistory.pop():'home';
   nav(prev,null);
@@ -1951,7 +1952,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=2');
+  navigator.serviceWorker.register('/sw.js?v=3');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
