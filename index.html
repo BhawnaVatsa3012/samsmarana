@@ -3646,12 +3646,16 @@ function renderStotraDetail() {
   if (titleEl) titleEl.textContent = stotra.nameDevanagari;
 
   var linesHtml = '';
-  verse.lines.forEach(function(line, i) {
-    linesHtml +=
-      '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">'+
-        '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:18px;color:#4a1000;line-height:2.1;flex:1">'+line+'</div>'+
-        '<button onclick="playStoraLine(\''+line.replace(/'/g,"\\'")+'\')" style="background:none;border:1.5px solid #e0c9a8;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:16px;flex-shrink:0;margin-top:8px" title="Listen">🔊</button>'+
-      '</div>';
+  var audioBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="playVerseAudio()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M8 5v14l11-7z"/></svg> Listen to Verse</button>';
+  verse.lines.forEach(function(line) {
+    var sk = (typeof line === 'object') ? line.sanskrit : line;
+    var en = (typeof line === 'object') ? line.english : '';
+    var hi = (typeof line === 'object') ? line.hindi : '';
+    linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
+    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:18px;color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
+    if (en) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
+    if (hi) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
+    linesHtml += '</div>';
   });
 
   var gateHtml = '';
@@ -3690,9 +3694,9 @@ function renderStotraDetail() {
       '<div style="font-size:12px;color:#9a7850">'+stotra.author+' · verse '+(_currentVerseIdx+1)+' of '+stotra.verseCount+'</div>'+
     '</div>'+
     (isLocked ? gateHtml :
+      audioBtn +
       '<div class="card" style="margin-bottom:0">'+
         linesHtml+
-        '<div style="border-top:1px solid #f0e4d0;margin-top:12px;padding-top:12px;font-family:\'EB Garamond\',serif;font-size:15px;color:#3a2a18;line-height:1.8;font-style:italic">'+verse.meaning+'</div>'+
       '</div>'+
       recitationBtn
     )+
@@ -3722,7 +3726,7 @@ async function playStoraLine(lineText) {
     if (_stotraAudioCache[cacheKey]) {
       b64 = _stotraAudioCache[cacheKey];
     } else {
-      var resp = await fetch('/api/grammar?type=tts', {
+      var resp = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: cacheKey })
@@ -3736,6 +3740,38 @@ async function playStoraLine(lineText) {
     _stotraAudio = new Audio(URL.createObjectURL(blob));
     _stotraAudio.play();
   } catch(e) { console.error('playStoraLine error:', e); }
+}
+
+async function playVerseAudio() {
+  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
+  if (!stotra) return;
+  var verse = stotra.verses[_currentVerseIdx];
+  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  for (var i = 0; i < verse.lines.length; i++) {
+    var lineObj = verse.lines[i];
+    var text = (typeof lineObj === 'object') ? lineObj.sanskrit : lineObj;
+    await new Promise(function(resolve) {
+      (function(t) {
+        if (_stotraAudioCache[t]) {
+          var blob = new Blob([Uint8Array.from(atob(_stotraAudioCache[t]), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
+          _stotraAudio = new Audio(URL.createObjectURL(blob));
+          _stotraAudio.onended = resolve; _stotraAudio.onerror = resolve;
+          _stotraAudio.play().catch(resolve);
+        } else {
+          fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: t }) })
+          .then(function(r){ return r.json(); }).then(function(data) {
+            if (data.error) { resolve(); return; }
+            _stotraAudioCache[t] = data.audio_base64;
+            var blob = new Blob([Uint8Array.from(atob(data.audio_base64), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
+            _stotraAudio = new Audio(URL.createObjectURL(blob));
+            _stotraAudio.onended = resolve; _stotraAudio.onerror = resolve;
+            _stotraAudio.play().catch(resolve);
+          }).catch(resolve);
+        }
+      })(text);
+    });
+  }
 }
 
 async function playFullRecitation() {
