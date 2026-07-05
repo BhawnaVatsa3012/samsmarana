@@ -211,6 +211,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   
 
 <div id="topbar">
+  <span id="topbar-back" onclick="goBack()" style="display:none;cursor:pointer;font-size:20px;color:#fff;line-height:1;padding:2px 6px 2px 0;">←</span>
   <div id="topbar-title">Samsmarana</div>
   <button onclick="openAuth('signin')" id="signin-btn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Sign In</button>
 </div>
@@ -1429,6 +1430,8 @@ function nav(id,el){
   if(id==='bookmarks')initBookmarksPage();
   if(id==='stotrams')initStotramsList();
   document.getElementById('topbar-title').textContent=titles[id]||id;
+  var backBtn=document.getElementById('topbar-back');
+  if(backBtn) backBtn.style.display = TAB_IDS.includes(id) ? 'none' : 'inline';
   document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
   var TAB_MAP={'home':'home','learn':'learn','tutor':'tutor','community':'community','progress':'progress','shabdroop':'learn','dhaturoop':'learn','sandhi':'learn','samas':'learn','karaka':'learn','script':'learn','flashcards':'learn','sentences':'learn','shlokaCards':'learn','stotrams':'learn','stotra-detail':'learn','upgrade':'progress','profile-details':'home','bookmarks':'home'};
 var activeTab=TAB_MAP[id]||null;
@@ -1959,7 +1962,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=6');
+  navigator.serviceWorker.register('/sw.js?v=7');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
