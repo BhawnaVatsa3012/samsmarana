@@ -12,8 +12,8 @@
 | Bug 5 | ✅ Closed | New user profile shows cached values on first load |
 | Bug 6 | ✅ Closed | Sign-out buried three levels deep |
 | Bug 7 | ✅ Fixed | Sign-up page unreachable — malformed HTML |
-| Bug 8 | ⬜ Open | Remove `console.log('[TAB DEBUG]...')` from nav() |
-| Bug 9 | ⬜ Open | `playStoraLine()` still hits `/api/grammar?type=tts` — fix to `/api/tts` |
+| Bug 8 | ✅ Fixed | Remove `console.log('[TAB DEBUG]...')` from nav() |
+| Bug 9 | ✅ Fixed | `playStoraLine()` now hits `/api/tts` correctly |
 
 ---
 
@@ -33,7 +33,7 @@
 | B8 | ⬜ Pending | Referral mechanism — Jigyasu earns 40% off Sadhaka, Sadhaka earns 30% off Vidvan; non-stackable, applied server-side via Razorpay |
 | B9 | ✅ Done | Bottom tab bar navigation (5 Devanagari-labelled tabs) |
 | B9.1 | ✅ Done | Active tab highlighting fix (background colour, not just text) |
-| B10 | 🔄 In Progress | Stotrams — list ✅, verse detail ✅, per-line EN/HI meanings rendering ✅, Verse 1 Shiv Tandav data updated ✅ — remaining verses across all 5 stotrams still need data converted to object format |
+| B10 | ✅ Done | Stotrams — all 5 stotrams fully migrated to per-line EN/HI object format (Shiv Tandav 68 lines, Rudrashtakam 32, Shiva Panchakshara 20, Mahishasura Mardini 62 + refrain, Maha Mrityunjaya 4). Live in production. |
 | — | ⬜ Pending | Vidvan tier launch |
 | — | ⬜ Pending | Razorpay live keys (switch from test to production) |
 | — | ⬜ Pending | Google Play Store via Capacitor |
