@@ -18,6 +18,7 @@
   --bg:#fdf8f2;--surface:#ffffff;--card:#ffffff;--border:#e0c9a8;
   --ink:#1a0f00;--muted:#5a4020;--accent:#7a2800;--gold:#9a6800;
   --light-accent:#faebd7;--green:#1a5c38;--red:#8b0000;
+  --deva-size:18px;
 }
 body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-height:100vh;overflow-x:hidden}
 .deva{font-family:'Tiro Devanagari Sanskrit',serif}
@@ -213,6 +214,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <div id="topbar">
   <span id="topbar-back" onclick="goBack()" style="display:none;cursor:pointer;font-size:20px;color:#fff;line-height:1;padding:2px 6px 2px 0;">←</span>
   <div id="topbar-title">Samsmarana</div>
+  <button onclick="cycleFontSize()" id="font-toggle-btn" title="Sanskrit text size" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:14px;padding:3px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:8px">A+</button>
   <button onclick="openAuth('signin')" id="signin-btn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Sign In</button>
 </div>
 
@@ -636,7 +638,7 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <!-- Label -->
 <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of <span id="sc-total">6</span></div>
 <!-- Sanskrit text -->
-<div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
+<div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:var(--deva-size);color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
 <!-- Source -->
 <div id="sc-source" style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#9a6800;text-align:center;margin-bottom:18px"></div>
 
@@ -1446,6 +1448,21 @@ function goBack(){
   var prev=navHistory.length>0?navHistory.pop():'home';
   nav(prev,null);
 }
+var FONT_SIZES=['16px','18px','20px','22px','24px'];
+function cycleFontSize(){
+  var cur=(getComputedStyle(document.documentElement).getPropertyValue('--deva-size')||'18px').trim();
+  var idx=FONT_SIZES.indexOf(cur);
+  var next=FONT_SIZES[(idx+1)%FONT_SIZES.length];
+  document.documentElement.style.setProperty('--deva-size',next);
+  try{localStorage.setItem('deva_font_size',next);}catch(e){}
+}
+function restoreFontSize(){
+  try{
+    var saved=localStorage.getItem('deva_font_size');
+    if(saved) document.documentElement.style.setProperty('--deva-size',saved);
+  }catch(e){}
+}
+restoreFontSize();
 
 
 function showShabd(wordRoman, btn) {
@@ -1962,7 +1979,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=7');
+  navigator.serviceWorker.register('/sw.js?v=8');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3657,7 +3674,7 @@ function renderStotraDetail() {
     var en = (typeof line === 'object') ? line.english : '';
     var hi = (typeof line === 'object') ? line.hindi : '';
     linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
-    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:18px;color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
+    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
     if (en) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
     if (hi) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
     linesHtml += '</div>';
