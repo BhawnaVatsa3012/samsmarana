@@ -731,6 +731,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <div id="progress-badge-name" style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#7a6040;margin-bottom:16px">Keep going — your first badge awaits</div>
 <div style="font-family:'EB Garamond',serif;font-size:56px;font-weight:600;color:#7a2800;line-height:1" id="progress-score">0</div>
 <div style="font-size:12px;color:#5a4020;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Cumulative Points</div>
+<div id="progress-streak" style="display:none;margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#9a6800;font-style:italic"></div>
 
 <!-- Milestone progress bar -->
 <div style="margin-top:20px">
@@ -1979,7 +1980,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=8');
+  navigator.serviceWorker.register('/sw.js?v=9');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -2808,6 +2809,12 @@ console.error('Progress fetch error:', e);
 function renderProgressStats(data) {
 var progress = data.progress || {};
 var score = progress.cumulative_score || 0;
+var streak = progress.streak_count || 0;
+var streakEl = document.getElementById('progress-streak');
+if (streakEl) {
+  if (streak > 0) { streakEl.textContent = '🔥 ' + streak + ' day' + (streak === 1 ? '' : 's') + ' of practice'; streakEl.style.display = 'block'; }
+  else { streakEl.style.display = 'none'; }
+}
 var badge = progress.badge_level || 'none';
 var cfg = BADGE_CONFIG[badge] || BADGE_CONFIG.none;
 
