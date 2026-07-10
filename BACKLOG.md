@@ -30,7 +30,7 @@
 | B5 | ✅ Done | Pronunciation Audio |
 | B6a | ✅ Done | Guru Ji personalisation |
 | B7 | ✅ Done | Expanded Shabd/Dhatu Roop (gated by tier) |
-| B8 | ⬜ Pending | Referral mechanism — Jigyasu earns 40% off Sadhaka, Sadhaka earns 30% off Vidvan; non-stackable, applied server-side via Razorpay |
+| B8 | ⬜ Deprioritized | Referral mechanism — Jigyasu earns 40% off Sadhaka, Sadhaka earns 30% off Vidvan; non-stackable, applied server-side via Razorpay. Deferred until post-launch once signup→paid conversion data exists. Also blocked by Vercel Hobby 12/12 function limit — would need to be merged into razorpay.js rather than its own endpoint. |
 | B9 | ✅ Done | Bottom tab bar navigation (5 Devanagari-labelled tabs) |
 | B9.1 | ✅ Done | Active tab highlighting fix (background colour, not just text) |
 | B10 | ✅ Done | Stotrams — all 5 stotrams fully migrated to per-line EN/HI object format (Shiv Tandav 68 lines, Rudrashtakam 32, Shiva Panchakshara 20, Mahishasura Mardini 62 + refrain, Maha Mrityunjaya 4). Live in production. |
@@ -74,7 +74,7 @@
 | # | Status | Item |
 |---|--------|------|
 | UI-P1 | ⬜ Pending | Replace numeric score display with Sanskrit milestone labels at each level (e.g. अभ्यासी at 10, साधक at 30) |
-| UI-P2 | ⬜ Pending | Daily streak counter — "7 days of practice" displayed next to score |
+| UI-P2 | ⬜ Pending — NEXT UP | Daily streak counter — "7 days of practice" displayed next to score |
 | UI-P3 | ⬜ Pending | Rename Learning Log to "शिक्षण पत्र — My Learning Record" and give it more prominence on the page |
 
 ### Onboarding
