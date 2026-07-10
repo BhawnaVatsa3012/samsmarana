@@ -61,7 +61,7 @@
 | # | Status | Item |
 |---|--------|------|
 | UI-S1 | ⬜ Pending | Full-screen recitation mode — when audio plays, dim UI and highlight the active Sanskrit line as audio progresses (Vidvan tier) |
-| UI-S2 | ⬜ Pending | Font size control — A / A+ toggle on Sanskrit text for accessibility (especially Devanagari at small sizes) |
+| UI-S2 | ✅ Done | Font size control — A / A+ toggle on Sanskrit text for accessibility (especially Devanagari at small sizes) |
 
 ### Guru Ji
 | # | Status | Item |
@@ -88,4 +88,4 @@
 | UI-X1 | ⬜ Pending | Pull-to-refresh on Community and Home pages |
 | UI-X2 | ⬜ Pending | Warm empty state for Bookmarks — "Save a shloka that speaks to you today 🙏" instead of generic icon |
 | UI-X3 | ⬜ Pending | Long-press to copy Sanskrit text on any shloka/stotra line |
-| UI-X4 | ⬜ Pending | Visible ← Back link at top of sub-pages (Stotra detail, Profile, Bookmarks) for users unfamiliar with gesture navigation |
+| UI-X4 | ✅ Done | Visible ← Back link at top of sub-pages (Stotra detail, Profile, Bookmarks) for users unfamiliar with gesture navigation |
