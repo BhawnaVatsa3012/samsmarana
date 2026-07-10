@@ -74,7 +74,7 @@
 | # | Status | Item |
 |---|--------|------|
 | UI-P1 | ⬜ Pending | Replace numeric score display with Sanskrit milestone labels at each level (e.g. अभ्यासी at 10, साधक at 30) |
-| UI-P2 | ⬜ Pending — NEXT UP | Daily streak counter — "7 days of practice" displayed next to score |
+| UI-P2 | ✅ Done | Daily streak counter — "7 days of practice" displayed next to score |
 | UI-P3 | ⬜ Pending | Rename Learning Log to "शिक्षण पत्र — My Learning Record" and give it more prominence on the page |
 
 ### Onboarding
