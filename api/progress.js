@@ -87,7 +87,7 @@ explain: a.explain
 }
 
 return res.status(200).json({
-progress: progress || { cumulative_score: 0, badge_level: 'none', last_attempt_date: null },
+progress: progress || { cumulative_score: 0, badge_level: 'none', last_attempt_date: null, streak_count: 0 },
 attempted_today: !!todayAttempt,
 today_score: todayAttempt ? todayAttempt.score : null,
 incorrect_log: incorrectLog
@@ -135,7 +135,19 @@ var { data: progress } = await supabase
 
 var prevScore = progress ? progress.cumulative_score : 0;
 var prevBadge = progress ? progress.badge_level : 'none';
+var prevStreak = progress ? (progress.streak_count || 0) : 0;
+var prevAttemptDate = progress ? progress.last_attempt_date : null;
 var newScore = prevScore + score;
+
+var yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+var newStreak;
+if (prevAttemptDate === yesterday) {
+newStreak = prevStreak + 1;
+} else if (prevAttemptDate === today) {
+newStreak = prevStreak;
+} else {
+newStreak = 1;
+}
 
 // Determine new badge
 var newBadge = prevBadge;
@@ -149,6 +161,7 @@ user_id: userId,
 cumulative_score: newScore,
 badge_level: newBadge,
 last_attempt_date: today,
+streak_count: newStreak,
 updated_at: new Date().toISOString()
 });
 
@@ -166,6 +179,7 @@ return res.status(200).json({
 score: score,
 cumulative_score: newScore,
 badge_level: newBadge,
+streak_count: newStreak,
 milestone_reached: (prevScore < 10 && newScore >= 10) ? 10 :
 (prevScore < 30 && newScore >= 30) ? 30 :
 (prevScore < 50 && newScore >= 50) ? 50 : null
