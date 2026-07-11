@@ -80,7 +80,7 @@
 ### Onboarding
 | # | Status | Item |
 |---|--------|------|
-| UI-O1 | ⬜ Pending | First-launch 3-card swipe: (1) What is Samsmarana (2) How tiers work (3) Start here — Today's Shloka |
+| UI-O1 | ✅ Done | First-launch 3-card swipe: (1) What is Samsmarana (2) How tiers work (3) Start here — Today's Shloka. Auto-shows once (localStorage), replayable via "How Samsmarana Works" in account dropdown. |
 
 ### Small High-Impact Polish
 | # | Status | Item |
