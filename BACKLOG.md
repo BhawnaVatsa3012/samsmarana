@@ -55,8 +55,8 @@
 ### Home Screen
 | # | Status | Item |
 |---|--------|------|
-| UI-H1 | ⬜ Pending | Reorder home: Shloka of the Day (full-width hero) → Today's Practice card (quiz status) → Continue where you left off → Community highlight teaser |
-| UI-H2 | ⬜ Pending | "Continue where you left off" card — surface last visited section (e.g. Shiv Tandav Verse 3, Shabd Roop) |
+| UI-H1 | ✅ Done | Reordered home: hero shloka → today's practice → continue where you left off → community teaser slot (UI-H3 content pending separately) |
+| UI-H2 | ✅ Done | "Continue where you left off" card added — reads last_visited from localStorage, written from stotra/shabd/dhatu nav functions, hidden if no history yet |
 | UI-H3 | ⬜ Pending | Community highlight on home — one reflection, read-only teaser for Jigyasu users to encourage upgrade |
 
 ### Stotrams Experience

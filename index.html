@@ -340,6 +340,10 @@ Ask Guru Ji about this Shloka
     <div id="quiz-body"></div>
   </div>
 </div>
+  <!-- CONTINUE WHERE YOU LEFT OFF -->
+  <div id="continue-card-slot" style="margin-bottom:20px;display:none"></div>
+  <!-- COMMUNITY HIGHLIGHT TEASER — UI-H3, not built in this pass -->
+  <!-- <div id="community-teaser-slot"></div> -->
   <div class="quick-grid">
     <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
     <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
@@ -1458,6 +1462,7 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
 
 })();
 setTimeout(initDailyQuiz,0);
+setTimeout(renderContinueCard,0);
 setTimeout(function(){ showOnboarding(false); }, 600);
 
 var navHistory=[];
@@ -1476,6 +1481,7 @@ function nav(id,el){
   if(id==='profile-details')initProfileDetails();
   if(id==='bookmarks')initBookmarksPage();
   if(id==='stotrams')initStotramsList();
+  if(id==='home')renderContinueCard();
   document.getElementById('topbar-title').textContent=titles[id]||id;
   var backBtn=document.getElementById('topbar-back');
   if(backBtn) backBtn.style.display = TAB_IDS.includes(id) ? 'none' : 'inline';
@@ -1585,6 +1591,15 @@ function showShabd(wordRoman, btn) {
   document.getElementById('shabd-content').innerHTML = html;
   document.querySelectorAll('#page-shabdroop .sub-tab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  if (btn) {
+    try {
+      localStorage.setItem('last_visited', JSON.stringify({
+        type: 'shabd',
+        label: 'Shabd Roop — ' + word.word_devanagari + ' (' + wordRoman + ')',
+        navTarget: { wordRoman: wordRoman }
+      }));
+    } catch(e) {}
+  }
 }
 function showDhatu(tenseId, btn) {
   if (!window._dhatuData) return;
@@ -1605,6 +1620,15 @@ function showDhatu(tenseId, btn) {
   document.getElementById('dhatu-content').innerHTML = html;
   document.querySelectorAll('#page-dhaturoop .sub-tab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  if (btn) {
+    try {
+      localStorage.setItem('last_visited', JSON.stringify({
+        type: 'dhatu',
+        label: 'Dhatu Roop — ' + tense.tense_title,
+        navTarget: { tenseId: tenseId }
+      }));
+    } catch(e) {}
+  }
 }
 async function loadGrammarData() {
   try {
@@ -1623,8 +1647,18 @@ async function loadGrammarData() {
     });
     document.getElementById('shabd-sub-tabs').innerHTML = tabsHtml;
 
-    // Show first word by default
-    if (visibleShabd.length) showShabd(visibleShabd[0].word_roman, null);
+    // Show first word by default, or resume to a specific word if requested
+    var shabdToShow = visibleShabd.length ? visibleShabd[0].word_roman : null;
+    var shabdIdx = 0;
+    if (window._resumeShabdWord) {
+      var foundIdx = visibleShabd.findIndex(function(w) { return w.word_roman === window._resumeShabdWord; });
+      if (foundIdx !== -1) { shabdToShow = window._resumeShabdWord; shabdIdx = foundIdx; }
+      window._resumeShabdWord = null;
+    }
+    if (shabdToShow) {
+      var shabdBtns = document.querySelectorAll('#page-shabdroop .sub-tab');
+      showShabd(shabdToShow, shabdBtns[shabdIdx] || null);
+    }
 
     // Show upgrade tile for Jigyasu only
     var lockedCount = allShabd.filter(function(w) { return !w.is_free; }).length;
@@ -1637,8 +1671,15 @@ async function loadGrammarData() {
     var allDhatu = dhatuJson.dhatu || [];
     window._dhatuData = premium ? allDhatu : allDhatu.filter(function(d) { return d.is_free; });
 
-    // Show first tense by default
-    showDhatu('lat', document.querySelector('#page-dhaturoop .sub-tab'));
+    // Show first tense by default, or resume to a specific tense if requested
+    var DHATU_TENSE_ORDER = ['lat', 'lrit', 'lang', 'lot', 'vidhiling'];
+    var dhatuTenseToShow = 'lat';
+    if (window._resumeDhatuTense && DHATU_TENSE_ORDER.indexOf(window._resumeDhatuTense) !== -1) {
+      dhatuTenseToShow = window._resumeDhatuTense;
+    }
+    window._resumeDhatuTense = null;
+    var dhatuBtns = document.querySelectorAll('#page-dhaturoop .sub-tab');
+    showDhatu(dhatuTenseToShow, dhatuBtns[DHATU_TENSE_ORDER.indexOf(dhatuTenseToShow)] || dhatuBtns[0]);
 
   } catch(e) {
     console.error('Grammar load error:', e);
@@ -2073,7 +2114,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=12');
+  navigator.serviceWorker.register('/sw.js?v=13');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3827,6 +3868,14 @@ function renderStotraDetail() {
   var el = document.getElementById('stotra-detail-content');
   if (el) el.innerHTML = html;
   window.scrollTo(0, 0);
+
+  try {
+    localStorage.setItem('last_visited', JSON.stringify({
+      type: 'stotra',
+      label: stotra.name + ' — Verse ' + (_currentVerseIdx + 1),
+      navTarget: { stotraId: stotra.id, verseIdx: _currentVerseIdx }
+    }));
+  } catch(e) {}
 }
 
 function stotraNavVerse(dir) {
@@ -3837,6 +3886,60 @@ function stotraNavVerse(dir) {
   if (next < 0 || next >= stotra.verseCount) return;
   _currentVerseIdx = next;
   renderStotraDetail();
+}
+
+function resumeStotra(id, verseIdx) {
+  if (typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === id; });
+  if (!stotra) return;
+  var tier = getTier();
+  if (tier === 'jigyasu') { openAuth('signin'); return; }
+  _currentStotraId = id;
+  _currentVerseIdx = (typeof verseIdx === 'number' && verseIdx >= 0 && verseIdx < stotra.verseCount) ? verseIdx : 0;
+  nav('stotra-detail', null);
+  setTimeout(renderStotraDetail, 0);
+}
+
+function continueLastVisited() {
+  var raw;
+  try { raw = localStorage.getItem('last_visited'); } catch(e) { raw = null; }
+  if (!raw) return;
+  var lv;
+  try { lv = JSON.parse(raw); } catch(e) { return; }
+  if (!lv || !lv.type || !lv.navTarget) return;
+  if (lv.type === 'stotra') {
+    resumeStotra(lv.navTarget.stotraId, lv.navTarget.verseIdx);
+  } else if (lv.type === 'shabd') {
+    window._resumeShabdWord = lv.navTarget.wordRoman;
+    nav('shabdroop', null);
+  } else if (lv.type === 'dhatu') {
+    window._resumeDhatuTense = lv.navTarget.tenseId;
+    nav('dhaturoop', null);
+  }
+}
+
+function renderContinueCard() {
+  var slot = document.getElementById('continue-card-slot');
+  if (!slot) return;
+  var raw;
+  try { raw = localStorage.getItem('last_visited'); } catch(e) { raw = null; }
+  var lv = null;
+  if (raw) { try { lv = JSON.parse(raw); } catch(e) { lv = null; } }
+  if (!lv || !lv.label) {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+    return;
+  }
+  slot.style.display = 'block';
+  slot.innerHTML =
+    '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px" onclick="continueLastVisited()">'+
+      '<div style="font-size:26px;width:40px;text-align:center">↩</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">Continue where you left off</div>'+
+        '<div style="font-family:\'EB Garamond\',serif;font-size:16px;font-weight:600;color:#1a0f00;margin-top:2px">'+lv.label+'</div>'+
+      '</div>'+
+      '<div style="color:#c8a870;font-size:20px">›</div>'+
+    '</div>';
 }
 
 async function playStoraLine(lineText) {
