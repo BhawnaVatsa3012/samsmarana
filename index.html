@@ -133,7 +133,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 
 <!-- ONBOARDING OVERLAY -->
 <div id="onboarding-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,10,4,.85);z-index:150;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
-<div style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:0;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;position:relative">
+<div id="onboard-card" style="background:#fff;border:1px solid #e0c9a8;border-radius:16px;padding:0;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;position:relative">
 <span onclick="onboardDismiss()" style="position:absolute;top:14px;right:16px;font-size:13px;color:#9a7850;cursor:pointer;text-decoration:underline;z-index:2">Skip</span>
 <div id="onboard-slide-0" class="onboard-slide" style="padding:44px 28px 28px;text-align:center">
 <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:44px;color:#7a2800;margin-bottom:14px">संस्मरण</div>
@@ -1529,14 +1529,33 @@ function onboardRender(){
   if(btn) btn.textContent = _onboardIdx===ONBOARD_SLIDES-1 ? 'Begin →' : 'Next →';
 }
 function onboardNav(dir){
-  if(_onboardIdx===ONBOARD_SLIDES-1){ onboardDismiss(); return; }
-  _onboardIdx=Math.min(ONBOARD_SLIDES-1,_onboardIdx+dir);
+  if(dir > 0 && _onboardIdx===ONBOARD_SLIDES-1){ onboardDismiss(); return; }
+  _onboardIdx = Math.max(0, Math.min(ONBOARD_SLIDES-1, _onboardIdx+dir));
   onboardRender();
 }
 function onboardDismiss(){
   try{ localStorage.setItem('onboarding_seen','1'); }catch(e){}
   document.getElementById('onboarding-overlay').style.display='none';
 }
+
+var _onboardTouchX = null, _onboardTouchY = null;
+(function(){
+  var card = document.getElementById('onboard-card');
+  if(!card) return;
+  card.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    _onboardTouchX = e.touches[0].clientX;
+    _onboardTouchY = e.touches[0].clientY;
+  }, {passive:true});
+  card.addEventListener('touchend', function(e){
+    if(_onboardTouchX === null) return;
+    var dx = e.changedTouches[0].clientX - _onboardTouchX;
+    var dy = e.changedTouches[0].clientY - _onboardTouchY;
+    _onboardTouchX = null; _onboardTouchY = null;
+    if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    onboardNav(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 
 
 function showShabd(wordRoman, btn) {
@@ -2053,7 +2072,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=10');
+  navigator.serviceWorker.register('/sw.js?v=11');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');

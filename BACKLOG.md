@@ -14,6 +14,7 @@
 | Bug 7 | ✅ Fixed | Sign-up page unreachable — malformed HTML |
 | Bug 8 | ✅ Fixed | Remove `console.log('[TAB DEBUG]...')` from nav() |
 | Bug 9 | ✅ Fixed | `playStoraLine()` now hits `/api/tts` correctly |
+| Bug 10 | ✅ Fixed | (UI-O1) Onboarding intro cards were not swipeable — added touchstart/touchend swipe navigation, kept the Next/Skip buttons working |
 
 ---
 
