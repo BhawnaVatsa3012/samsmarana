@@ -342,8 +342,8 @@ Ask Guru Ji about this Shloka
 </div>
   <!-- CONTINUE WHERE YOU LEFT OFF -->
   <div id="continue-card-slot" style="margin-bottom:20px;display:none"></div>
-  <!-- COMMUNITY HIGHLIGHT TEASER — UI-H3, not built in this pass -->
-  <!-- <div id="community-teaser-slot"></div> -->
+  <!-- COMMUNITY HIGHLIGHT TEASER -->
+  <div id="community-teaser-slot" style="margin-bottom:20px;display:none"></div>
   <div class="quick-grid">
     <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
     <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
@@ -1463,6 +1463,7 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
 })();
 setTimeout(initDailyQuiz,0);
 setTimeout(renderContinueCard,0);
+setTimeout(renderCommunityTeaser,0);
 setTimeout(function(){ showOnboarding(false); }, 600);
 
 var navHistory=[];
@@ -1481,7 +1482,7 @@ function nav(id,el){
   if(id==='profile-details')initProfileDetails();
   if(id==='bookmarks')initBookmarksPage();
   if(id==='stotrams')initStotramsList();
-  if(id==='home')renderContinueCard();
+  if(id==='home'){renderContinueCard();renderCommunityTeaser();}
   document.getElementById('topbar-title').textContent=titles[id]||id;
   var backBtn=document.getElementById('topbar-back');
   if(backBtn) backBtn.style.display = TAB_IDS.includes(id) ? 'none' : 'inline';
@@ -2114,7 +2115,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=13');
+  navigator.serviceWorker.register('/sw.js?v=14');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3940,6 +3941,42 @@ function renderContinueCard() {
       '</div>'+
       '<div style="color:#c8a870;font-size:20px">›</div>'+
     '</div>';
+}
+
+async function renderCommunityTeaser() {
+  var slot = document.getElementById('community-teaser-slot');
+  if (!slot) return;
+  if (typeof getTier !== 'function' || getTier() !== 'jigyasu') {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+    return;
+  }
+  try {
+    var res = await fetch('/api/community');
+    var data = await res.json();
+    if (!data.reflections || data.reflections.length === 0) {
+      slot.style.display = 'none';
+      slot.innerHTML = '';
+      return;
+    }
+    var r = data.reflections[0];
+    var text = r.reflection || '';
+    if (text.length > 120) text = text.slice(0, 120).trim() + '…';
+    slot.style.display = 'block';
+    slot.innerHTML =
+      '<div class="card" style="padding:16px">'+
+        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:10px">From the Community</div>'+
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
+          '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7a2800,#c8922a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">'+(r.user_initials||'')+'</div>'+
+          '<div style="font-family:\'EB Garamond\',serif;font-size:14px;font-weight:600;color:#1a0f00">'+(r.user_name||'A fellow seeker')+'</div>'+
+        '</div>'+
+        '<div style="font-family:\'EB Garamond\',serif;font-size:15px;color:#1a0f00;line-height:1.7;font-style:italic;margin-bottom:12px">"'+text+'"</div>'+
+        '<div onclick="document.getElementById(\'guru-upgrade-popup\').style.display=\'flex\'" style="cursor:pointer;font-size:12px;font-weight:600;color:#7a2800;text-decoration:underline">Join the conversation — upgrade to Sadhaka</div>'+
+      '</div>';
+  } catch (e) {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+  }
 }
 
 async function playStoraLine(lineText) {

@@ -57,7 +57,7 @@
 |---|--------|------|
 | UI-H1 | ✅ Done | Reordered home: hero shloka → today's practice → continue where you left off → community teaser slot (UI-H3 content pending separately) |
 | UI-H2 | ✅ Done | "Continue where you left off" card added — reads last_visited from localStorage, written from stotra/shabd/dhatu nav functions, hidden if no history yet |
-| UI-H3 | ⬜ Pending | Community highlight on home — one reflection, read-only teaser for Jigyasu users to encourage upgrade |
+| UI-H3 | ✅ Done | Community highlight teaser added to home for Jigyasu users only — pulls one reflection from GET /api/community (no new endpoint), read-only, links to upgrade flow |
 
 ### Stotrams Experience
 | # | Status | Item |
