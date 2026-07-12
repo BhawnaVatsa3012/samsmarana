@@ -1469,6 +1469,7 @@ function nav(id,el){
   document.getElementById('page-'+id).classList.add('active');
   if(id==='sentences')renderSentences();
   if(id==='shlokaCards')fetchShlokaCards();
+  if(id==='shabdroop'||id==='dhaturoop')loadGrammarData();
   if(id==='community')initCommunity();
   if(id==='upgrade')initUpgradePage();
   if(id==='progress')initProgressPage();
@@ -2072,7 +2073,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=11');
+  navigator.serviceWorker.register('/sw.js?v=12');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');

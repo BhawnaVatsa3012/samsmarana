@@ -15,6 +15,7 @@
 | Bug 8 | ✅ Fixed | Remove `console.log('[TAB DEBUG]...')` from nav() |
 | Bug 9 | ✅ Fixed | `playStoraLine()` now hits `/api/tts` correctly |
 | Bug 10 | ✅ Fixed | (UI-O1) Onboarding intro cards were not swipeable — added touchstart/touchend swipe navigation, kept the Next/Skip buttons working |
+| Bug 11 | ✅ Fixed | Shabd Roop / Dhatu Roop rendered empty despite API/DB having correct data — `loadGrammarData()` was only ever called from the login/session-restore path, never wired to `nav('shabdroop'/'dhaturoop')`, so anonymous/free users (and any pre-session-restore visit) never populated `window._shabdData`/`_dhatuData`, and `showShabd`/`showDhatu` silently bailed out |
 
 ---
 
