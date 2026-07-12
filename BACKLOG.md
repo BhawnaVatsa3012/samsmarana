@@ -47,7 +47,7 @@
 ### Toggles & Settings
 | # | Status | Item |
 |---|--------|------|
-| UI-T1 | ⬜ Pending | Notifications toggle — move to account dropdown as a prominent ON/OFF with label "Daily shloka reminder · 8 AM" |
+| UI-T1 | ✅ Done | Notifications moved to account dropdown as an ON/OFF toggle, "Daily shloka reminder · 8 AM" — reuses existing /api/subscribe subscribe/unsubscribe actions, no new endpoint |
 | UI-T2 | ⬜ Pending | Audio autoplay toggle — let users disable audio autoplay by default (for office/commute use) |
 | UI-T3 | ⬜ Pending | Stotrams meanings toggle — "Show meanings" per verse, so users can read Sanskrit first and reveal meaning deliberately |
 | UI-T4 | ⬜ Pending | Transliteration toggle — show/hide Roman script on stotram and shloka content for users not yet fluent in Devanagari |

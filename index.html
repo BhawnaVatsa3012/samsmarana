@@ -271,13 +271,17 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
       <div style="font-size:11px;color:#7a6040" id="acct-plan-sub">Jigyasu</div>
     </div>
   </div>
-  <div id="acct-notif-row" onclick="togglePushSubscription();" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
+  <div id="acct-notif-row" style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f5ece0;">
     <span style="font-size:18px" id="acct-notif-icon">🔔</span>
-    <div>
-      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Notifications</div>
-      <div style="font-size:11px;color:#7a6040" id="acct-notif-sub">Daily shloka reminders</div>
+    <div style="flex:1">
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Daily shloka reminder · 8 AM</div>
+      <div style="font-size:11px;color:#7a6040" id="acct-notif-sub">Loading…</div>
+    </div>
+    <div id="acct-notif-toggle" onclick="togglePushSubscription()" style="width:44px;height:26px;border-radius:14px;background:#e0c9a8;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s ease">
+      <div id="acct-notif-knob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s ease"></div>
     </div>
   </div>
+  <div id="acct-notif-error" style="display:none;padding:0 20px 10px;font-size:11px;color:#8b0000;border-bottom:1px solid #f5ece0;"></div>
   <div onclick="closeAccountDropdown();showOnboarding(true);" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
     <span style="font-size:18px">❓</span>
     <div>
@@ -2115,7 +2119,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=14');
+  navigator.serviceWorker.register('/sw.js?v=15');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -2135,59 +2139,99 @@ function urlBase64ToUint8Array(base64String) {
   return output;
 }
 
+function setNotifToggleVisual(on, disabled) {
+  var toggle = document.getElementById('acct-notif-toggle');
+  var knob = document.getElementById('acct-notif-knob');
+  if (!toggle || !knob) return;
+  toggle.style.background = on ? '#7a2800' : '#e0c9a8';
+  knob.style.left = on ? '21px' : '3px';
+  toggle.style.opacity = disabled ? '0.5' : '1';
+  toggle.style.cursor = disabled ? 'not-allowed' : 'pointer';
+}
+
+function showNotifError(msg) {
+  var el = document.getElementById('acct-notif-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(function() { el.style.display = 'none'; }, 3000);
+}
+
 async function updateNotifTile(sub) {
   var icon = document.getElementById('acct-notif-icon');
   var label = document.getElementById('acct-notif-sub');
   if (!icon || !label) return;
-  if (sub) { icon.textContent = '🔕'; label.textContent = 'Tap to unsubscribe'; }
-  else { icon.textContent = '🔔'; label.textContent = 'Daily shloka reminders'; }
+  if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+    icon.textContent = '🔕';
+    label.textContent = 'Enable notifications in your browser settings first';
+    setNotifToggleVisual(false, true);
+    return;
+  }
+  if (sub) { icon.textContent = '🔔'; label.textContent = 'On'; setNotifToggleVisual(true, false); }
+  else { icon.textContent = '🔕'; label.textContent = 'Off'; setNotifToggleVisual(false, false); }
 }
 
 async function initNotifTile() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    var icon = document.getElementById('acct-notif-icon');
+    var label = document.getElementById('acct-notif-sub');
+    if (icon) icon.textContent = '🔕';
+    if (label) label.textContent = 'Not supported on this device';
+    setNotifToggleVisual(false, true);
+    return;
+  }
   var reg = await navigator.serviceWorker.ready;
   var sub = await reg.pushManager.getSubscription();
   updateNotifTile(sub);
 }
 
 async function togglePushSubscription() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Push notifications are not supported on this device.'); return;
-  }
-  if (!_user) { alert('Please sign in to enable notifications.'); return; }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!_user) { openAuth('signin'); return; }
+  if (typeof Notification !== 'undefined' && Notification.permission === 'denied') return;
   var reg = await navigator.serviceWorker.ready;
   var existing = await reg.pushManager.getSubscription();
   if (existing) {
-    await existing.unsubscribe();
-    await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'unsubscribe', endpoint: existing.endpoint })
-    });
+    try { await existing.unsubscribe(); } catch (e) {}
     updateNotifTile(null);
+    try {
+      var res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'unsubscribe', endpoint: existing.endpoint })
+      });
+      if (!res.ok) throw new Error('unsubscribe failed');
+    } catch (e) {
+      showNotifError('Turned off, but could not sync. Please try again.');
+    }
     return;
   }
   var permission = await Notification.requestPermission();
-  if (permission !== 'granted') {
-    alert('Notification permission denied. Please enable it in your browser settings.'); return;
+  if (permission !== 'granted') { updateNotifTile(null); return; }
+  try {
+    var sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    var subJson = sub.toJSON();
+    var res2 = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'subscribe',
+        user_id: _user.id,
+        endpoint: subJson.endpoint,
+        p256dh: subJson.keys.p256dh,
+        auth: subJson.keys.auth
+      })
+    });
+    if (!res2.ok) throw new Error('subscribe failed');
+    updateNotifTile(sub);
+  } catch (e) {
+    try { var s = await reg.pushManager.getSubscription(); if (s) await s.unsubscribe(); } catch (e2) {}
+    updateNotifTile(null);
+    showNotifError('Could not turn on reminders. Try again.');
   }
-  var sub = await reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-  });
-  var subJson = sub.toJSON();
-  await fetch('/api/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'subscribe',
-      user_id: _user.id,
-      endpoint: subJson.endpoint,
-      p256dh: subJson.keys.p256dh,
-      auth: subJson.keys.auth
-    })
-  });
-  updateNotifTile(sub);
 }
  
 
