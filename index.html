@@ -282,6 +282,16 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
     </div>
   </div>
   <div id="acct-notif-error" style="display:none;padding:0 20px 10px;font-size:11px;color:#8b0000;border-bottom:1px solid #f5ece0;"></div>
+  <div style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f5ece0;">
+    <span style="font-size:18px">🎧</span>
+    <div style="flex:1">
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Auto-play through lines</div>
+      <div style="font-size:11px;color:#7a6040">Off = tap each line to hear it</div>
+    </div>
+    <div id="acct-autoplay-toggle" onclick="toggleAudioAutoplay()" style="width:44px;height:26px;border-radius:14px;background:#e0c9a8;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s ease">
+      <div id="acct-autoplay-knob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s ease"></div>
+    </div>
+  </div>
   <div onclick="closeAccountDropdown();showOnboarding(true);" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid #f5ece0;">
     <span style="font-size:18px">❓</span>
     <div>
@@ -2119,7 +2129,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=15');
+  navigator.serviceWorker.register('/sw.js?v=16');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -2147,6 +2157,36 @@ function setNotifToggleVisual(on, disabled) {
   knob.style.left = on ? '21px' : '3px';
   toggle.style.opacity = disabled ? '0.5' : '1';
   toggle.style.cursor = disabled ? 'not-allowed' : 'pointer';
+}
+
+function getAudioAutoplay() {
+  // Default ON (true) when unset, to preserve current behavior for existing users.
+  return localStorage.getItem('audio_autoplay') !== 'false';
+}
+
+function setAutoplayToggleVisual(on) {
+  var toggle = document.getElementById('acct-autoplay-toggle');
+  var knob = document.getElementById('acct-autoplay-knob');
+  if (!toggle || !knob) return;
+  toggle.style.background = on ? '#7a2800' : '#e0c9a8';
+  knob.style.left = on ? '21px' : '3px';
+}
+
+function toggleAudioAutoplay() {
+  var next = !getAudioAutoplay();
+  try { localStorage.setItem('audio_autoplay', next ? 'true' : 'false'); } catch(e) {}
+  setAutoplayToggleVisual(next);
+}
+
+function playStotraLineByIndex(idx) {
+  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
+  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
+  if (!stotra) return;
+  var verse = stotra.verses[_currentVerseIdx];
+  if (!verse || !verse.lines[idx]) return;
+  var lineObj = verse.lines[idx];
+  var text = (typeof lineObj === 'object') ? lineObj.sanskrit : lineObj;
+  playStoraLine(text);
 }
 
 function showNotifError(msg) {
@@ -3229,6 +3269,7 @@ function openAccountDropdown() {
   document.getElementById('account-dropdown').style.display = 'block';
   document.getElementById('account-dropdown-overlay').style.display = 'block';
   initNotifTile();
+  setAutoplayToggleVisual(getAudioAutoplay());
 }
 
 function closeAccountDropdown() {
@@ -3855,12 +3896,12 @@ function renderStotraDetail() {
 
   var linesHtml = '';
   var audioBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="playVerseAudio()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M8 5v14l11-7z"/></svg> Listen to Verse</button>';
-  verse.lines.forEach(function(line) {
+  verse.lines.forEach(function(line, lineIdx) {
     var sk = (typeof line === 'object') ? line.sanskrit : line;
     var en = (typeof line === 'object') ? line.english : '';
     var hi = (typeof line === 'object') ? line.hindi : '';
     linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
-    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
+    linesHtml += '<div onclick="playStotraLineByIndex('+lineIdx+')" style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;cursor:pointer;">'+sk+'</div>';
     if (en) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
     if (hi) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
     linesHtml += '</div>';
@@ -4054,6 +4095,7 @@ async function playVerseAudio() {
   if (!stotra) return;
   var verse = stotra.verses[_currentVerseIdx];
   if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  var autoplay = getAudioAutoplay();
   for (var i = 0; i < verse.lines.length; i++) {
     var lineObj = verse.lines[i];
     var text = (typeof lineObj === 'object') ? lineObj.sanskrit : lineObj;
@@ -4077,6 +4119,7 @@ async function playVerseAudio() {
         }
       })(text);
     });
+    if (!autoplay) break;
   }
 }
 
@@ -4088,6 +4131,7 @@ async function playFullRecitation() {
   if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
   var allLines = [];
   stotra.verses.forEach(function(v){ v.lines.forEach(function(l){ allLines.push(l); }); });
+  var autoplay = getAudioAutoplay();
   for (var i = 0; i < allLines.length; i++) {
     await new Promise(function(resolve) {
       playStoraLine(allLines[i]).then(function() {
@@ -4096,6 +4140,7 @@ async function playFullRecitation() {
         _stotraAudio.onerror = resolve;
       });
     });
+    if (!autoplay) break;
   }
 }
 
