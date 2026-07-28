@@ -4073,7 +4073,7 @@ async function playStoraLine(lineText) {
     if (_stotraAudioCache[cacheKey]) {
       b64 = _stotraAudioCache[cacheKey];
     } else {
-      var resp = await fetch('/api/tts', {
+      var resp = await fetch('/api/grammar?type=tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: cacheKey })
@@ -4107,7 +4107,7 @@ async function playVerseAudio() {
           _stotraAudio.onended = resolve; _stotraAudio.onerror = resolve;
           _stotraAudio.play().catch(resolve);
         } else {
-          fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: t }) })
+          fetch('/api/grammar?type=tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: t }) })
           .then(function(r){ return r.json(); }).then(function(data) {
             if (data.error) { resolve(); return; }
             _stotraAudioCache[t] = data.audio_base64;
