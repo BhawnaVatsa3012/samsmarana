@@ -16,6 +16,7 @@
 | Bug 9 | ✅ Fixed | `playStoraLine()` now hits `/api/tts` correctly |
 | Bug 10 | ✅ Fixed | (UI-O1) Onboarding intro cards were not swipeable — added touchstart/touchend swipe navigation, kept the Next/Skip buttons working |
 | Bug 11 | ✅ Fixed | Shabd Roop / Dhatu Roop rendered empty despite API/DB having correct data — `loadGrammarData()` was only ever called from the login/session-restore path, never wired to `nav('shabdroop'/'dhaturoop')`, so anonymous/free users (and any pre-session-restore visit) never populated `window._shabdData`/`_dhatuData`, and `showShabd`/`showDhatu` silently bailed out |
+| Bug 12 | ✅ Fixed | Stotram audio not playing — `api/tts.js` was consolidated into `api/grammar.js` (`POST /api/grammar?type=tts`) at some point, but `playStoraLine()` and `playVerseAudio()` were never updated and still called `/api/tts`, which hit Vercel's default 404 page; `.then(r=>r.json())` threw on the non-JSON body and the error fell into a bare `.catch(resolve)`, so it silently resolved with no audio and no visible error. Frontend-only fix, `api/grammar.js` untouched. Note: `ELEVENLABS_API_KEY`/`ELEVENLABS_VOICE_ID` are not set in any Vercel environment, so TTS will still return `{error:'TTS not configured'}` until those are added — tracked as a separate follow-up, not part of this fix. |
 
 ---
 
