@@ -2129,7 +2129,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=17');
+  navigator.serviceWorker.register('/sw.js?v=18');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3837,6 +3837,7 @@ var _currentStotraId = null;
 var _currentVerseIdx = 0;
 var _stotraAudioCache = {};
 var _stotraAudio = null;
+var _recitationActive = false;
 
 function initStotramsList() {
   if (typeof STOTRAMS === 'undefined') return;
@@ -3886,7 +3887,7 @@ function renderStotraDetail() {
   if (titleEl) titleEl.textContent = stotra.nameDevanagari;
 
   var linesHtml = '';
-  var audioBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="playVerseAudio()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M8 5v14l11-7z"/></svg> Listen to Verse</button>';
+  var audioBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="toggleVerseAudio()"><svg id="verse-play-icon" viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M8 5v14l11-7z"/></svg> <span id="verse-play-label">Listen to Verse</span></button>';
   verse.lines.forEach(function(line, lineIdx) {
     var sk = (typeof line === 'object') ? line.sanskrit : line;
     var en = (typeof line === 'object') ? line.english : '';
@@ -3912,9 +3913,9 @@ function renderStotraDetail() {
   var recitationBtn = '';
   if (isVidvan) {
     recitationBtn =
-      '<button class="audio-btn" style="width:100%;justify-content:center;margin-top:12px" onclick="playFullRecitation()">'+
-        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'+
-        ' Full Recitation'+
+      '<button class="audio-btn" style="width:100%;justify-content:center;margin-top:12px" onclick="toggleFullRecitation()">'+
+        '<svg id="recitation-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'+
+        ' <span id="recitation-play-label">Full Recitation</span>'+
       '</button>';
   } else if (tier === 'sadhaka') {
     recitationBtn =
@@ -3961,6 +3962,8 @@ function stotraNavVerse(dir) {
   if (!stotra) return;
   var next = _currentVerseIdx + dir;
   if (next < 0 || next >= stotra.verseCount) return;
+  _recitationActive = false;
+  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
   _currentVerseIdx = next;
   renderStotraDetail();
 }
@@ -4059,13 +4062,53 @@ function stotraAudioUrl(stotraId, verseIdx) {
   return 'https://wcvjdbmigjgocgwforsr.supabase.co/storage/v1/object/public/stotram-audio/'+stotraId+'/verse-'+verseIdx+'.mp3';
 }
 
-async function playVerseAudio() {
+function updateVerseAudioBtn(playing) {
+  var icon = document.getElementById('verse-play-icon');
+  var label = document.getElementById('verse-play-label');
+  if (!icon || !label) return;
+  if (playing) {
+    icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    label.textContent = 'Stop';
+  } else {
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    label.textContent = 'Listen to Verse';
+  }
+}
+
+function updateRecitationBtn(playing) {
+  var icon = document.getElementById('recitation-play-icon');
+  var label = document.getElementById('recitation-play-label');
+  if (!icon || !label) return;
+  if (playing) {
+    icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    label.textContent = 'Stop Recitation';
+  } else {
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    label.textContent = 'Full Recitation';
+  }
+}
+
+function toggleVerseAudio() {
   if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
-  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+
+  if (_stotraAudio && _stotraAudio._verseIdx === _currentVerseIdx && !_stotraAudio.paused) {
+    _stotraAudio.pause();
+    updateVerseAudioBtn(false);
+    return;
+  }
+  if (_stotraAudio && _stotraAudio._verseIdx === _currentVerseIdx && !_stotraAudio.ended) {
+    _stotraAudio.play().catch(function(e){ console.error('resume error:', e); });
+    updateVerseAudioBtn(true);
+    return;
+  }
+  if (_stotraAudio) { _stotraAudio.pause(); }
   _stotraAudio = new Audio(stotraAudioUrl(stotra.id, _currentVerseIdx));
-  _stotraAudio.play().catch(function(e){ console.error('playVerseAudio error:', e); });
+  _stotraAudio._verseIdx = _currentVerseIdx;
+  _stotraAudio.onended = function() { updateVerseAudioBtn(false); };
+  _stotraAudio.play().catch(function(e){ console.error('playVerseAudio error:', e); updateVerseAudioBtn(false); });
+  updateVerseAudioBtn(true);
 }
 
 async function playFullRecitation() {
@@ -4073,18 +4116,38 @@ async function playFullRecitation() {
   if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
-  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  _recitationActive = true;
   var autoplay = getAudioAutoplay();
   for (var i = _currentVerseIdx; i < stotra.verseCount; i++) {
+    if (!_recitationActive) return;
     _currentVerseIdx = i;
     renderStotraDetail();
-    await new Promise(function(resolve) {
+    updateRecitationBtn(true);
+    if (!_stotraAudio || _stotraAudio._verseIdx !== i) {
       _stotraAudio = new Audio(stotraAudioUrl(stotra.id, i));
+      _stotraAudio._verseIdx = i;
+    }
+    await new Promise(function(resolve) {
+      if (!_recitationActive) { resolve(); return; }
       _stotraAudio.onended = resolve;
       _stotraAudio.onerror = resolve;
       _stotraAudio.play().catch(resolve);
     });
+    if (!_recitationActive) return;
     if (!autoplay) break;
+  }
+  _recitationActive = false;
+  _stotraAudio = null;
+  updateRecitationBtn(false);
+}
+
+function toggleFullRecitation() {
+  if (_recitationActive) {
+    _recitationActive = false;
+    if (_stotraAudio) { _stotraAudio.pause(); }
+    updateRecitationBtn(false);
+  } else {
+    playFullRecitation();
   }
 }
 
