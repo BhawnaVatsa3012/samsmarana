@@ -1487,7 +1487,7 @@ function nav(id,el){
   if(cur&&cur.id!=='page-'+id){
     navHistory.push(cur.id.replace('page-',''));
     if(cur.id==='page-home') pauseShlokaAudio();
-    if(cur.id==='page-stotra-detail') stopAllStotraAudio();
+    if(cur.id==='page-stotra-detail') { stopAllStotraAudio(); hideRecitationFullscreen(); }
   }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -2133,7 +2133,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=20');
+  navigator.serviceWorker.register('/sw.js?v=21');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3858,6 +3858,7 @@ var _stotraAudioCache = {};
 var _stotraAudio = null;
 var _recitationActive = false;
 var _recitationResolve = null;
+var _recitationFullscreen = false;
 
 function initStotramsList() {
   if (typeof STOTRAMS === 'undefined') return;
@@ -4144,11 +4145,13 @@ async function playFullRecitation() {
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
   _recitationActive = true;
+  showRecitationFullscreen();
   var autoplay = getAudioAutoplay();
   for (var i = _currentVerseIdx; i < stotra.verseCount; i++) {
     if (!_recitationActive) return;
     _currentVerseIdx = i;
     renderStotraDetail();
+    renderRecitationFullscreen(stotra, i);
     updateRecitationBtn(true);
     if (!_stotraAudio || _stotraAudio._verseIdx !== i) {
       _stotraAudio = new Audio(stotraAudioUrl(stotra.id, i));
@@ -4168,12 +4171,56 @@ async function playFullRecitation() {
   _recitationActive = false;
   _stotraAudio = null;
   updateRecitationBtn(false);
+  hideRecitationFullscreen();
+}
+
+function showRecitationFullscreen() {
+  var el = document.getElementById('recitation-fullscreen');
+  if (!el) return;
+  el.style.display = 'flex';
+  _recitationFullscreen = true;
+  var tb = document.getElementById('bottom-tabbar');
+  if (tb) tb.style.display = 'none';
+}
+
+function hideRecitationFullscreen() {
+  var el = document.getElementById('recitation-fullscreen');
+  if (el) el.style.display = 'none';
+  _recitationFullscreen = false;
+  var tb = document.getElementById('bottom-tabbar');
+  if (tb) tb.style.display = '';
+}
+
+function renderRecitationFullscreen(stotra, verseIdx) {
+  if (!_recitationFullscreen) return;
+  var verse = stotra.verses[verseIdx];
+  var counter = document.getElementById('recitation-fs-counter');
+  var sk = document.getElementById('recitation-fs-sanskrit');
+  var en = document.getElementById('recitation-fs-english');
+  if (counter) counter.textContent = stotra.nameDevanagari + ' · Verse ' + (verseIdx + 1) + ' / ' + stotra.verseCount;
+  if (sk) {
+    var skHtml = '';
+    verse.lines.forEach(function(line) {
+      var s = (typeof line === 'object') ? line.sanskrit : line;
+      skHtml += '<div style="margin-bottom:10px">' + s + '</div>';
+    });
+    sk.innerHTML = skHtml;
+  }
+  if (en) {
+    var enHtml = '';
+    verse.lines.forEach(function(line) {
+      var e = (typeof line === 'object') ? line.english : '';
+      if (e) enHtml += '<div style="margin-bottom:6px">' + e + '</div>';
+    });
+    en.innerHTML = enHtml;
+  }
 }
 
 function toggleFullRecitation() {
   if (_recitationActive) {
     stopAllStotraAudio();
     updateRecitationBtn(false);
+    hideRecitationFullscreen();
   } else {
     playFullRecitation();
   }
@@ -4192,6 +4239,17 @@ function toggleFullRecitation() {
 <!-- STOTRA DETAIL -->
 <div class="page" id="page-stotra-detail">
   <div id="stotra-detail-content"></div>
+</div>
+
+<div id="recitation-fullscreen" style="display:none;position:fixed;inset:0;z-index:200;background:linear-gradient(180deg,#1a0f00,#3a1f00);align-items:center;justify-content:center;flex-direction:column;padding:32px 24px;text-align:center;">
+  <button onclick="toggleFullRecitation()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#e0c9a8;font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+  <div id="recitation-fs-counter" style="color:#c8922a;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;"></div>
+  <div id="recitation-fs-sanskrit" style="font-family:'Tiro Devanagari Sanskrit',serif;color:#fdf3e0;font-size:28px;line-height:2.1;max-width:600px;text-shadow:0 0 24px rgba(200,146,42,0.35);"></div>
+  <div id="recitation-fs-english" style="font-family:'EB Garamond',serif;font-style:italic;color:#c8a878;font-size:15px;margin-top:20px;max-width:520px;line-height:1.7;opacity:.8;"></div>
+  <button onclick="toggleFullRecitation()" style="margin-top:36px;background:rgba(224,201,168,0.12);border:1px solid rgba(224,201,168,0.3);border-radius:24px;padding:12px 28px;color:#e0c9a8;font-family:'EB Garamond',serif;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+    <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+    Pause
+  </button>
 </div>
 
   <div id="bottom-tabbar">
