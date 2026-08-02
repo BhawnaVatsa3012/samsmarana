@@ -285,8 +285,8 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   <div style="display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f5ece0;">
     <span style="font-size:18px">🎧</span>
     <div style="flex:1">
-      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Auto-play through lines</div>
-      <div style="font-size:11px;color:#7a6040">Off = tap each line to hear it</div>
+      <div style="font-family:'EB Garamond',serif;font-size:16px;font-weight:600;color:#1a0f00">Auto-play next verse</div>
+      <div style="font-size:11px;color:#7a6040">Off = pause after each verse during Full Recitation</div>
     </div>
     <div id="acct-autoplay-toggle" onclick="toggleAudioAutoplay()" style="width:44px;height:26px;border-radius:14px;background:#e0c9a8;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s ease">
       <div id="acct-autoplay-knob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s ease"></div>
@@ -2129,7 +2129,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=16');
+  navigator.serviceWorker.register('/sw.js?v=17');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -2178,16 +2178,7 @@ function toggleAudioAutoplay() {
   setAutoplayToggleVisual(next);
 }
 
-function playStotraLineByIndex(idx) {
-  if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
-  var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
-  if (!stotra) return;
-  var verse = stotra.verses[_currentVerseIdx];
-  if (!verse || !verse.lines[idx]) return;
-  var lineObj = verse.lines[idx];
-  var text = (typeof lineObj === 'object') ? lineObj.sanskrit : lineObj;
-  playStoraLine(text);
-}
+
 
 function showNotifError(msg) {
   var el = document.getElementById('acct-notif-error');
@@ -3901,7 +3892,7 @@ function renderStotraDetail() {
     var en = (typeof line === 'object') ? line.english : '';
     var hi = (typeof line === 'object') ? line.hindi : '';
     linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
-    linesHtml += '<div onclick="playStotraLineByIndex('+lineIdx+')" style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;cursor:pointer;">'+sk+'</div>';
+    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
     if (en) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
     if (hi) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
     linesHtml += '</div>';
@@ -4064,63 +4055,17 @@ async function renderCommunityTeaser() {
   }
 }
 
-async function playStoraLine(lineText) {
-  if (!lineText) return;
-  var cacheKey = lineText.trim();
-  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
-  try {
-    var b64;
-    if (_stotraAudioCache[cacheKey]) {
-      b64 = _stotraAudioCache[cacheKey];
-    } else {
-      var resp = await fetch('/api/grammar?type=tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cacheKey })
-      });
-      var data = await resp.json();
-      if (data.error) { console.error('TTS error:', data.error); return; }
-      b64 = data.audio_base64;
-      _stotraAudioCache[cacheKey] = b64;
-    }
-    var blob = new Blob([Uint8Array.from(atob(b64), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
-    _stotraAudio = new Audio(URL.createObjectURL(blob));
-    _stotraAudio.play();
-  } catch(e) { console.error('playStoraLine error:', e); }
+function stotraAudioUrl(stotraId, verseIdx) {
+  return 'https://wcvjdbmigjgocgwforsr.supabase.co/storage/v1/object/public/stotram-audio/'+stotraId+'/verse-'+verseIdx+'.mp3';
 }
 
 async function playVerseAudio() {
   if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
-  var verse = stotra.verses[_currentVerseIdx];
   if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
-  var autoplay = getAudioAutoplay();
-  for (var i = 0; i < verse.lines.length; i++) {
-    var lineObj = verse.lines[i];
-    var text = (typeof lineObj === 'object') ? lineObj.sanskrit : lineObj;
-    await new Promise(function(resolve) {
-      (function(t) {
-        if (_stotraAudioCache[t]) {
-          var blob = new Blob([Uint8Array.from(atob(_stotraAudioCache[t]), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
-          _stotraAudio = new Audio(URL.createObjectURL(blob));
-          _stotraAudio.onended = resolve; _stotraAudio.onerror = resolve;
-          _stotraAudio.play().catch(resolve);
-        } else {
-          fetch('/api/grammar?type=tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: t }) })
-          .then(function(r){ return r.json(); }).then(function(data) {
-            if (data.error) { resolve(); return; }
-            _stotraAudioCache[t] = data.audio_base64;
-            var blob = new Blob([Uint8Array.from(atob(data.audio_base64), function(c){ return c.charCodeAt(0); })], { type: 'audio/mpeg' });
-            _stotraAudio = new Audio(URL.createObjectURL(blob));
-            _stotraAudio.onended = resolve; _stotraAudio.onerror = resolve;
-            _stotraAudio.play().catch(resolve);
-          }).catch(resolve);
-        }
-      })(text);
-    });
-    if (!autoplay) break;
-  }
+  _stotraAudio = new Audio(stotraAudioUrl(stotra.id, _currentVerseIdx));
+  _stotraAudio.play().catch(function(e){ console.error('playVerseAudio error:', e); });
 }
 
 async function playFullRecitation() {
@@ -4129,16 +4074,15 @@ async function playFullRecitation() {
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
   if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
-  var allLines = [];
-  stotra.verses.forEach(function(v){ v.lines.forEach(function(l){ allLines.push(l); }); });
   var autoplay = getAudioAutoplay();
-  for (var i = 0; i < allLines.length; i++) {
+  for (var i = _currentVerseIdx; i < stotra.verseCount; i++) {
+    _currentVerseIdx = i;
+    renderStotraDetail();
     await new Promise(function(resolve) {
-      playStoraLine(allLines[i]).then(function() {
-        if (!_stotraAudio) { resolve(); return; }
-        _stotraAudio.onended = resolve;
-        _stotraAudio.onerror = resolve;
-      });
+      _stotraAudio = new Audio(stotraAudioUrl(stotra.id, i));
+      _stotraAudio.onended = resolve;
+      _stotraAudio.onerror = resolve;
+      _stotraAudio.play().catch(resolve);
     });
     if (!autoplay) break;
   }
