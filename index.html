@@ -1484,7 +1484,11 @@ var navHistory=[];
 var TAB_IDS=['home','learn','tutor','community','progress'];
 function nav(id,el){
   const cur=document.querySelector('.page.active');
-  if(cur&&cur.id!=='page-'+id) navHistory.push(cur.id.replace('page-',''));
+  if(cur&&cur.id!=='page-'+id){
+    navHistory.push(cur.id.replace('page-',''));
+    if(cur.id==='page-home') pauseShlokaAudio();
+    if(cur.id==='page-stotra-detail') stopAllStotraAudio();
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(id==='sentences')renderSentences();
@@ -2129,7 +2133,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=19');
+  navigator.serviceWorker.register('/sw.js?v=20');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
