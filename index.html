@@ -2129,7 +2129,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=18');
+  navigator.serviceWorker.register('/sw.js?v=19');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3668,7 +3668,7 @@ var label = document.getElementById('shloka-play-label');
 if (!icon || !label) return;
 if (playing) {
 icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
-label.textContent = 'Stop';
+label.textContent = 'Pause';
 } else {
 icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
 label.textContent = 'Listen';
@@ -3838,6 +3838,7 @@ var _currentVerseIdx = 0;
 var _stotraAudioCache = {};
 var _stotraAudio = null;
 var _recitationActive = false;
+var _recitationResolve = null;
 
 function initStotramsList() {
   if (typeof STOTRAMS === 'undefined') return;
@@ -3867,6 +3868,7 @@ function openStotra(id) {
     openAuth('signin');
     return;
   }
+  stopAllStotraAudio();
   _currentStotraId = id;
   _currentVerseIdx = 0;
   nav('stotra-detail', null);
@@ -3962,8 +3964,7 @@ function stotraNavVerse(dir) {
   if (!stotra) return;
   var next = _currentVerseIdx + dir;
   if (next < 0 || next >= stotra.verseCount) return;
-  _recitationActive = false;
-  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+  stopAllStotraAudio();
   _currentVerseIdx = next;
   renderStotraDetail();
 }
@@ -3974,6 +3975,7 @@ function resumeStotra(id, verseIdx) {
   if (!stotra) return;
   var tier = getTier();
   if (tier === 'jigyasu') { openAuth('signin'); return; }
+  stopAllStotraAudio();
   _currentStotraId = id;
   _currentVerseIdx = (typeof verseIdx === 'number' && verseIdx >= 0 && verseIdx < stotra.verseCount) ? verseIdx : 0;
   nav('stotra-detail', null);
@@ -4062,13 +4064,19 @@ function stotraAudioUrl(stotraId, verseIdx) {
   return 'https://wcvjdbmigjgocgwforsr.supabase.co/storage/v1/object/public/stotram-audio/'+stotraId+'/verse-'+verseIdx+'.mp3';
 }
 
+function stopAllStotraAudio() {
+  _recitationActive = false;
+  if (_recitationResolve) { var r = _recitationResolve; _recitationResolve = null; r(); }
+  if (_stotraAudio) { _stotraAudio.pause(); _stotraAudio = null; }
+}
+
 function updateVerseAudioBtn(playing) {
   var icon = document.getElementById('verse-play-icon');
   var label = document.getElementById('verse-play-label');
   if (!icon || !label) return;
   if (playing) {
     icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
-    label.textContent = 'Stop';
+    label.textContent = 'Pause';
   } else {
     icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
     label.textContent = 'Listen to Verse';
@@ -4081,7 +4089,7 @@ function updateRecitationBtn(playing) {
   if (!icon || !label) return;
   if (playing) {
     icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
-    label.textContent = 'Stop Recitation';
+    label.textContent = 'Pause Recitation';
   } else {
     icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
     label.textContent = 'Full Recitation';
@@ -4128,11 +4136,13 @@ async function playFullRecitation() {
       _stotraAudio._verseIdx = i;
     }
     await new Promise(function(resolve) {
+      _recitationResolve = resolve;
       if (!_recitationActive) { resolve(); return; }
       _stotraAudio.onended = resolve;
       _stotraAudio.onerror = resolve;
       _stotraAudio.play().catch(resolve);
     });
+    _recitationResolve = null;
     if (!_recitationActive) return;
     if (!autoplay) break;
   }
@@ -4143,8 +4153,7 @@ async function playFullRecitation() {
 
 function toggleFullRecitation() {
   if (_recitationActive) {
-    _recitationActive = false;
-    if (_stotraAudio) { _stotraAudio.pause(); }
+    stopAllStotraAudio();
     updateRecitationBtn(false);
   } else {
     playFullRecitation();
