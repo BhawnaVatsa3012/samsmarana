@@ -3565,6 +3565,8 @@ var _ambientAudio = null;
 var _audioPlaying = false;
 var _voiceDelay = null;
 var _outroTimeout = null;
+var _voiceStarted = false;
+var _shlokaAudioSrc = null;
 
 function getShlokaAudioFile() {
 var day = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
@@ -3579,20 +3581,30 @@ alert('Audio is a Sadhaka feature. Upgrade to unlock 🙏');
 return;
 }
 if (_audioPlaying) {
-stopShlokaAudio();
-} else {
-playShlokaAudio();
+pauseShlokaAudio();
+return;
 }
+var src = getShlokaAudioFile();
+if (_shlokaAudio && _shlokaAudioSrc === src && !_shlokaAudio.ended) {
+var ambientResume = _ambientAudio.play();
+var voiceResume = _shlokaAudio.play();
+if (ambientResume !== undefined) ambientResume.catch(function(e){ console.warn('Ambient resume failed:', e); pauseShlokaAudio(); });
+if (voiceResume !== undefined) voiceResume.catch(function(){});
+_audioPlaying = true;
+updateAudioBtn(true);
+return;
+}
+playShlokaAudio();
 }
 
 function playShlokaAudio() {
 var src = getShlokaAudioFile();
+_shlokaAudioSrc = src;
+_voiceStarted = false;
 
-// Clear any pending timers
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
 if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
 
-// Create audio objects fresh each time
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio = null; }
 if (_ambientAudio) { _ambientAudio.pause(); _ambientAudio = null; }
 
@@ -3604,36 +3616,31 @@ _shlokaAudio = new Audio(src);
 _shlokaAudio.volume = 1.0;
 _shlokaAudio.preload = 'auto';
 
-var _voiceStarted = false;
-
-// Use timeupdate to trigger voice after 5s — stays in audio event chain (iOS safe)
 _ambientAudio.addEventListener('timeupdate', function() {
 if (!_voiceStarted && _ambientAudio.currentTime >= 5) {
 _voiceStarted = true;
 _shlokaAudio.play().catch(function(e) {
 console.warn('Voice play failed:', e);
-stopShlokaAudio();
+pauseShlokaAudio();
 });
 }
 });
 
 _shlokaAudio.addEventListener('ended', function() {
-_outroTimeout = setTimeout(stopShlokaAudio, 5000);
+_outroTimeout = setTimeout(fullyStopShlokaAudio, 5000);
 });
 
-// Both started within the direct user gesture
 var ambientPromise = _ambientAudio.play();
 var voicePromise = _shlokaAudio.play();
 
 if (ambientPromise !== undefined) {
 ambientPromise.catch(function(e) {
 console.warn('Ambient play failed:', e);
-stopShlokaAudio();
+pauseShlokaAudio();
 return;
 });
 }
 
-// Immediately pause voice — it was just unlocked, not meant to play yet
 if (voicePromise !== undefined) {
 voicePromise.then(function() {
 _shlokaAudio.pause();
@@ -3645,13 +3652,21 @@ _audioPlaying = true;
 updateAudioBtn(true);
 }
 
+function pauseShlokaAudio() {
+if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
+if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
+if (_shlokaAudio) { _shlokaAudio.pause(); }
+if (_ambientAudio) { _ambientAudio.pause(); }
+_audioPlaying = false;
+updateAudioBtn(false);
+}
 
-
-function stopShlokaAudio() {
+function fullyStopShlokaAudio() {
 if (_voiceDelay) { clearTimeout(_voiceDelay); _voiceDelay = null; }
 if (_outroTimeout) { clearTimeout(_outroTimeout); _outroTimeout = null; }
 if (_shlokaAudio) { _shlokaAudio.pause(); _shlokaAudio.currentTime = 0; _shlokaAudio = null; }
 _audioPlaying = false;
+_voiceStarted = false;
 updateAudioBtn(false);
 if (_ambientAudio) {
 var fadeAudio = _ambientAudio;
