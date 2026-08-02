@@ -16,7 +16,7 @@
 | Bug 9 | ✅ Fixed | `playStoraLine()` now hits `/api/tts` correctly |
 | Bug 10 | ✅ Fixed | (UI-O1) Onboarding intro cards were not swipeable — added touchstart/touchend swipe navigation, kept the Next/Skip buttons working |
 | Bug 11 | ✅ Fixed | Shabd Roop / Dhatu Roop rendered empty despite API/DB having correct data — `loadGrammarData()` was only ever called from the login/session-restore path, never wired to `nav('shabdroop'/'dhaturoop')`, so anonymous/free users (and any pre-session-restore visit) never populated `window._shabdData`/`_dhatuData`, and `showShabd`/`showDhatu` silently bailed out |
-| Bug 12 | ✅ Fixed | Stotram audio not playing — `api/tts.js` was consolidated into `api/grammar.js` (`POST /api/grammar?type=tts`) at some point, but `playStoraLine()` and `playVerseAudio()` were never updated and still called `/api/tts`, which hit Vercel's default 404 page; `.then(r=>r.json())` threw on the non-JSON body and the error fell into a bare `.catch(resolve)`, so it silently resolved with no audio and no visible error. Frontend-only fix, `api/grammar.js` untouched. Note: `ELEVENLABS_API_KEY`/`ELEVENLABS_VOICE_ID` are not set in any Vercel environment, so TTS will still return `{error:'TTS not configured'}` until those are added — tracked as a separate follow-up, not part of this fix. |
+| Bug 12 | ✅ Fixed | Stotram audio not playing — originally traced to a stale `/api/tts` URL after `api/tts.js` was consolidated into `api/grammar.js`. That URL fix shipped but was superseded before ElevenLabs was ever properly configured. Aug 2026: dropped ElevenLabs TTS entirely for stotrams — `playStoraLine()`/`playStotraLineByIndex()` removed, replaced with static per-verse MP3 recordings (Bhawna's own voice) served from Supabase Storage bucket `stotram-audio`, all 52 verses across 5 stotrams. `playVerseAudio()`/`playFullRecitation()` now just play a direct URL. ElevenLabs remains in use only for the grammar-tutor feature, unrelated to stotrams. |
 
 ---
 
@@ -49,7 +49,7 @@
 | # | Status | Item |
 |---|--------|------|
 | UI-T1 | ✅ Done | Notifications moved to account dropdown as an ON/OFF toggle, "Daily shloka reminder · 8 AM" — reuses existing /api/subscribe subscribe/unsubscribe actions, no new endpoint |
-| UI-T2 | ✅ Done | Audio autoplay toggle — let users disable audio autoplay by default (for office/commute use); also adds tap-to-play on individual verse lines |
+| UI-T2 | ✅ Done | Audio autoplay toggle, relabeled "Auto-play next verse" (Aug 2026) after the move to static per-verse audio — now controls verse-to-verse advance during Full Recitation only. Per-line tap-to-play was removed since audio is one file per verse, not per line. |
 | UI-T3 | ⬜ Pending | Stotrams meanings toggle — "Show meanings" per verse, so users can read Sanskrit first and reveal meaning deliberately |
 | UI-T4 | ⬜ Pending | Transliteration toggle — show/hide Roman script on stotram and shloka content for users not yet fluent in Devanagari |
 
