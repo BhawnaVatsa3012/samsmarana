@@ -2133,7 +2133,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=21');
+  navigator.serviceWorker.register('/sw.js?v=22');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -4106,13 +4106,25 @@ function updateVerseAudioBtn(playing) {
 function updateRecitationBtn(playing) {
   var icon = document.getElementById('recitation-play-icon');
   var label = document.getElementById('recitation-play-label');
-  if (!icon || !label) return;
-  if (playing) {
-    icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
-    label.textContent = 'Pause Recitation';
-  } else {
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    label.textContent = 'Full Recitation';
+  if (icon && label) {
+    if (playing) {
+      icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+      label.textContent = 'Pause Recitation';
+    } else {
+      icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      label.textContent = 'Full Recitation';
+    }
+  }
+  var fsIcon = document.getElementById('recitation-fs-toggle-icon');
+  var fsLabel = document.getElementById('recitation-fs-toggle-label');
+  if (fsIcon && fsLabel) {
+    if (playing) {
+      fsIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+      fsLabel.textContent = 'Pause';
+    } else {
+      fsIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      fsLabel.textContent = 'Resume';
+    }
   }
 }
 
@@ -4171,6 +4183,10 @@ async function playFullRecitation() {
   _recitationActive = false;
   _stotraAudio = null;
   updateRecitationBtn(false);
+}
+
+function exitRecitationFullscreen() {
+  if (_recitationActive) { stopAllStotraAudio(); updateRecitationBtn(false); }
   hideRecitationFullscreen();
 }
 
@@ -4220,7 +4236,6 @@ function toggleFullRecitation() {
   if (_recitationActive) {
     stopAllStotraAudio();
     updateRecitationBtn(false);
-    hideRecitationFullscreen();
   } else {
     playFullRecitation();
   }
@@ -4242,13 +4257,13 @@ function toggleFullRecitation() {
 </div>
 
 <div id="recitation-fullscreen" style="display:none;position:fixed;inset:0;z-index:200;background:linear-gradient(180deg,#1a0f00,#3a1f00);align-items:center;justify-content:center;flex-direction:column;padding:32px 24px;text-align:center;">
-  <button onclick="toggleFullRecitation()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#e0c9a8;font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+  <button onclick="exitRecitationFullscreen()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#e0c9a8;font-size:28px;cursor:pointer;line-height:1;">&times;</button>
   <div id="recitation-fs-counter" style="color:#c8922a;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;"></div>
   <div id="recitation-fs-sanskrit" style="font-family:'Tiro Devanagari Sanskrit',serif;color:#fdf3e0;font-size:28px;line-height:2.1;max-width:600px;text-shadow:0 0 24px rgba(200,146,42,0.35);"></div>
   <div id="recitation-fs-english" style="font-family:'EB Garamond',serif;font-style:italic;color:#c8a878;font-size:15px;margin-top:20px;max-width:520px;line-height:1.7;opacity:.8;"></div>
   <button onclick="toggleFullRecitation()" style="margin-top:36px;background:rgba(224,201,168,0.12);border:1px solid rgba(224,201,168,0.3);border-radius:24px;padding:12px 28px;color:#e0c9a8;font-family:'EB Garamond',serif;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:8px;">
-    <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
-    Pause
+    <svg id="recitation-fs-toggle-icon" viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+    <span id="recitation-fs-toggle-label">Pause</span>
   </button>
 </div>
 
