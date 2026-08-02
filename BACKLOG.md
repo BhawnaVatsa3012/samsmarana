@@ -22,6 +22,8 @@
 | Bug 14 | ⬜ Pending | Stotram page "Listen to Verse" / "Full Recitation" buttons say "Stop" / "Stop Recitation" while paused — should say "Pause" / "Pause Recitation" instead, since the behavior already resumes rather than restarts. Label-only fix in `updateVerseAudioBtn()` and `updateRecitationBtn()`. |
 | Bug 15 | ⬜ Pending | Pausing audio on one verse, then navigating to a different verse via the stotrams list, "Continue where you left off", or a bookmark, and pressing Listen can resume the old paused verse instead of starting the new one. Root cause: `openStotra()` and `resumeStotra()` don't clear `_stotraAudio`/`_recitationActive` the way `stotraNavVerse()` does. Full Recitation pause also leaves its internal wait-loop unresolved rather than actually stopped, risking a second overlapping loop on resume. Needs both entry points patched to mirror `stotraNavVerse()`'s reset, and the recitation pause path needs to explicitly release its pending wait instead of leaving it dangling. |
 
+| Bug 16 | ✅ Fixed | Shloka of the Day audio (home page) and stotram audio (stotra detail page) could overlap and play simultaneously — neither stopped when navigating away from its page, so starting one while the other was still running in the background caused audio to overlap. Fixed by hooking into `nav()`, the single function every page transition goes through: leaving the home page now calls `pauseShlokaAudio()`, and leaving the stotra detail page now calls `stopAllStotraAudio()`. Covers every navigation path (tabs, back button, bookmarks, "Continue where you left off"), not just the specific one that surfaced it. |
+
 ---
 
 ## ✨ Feature Backlog
