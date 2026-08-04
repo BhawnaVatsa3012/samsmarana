@@ -3956,11 +3956,14 @@ function renderStotraDetail(preserveScroll) {
       '<div style="text-align:center;margin-top:12px;font-size:12px;color:#9a7850">🔒 Full recitation — Vidvan only</div>';
   }
 
+  var isLastVerse = (_currentVerseIdx === stotra.verseCount - 1);
+  var nextBtnHtml = isLastVerse ? '' : '<button onclick="stotraNavVerse(1)" style="flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:\'EB Garamond\',serif;font-size:15px;cursor:pointer;color:#5a4020">Next →</button>';
+
   var navHtml =
     '<div style="display:flex;gap:10px;margin-top:16px">'+
       '<button onclick="stotraNavVerse(-1)" style="flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:\'EB Garamond\',serif;font-size:15px;cursor:pointer;color:#5a4020" '+((_currentVerseIdx===0)?'disabled style="opacity:.4;cursor:default"':'')+'>← Prev</button>'+
       '<div style="flex:0;font-size:12px;color:#9a7850;align-self:center;text-align:center;min-width:60px">'+(_currentVerseIdx+1)+' / '+stotra.verseCount+'</div>'+
-      '<button onclick="stotraNavVerse(1)" style="flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:\'EB Garamond\',serif;font-size:15px;cursor:pointer;color:#5a4020" '+((_currentVerseIdx===stotra.verseCount-1)?'disabled style="opacity:.4;cursor:default"':'')+'>Next →</button>'+
+      nextBtnHtml+
     '</div>';
 
   var html =
