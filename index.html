@@ -2168,6 +2168,17 @@ function getAudioAutoplay() {
   return localStorage.getItem('audio_autoplay') !== 'false';
 }
 
+function getShowMeanings() {
+  // Default ON (true) when unset, to preserve current behavior (meanings always shown).
+  return localStorage.getItem('show_meanings') !== 'false';
+}
+
+function toggleShowMeanings() {
+  var next = !getShowMeanings();
+  try { localStorage.setItem('show_meanings', next ? 'true' : 'false'); } catch(e) {}
+  renderStotraDetail(true);
+}
+
 function setAutoplayToggleVisual(on) {
   var toggle = document.getElementById('acct-autoplay-toggle');
   var knob = document.getElementById('acct-autoplay-knob');
@@ -3895,7 +3906,7 @@ function openStotra(id) {
   setTimeout(renderStotraDetail, 0);
 }
 
-function renderStotraDetail() {
+function renderStotraDetail(preserveScroll) {
   if (!_currentStotraId || typeof STOTRAMS === 'undefined') return;
   var stotra = STOTRAMS.find(function(s){ return s.id === _currentStotraId; });
   if (!stotra) return;
@@ -3910,14 +3921,15 @@ function renderStotraDetail() {
 
   var linesHtml = '';
   var audioBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:16px;" onclick="toggleVerseAudio()"><svg id="verse-play-icon" viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M8 5v14l11-7z"/></svg> <span id="verse-play-label">Listen to Verse</span></button>';
+  var meaningsBtn = '<button class="audio-btn" style="width:100%;justify-content:center;margin-bottom:12px;background:#fff;color:#7a2800;border:1.5px solid #e0c9a8" onclick="toggleShowMeanings()">'+(getShowMeanings()?'Hide Meanings':'Show Meanings')+'</button>';
   verse.lines.forEach(function(line, lineIdx) {
     var sk = (typeof line === 'object') ? line.sanskrit : line;
     var en = (typeof line === 'object') ? line.english : '';
     var hi = (typeof line === 'object') ? line.hindi : '';
     linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
     linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
-    if (en) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
-    if (hi) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
+    if (en && getShowMeanings()) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
+    if (hi && getShowMeanings()) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
     linesHtml += '</div>';
   });
 
@@ -3958,6 +3970,7 @@ function renderStotraDetail() {
     '</div>'+
     (isLocked ? gateHtml :
       audioBtn +
+      meaningsBtn +
       '<div class="card" style="margin-bottom:0">'+
         linesHtml+
       '</div>'+
@@ -3967,7 +3980,7 @@ function renderStotraDetail() {
 
   var el = document.getElementById('stotra-detail-content');
   if (el) el.innerHTML = html;
-  window.scrollTo(0, 0);
+  if (!preserveScroll) window.scrollTo(0, 0);
 
   try {
     localStorage.setItem('last_visited', JSON.stringify({
