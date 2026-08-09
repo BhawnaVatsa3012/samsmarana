@@ -47,6 +47,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 
 .page{display:none;padding:20px 18px 80px;background:#fdf8f2;}
 .ptr-indicator{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:height .25s ease;color:#9a6800;font-family:'EB Garamond',serif;font-size:13px;font-style:italic}
+.copyable-sanskrit{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .page.active{display:block}
 .pill{display:inline-block;background:#f0d0b0;color:#5a1000;border-radius:4px;padding:3px 10px;font-size:10px;font-weight:700;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase;border:1px solid #c89060}
 .page-heading{font-family:'EB Garamond',serif;font-size:26px;font-weight:600;color:#1a0f00;margin-bottom:6px}
@@ -323,7 +324,7 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   </div>
   <div class="shloka-card">
     <div class="shloka-label">☀ Shloka of the Day</div>
-    <div class="shloka-text deva" id="shloka-text"></div>
+    <div class="shloka-text deva copyable-sanskrit" id="shloka-text"></div>
     <div class="shloka-source serif" id="shloka-source"></div>
     <div class="shloka-meaning" id="shloka-meaning"></div>
    <div class="shloka-life" id="shloka-life"></div>
@@ -704,7 +705,7 @@ Ask me anything. Grammar, shlokas, philosophy, or how a Sanskrit word connects t
 <!-- Label -->
 <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#9a6800;margin-bottom:16px;font-weight:600">🪔 Shloka <span id="sc-num">1</span> of <span id="sc-total">6</span></div>
 <!-- Sanskrit text -->
-<div id="sc-text" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:var(--deva-size);color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
+<div id="sc-text" class="copyable-sanskrit" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:var(--deva-size);color:#4a1000;line-height:2.1;text-align:center;margin-bottom:10px;white-space:pre-line"></div>
 <!-- Source -->
 <div id="sc-source" style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#9a6800;text-align:center;margin-bottom:18px"></div>
 
@@ -1644,6 +1645,64 @@ enablePullToRefresh('page-home','home-ptr-indicator', function(){
   return renderCommunityTeaser();
 });
 enablePullToRefresh('page-community','community-ptr-indicator', loadReflections);
+
+var _lpTimer=null, _lpStartX=0, _lpStartY=0;
+document.addEventListener('touchstart', function(e){
+  var el = e.target.closest ? e.target.closest('.copyable-sanskrit') : null;
+  if(!el) return;
+  _lpStartX = e.touches[0].clientX;
+  _lpStartY = e.touches[0].clientY;
+  _lpTimer = setTimeout(function(){
+    _lpTimer = null;
+    copySanskritText(el);
+  }, 550);
+}, {passive:true});
+document.addEventListener('touchmove', function(e){
+  if(!_lpTimer) return;
+  var dx = Math.abs(e.touches[0].clientX - _lpStartX);
+  var dy = Math.abs(e.touches[0].clientY - _lpStartY);
+  if(dx>10 || dy>10){ clearTimeout(_lpTimer); _lpTimer=null; }
+}, {passive:true});
+document.addEventListener('touchend', function(){
+  if(_lpTimer){ clearTimeout(_lpTimer); _lpTimer=null; }
+}, {passive:true});
+
+function copySanskritText(el){
+  var text = el.textContent || '';
+  function done(ok){
+    if(navigator.vibrate) navigator.vibrate(15);
+    showCopyToast(ok);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){done(true);}).catch(function(){
+      fallbackCopy(text, done);
+    });
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=text;
+    ta.style.position='fixed';
+    ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    cb(ok);
+  }catch(e){ cb(false); }
+}
+function showCopyToast(ok){
+  var toast=document.createElement('div');
+  toast.textContent = ok ? '📋 Copied to clipboard' : 'Could not copy — try again';
+  toast.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(90,20,0,.92);color:#fff;padding:10px 20px;border-radius:24px;font-family:\'EB Garamond\',serif;font-size:14px;z-index:1000;box-shadow:0 4px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .25s';
+  document.body.appendChild(toast);
+  requestAnimationFrame(function(){ toast.style.opacity='1'; });
+  setTimeout(function(){ toast.style.opacity='0'; setTimeout(function(){toast.remove();},300); }, 1400);
+}
 
 
 function showShabd(wordRoman, btn) {
@@ -4013,7 +4072,7 @@ function renderStotraDetail(preserveScroll) {
     var en = (typeof line === 'object') ? line.english : '';
     var hi = (typeof line === 'object') ? line.hindi : '';
     linesHtml += '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e8d8c0;">';
-    linesHtml += '<div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
+    linesHtml += '<div class="copyable-sanskrit" style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:var(--deva-size);color:#4a1000;line-height:2;margin-bottom:6px;">'+sk+'</div>';
     if (en && getShowMeanings()) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;"><span style="font-size:9px;font-weight:700;color:#9a6800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">EN</span><div style="font-family:\'EB Garamond\',serif;font-size:14px;color:#3a2a18;line-height:1.7;font-style:italic;">'+en+'</div></div>';
     if (hi && getShowMeanings()) linesHtml += '<div style="display:flex;gap:6px;align-items:flex-start;"><span style="font-size:9px;font-weight:700;color:#7a2800;text-transform:uppercase;padding-top:3px;flex-shrink:0;">HI</span><div style="font-family:\'Tiro Devanagari Sanskrit\',serif;font-size:13px;color:#3a2a18;line-height:1.8;">'+hi+'</div></div>';
     linesHtml += '</div>';
