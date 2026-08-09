@@ -76,9 +76,9 @@
 ### Guru Ji
 | # | Status | Item |
 |---|--------|------|
-| UI-G1 | ⬜ Pending | Parchment/cream background on Guru Ji's message bubbles (planned in visual refresh) |
-| UI-G2 | ⬜ Pending | "Today's teaching" card in Guru Ji — one daily grammar insight surfaced passively, no prompt needed |
-| UI-G3 | ⬜ Pending | Add 🙏 "This helped" response rating alongside the existing Flag button |
+| UI-G1 | ✅ Done | Parchment treatment on Guru Ji's message bubbles — layered gradient background, gold left-edge accent, faint "ॐ" watermark, and a fade-up entrance animation on every reply. Pure CSS on `.msg.ai`, applies to both the JS-generated messages and the hardcoded greeting bubble. |
+| UI-G2 | ✅ Done | "Today's Teaching" card on the Ask Guru Ji page — surfaces one of six existing grammar insights (reused verbatim from the Sandhi/Samas/Karaka/Script pages) automatically on page load, no prompt needed. Rotates daily using the same day-of-year modulo pattern as Shloka of the Day, via `TEACHINGS` array and `renderTodaysTeaching()`. |
+| UI-G3 | ✅ Done | 🙏 "This helped" button added next to the existing ⚑ Flag button on every Guru Ji response. Local UI-only click response mirroring Flag's behavior — no backend persistence yet for either signal. |
 
 ### Progress Page
 | # | Status | Item |
