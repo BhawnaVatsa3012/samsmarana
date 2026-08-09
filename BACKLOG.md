@@ -95,7 +95,7 @@
 ### Small High-Impact Polish
 | # | Status | Item |
 |---|--------|------|
-| UI-X1 | ⬜ Pending | Pull-to-refresh on Community and Home pages |
-| UI-X2 | ⬜ Pending | Warm empty state for Bookmarks — "Save a shloka that speaks to you today 🙏" instead of generic icon |
-| UI-X3 | ⬜ Pending | Long-press to copy Sanskrit text on any shloka/stotra line |
+| UI-X1 | ✅ Done | Pull-to-refresh on Home and Community — a lightweight touch-driven indicator bar (no dependencies) that arms only when window.scrollY is 0, so it doesn't interfere with normal scrolling. Re-runs renderContinueCard()/renderCommunityTeaser() on Home and loadReflections() on Community via enablePullToRefresh(). Needs a real-device test to confirm the pull thresholds feel right — not yet verified beyond code review. |
+| UI-X2 | ✅ Done | Bookmarks empty state now reads "Save a shloka that speaks to you today 🙏" with a 🌸 icon (matching the warm tone already used elsewhere in the app), replacing the generic 🔖 + "No saved shlokas yet" copy. |
+| UI-X3 | ✅ Done | Long-press (~550ms) on any Sanskrit line — Shloka of the Day, Shloka Cards, stotram verse lines — copies the text via a shared `.copyable-sanskrit` class and one document-level event-delegated handler, with a toast confirmation. Falls back to execCommand('copy') when navigator.clipboard is unavailable/rejects. Needs a real iPhone test — iOS Safari can restrict clipboard writes triggered from setTimeout rather than a direct tap; not yet verified on-device. |
 | UI-X4 | ✅ Done | Visible ← Back link at top of sub-pages (Stotra detail, Profile, Bookmarks) for users unfamiliar with gesture navigation |
