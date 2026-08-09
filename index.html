@@ -614,6 +614,7 @@ Ask Guru Ji about this Shloka
   <div class="pill">AI</div>
   <div class="page-heading">Ask Guru Ji — गुरु जी</div>
   <div class="page-desc">Not a chatbot. A teacher who knows you have already lived enough to understand Sanskrit deeply.</div>
+  <div id="guru-teaching-card" style="margin-bottom:14px"></div>
   <div class="sugs">
     <button class="sug" onclick="askSug(this)">What does the Gita say about Karma?</button>
     <button class="sug" onclick="askSug(this)">Explain बालक Shabd Roop with a life example</button>
@@ -1065,6 +1066,14 @@ const shlokas=[
   {text:'चरैवेति चरैवेति',source:'Aitareya Brahmana',meaning:'Keep moving. Keep moving.',meaningHi:'चलते रहो। चलते रहो।',life:'Two words. The shortest and most powerful instruction in all of Sanskrit. No explanation needed.'},
   {text:'यो मां पश्यति सर्वत्र सर्वं च मयि पश्यति । तस्याहं न प्रणश्यामि स च मे न प्रणश्यति ॥',source:'Bhagavad Gita 6.30',meaning:'One who sees Me everywhere and everything in Me — I am never lost to them, nor are they ever lost to Me.',meaningHi:'जो मुझे सर्वत्र देखता है और सब कुछ में मुझे देखता है — मैं उसके लिए कभी नहीं खोता और वह मेरे लिए कभी नहीं खोता।',life:'A statement on connection so profound that once truly understood, separation becomes impossible.'},
 ];
+const TEACHINGS=[
+  'The word Karma (कर्म) is itself a neuter noun — a Shabd Roop of the root kar. When the Gita says "Karmanyevadhikaraste" — your right is to karma alone — it uses the 7th Vibhakti. The action is the location you inhabit.',
+  'The Gita\'s most quoted verse uses Lot Lakar — "Arise! Fight!" (उत्तिष्ठ, अर्जुन). Commands in Sanskrit are not harsh — they carry the weight of love and duty combined.',
+  'Namaste is itself a Sandhi — namas + te. "I bow to you." Two words, spoken millions of times daily, that most people don\'t know are grammatically fused. Sandhi is everywhere once you see it.',
+  'Mahābhārata is a Tatpurusha — mahā + bhārata — "the great tale of the Bharatas." Upanishad is also a compound — upa (near) + ni (down) + shad (to sit) — "sitting near the teacher." Every Sanskrit word you use is a compressed universe of meaning.',
+  'Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.',
+  'The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.'
+];
 const cards=[
   {d:'विवेक',r:'Viveka',m:'Discernment — the ability to tell the real from the unreal, the eternal from the temporary.',shloka:'नित्यानित्यवस्तुविवेकः',slokaMeaning:'Discrimination between the eternal and the transient — the first qualification for seeking truth.',source:'Vivekachudamani — Adi Shankaracharya'},
   {d:'वैराग्य',r:'Vairagya',m:'Dispassion — not bitterness toward the world, but freedom from being pulled by it.',shloka:'वि + राग = वैराग्य',slokaMeaning:'Vi means without, raga means passion. Vairagya is being without the colouring of desire — seeing clearly.',source:'Vedanta etymology — Vivekachudamani'},
@@ -1497,6 +1506,7 @@ function nav(id,el){
   if(id==='shlokaCards')fetchShlokaCards();
   if(id==='shabdroop'||id==='dhaturoop')loadGrammarData();
   if(id==='community')initCommunity();
+  if(id==='tutor')renderTodaysTeaching();
   if(id==='upgrade')initUpgradePage();
   if(id==='progress')initProgressPage();
   if(id==='profile-details')initProfileDetails();
@@ -3589,6 +3599,14 @@ function getShlokaAudioFile() {
 var day = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
 var idx = day % shlokas.length;
 return '/audio/shloka-' + (idx + 1) + '.mp3';
+}
+
+function renderTodaysTeaching(){
+  var el=document.getElementById('guru-teaching-card');
+  if(!el||typeof TEACHINGS==='undefined'||!TEACHINGS.length) return;
+  var day=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  var idx=day%TEACHINGS.length;
+  el.innerHTML='<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-weight:500">✦ Today\'s Teaching</div><div class="info-box" style="margin-top:0">'+TEACHINGS[idx]+'</div>';
 }
 
 function toggleShlokaAudio() {
