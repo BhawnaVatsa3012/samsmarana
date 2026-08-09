@@ -1798,16 +1798,32 @@ function addMsg(role,text){
   const box=document.getElementById('chat-box');
   const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
   if(role==='ai'){
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:14px;margin-top:6px;';
+
     const flag=document.createElement('button');
     flag.title='Flag this response as potentially inaccurate';
-    flag.style.cssText='display:block;margin-top:6px;background:none;border:none;cursor:pointer;font-size:11px;color:#c8a870;font-family:\'EB Garamond\',serif;font-style:italic;padding:0;';
+    flag.style.cssText='background:none;border:none;cursor:pointer;font-size:11px;color:#c8a870;font-family:\'EB Garamond\',serif;font-style:italic;padding:0;';
     flag.textContent='⚑ Flag as inaccurate';
     flag.onclick=function(){
       flag.textContent='⚑ Flagged — thank you 🙏';
       flag.style.color='#8b0000';
       flag.onclick=null;
     };
-    d.appendChild(flag);
+
+    const helpful=document.createElement('button');
+    helpful.title='This response helped me';
+    helpful.style.cssText='background:none;border:none;cursor:pointer;font-size:11px;color:#c8a870;font-family:\'EB Garamond\',serif;font-style:italic;padding:0;';
+    helpful.textContent='🙏 This helped';
+    helpful.onclick=function(){
+      helpful.textContent='🙏 Glad it helped';
+      helpful.style.color='#7a2800';
+      helpful.onclick=null;
+    };
+
+    row.appendChild(flag);
+    row.appendChild(helpful);
+    d.appendChild(row);
   }
   box.appendChild(d);scrollChat();
 }
