@@ -799,7 +799,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <!-- Milestone progress bar -->
 <div style="margin-top:20px">
 <div style="display:flex;justify-content:space-between;font-size:11px;color:#7a6040;margin-bottom:6px">
-<span id="progress-bar-label">Progress to Bronze 🥉</span>
+<span id="progress-bar-label">Progress to अभ्यासी</span>
 <span id="progress-bar-fraction">0 / 10</span>
 </div>
 <div style="background:#e0c9a8;border-radius:4px;height:8px">
@@ -3017,10 +3017,10 @@ var _progressQuizState = { idx: 0, score: 0, answered: false, done: false, answe
 var _progressQuizQuestions = [];
 
 var BADGE_CONFIG = {
-none: { emoji: '🕉️', label: 'Keep going — your first badge awaits', next: 10, nextLabel: 'Progress to Bronze 🥉' },
-bronze: { emoji: '🥉', label: 'Bronze Badge — Sanskrit Journey Begun!', next: 30, nextLabel: 'Progress to Silver 🥈' },
-silver: { emoji: '🥈', label: 'Silver Badge — The Practitioner!', next: 50, nextLabel: 'Progress to Gold 🥇' },
-gold: { emoji: '🥇', label: 'Gold Badge — विद्वान् in the making!', next: 50, nextLabel: 'Maximum achieved 🙏' }
+none: { emoji: '🕉️', label: 'आरम्भक — your first milestone awaits', next: 10, nextLabel: 'Progress to अभ्यासी' },
+bronze: { emoji: '🥉', label: 'अभ्यासी — Your Sanskrit Journey Begun!', next: 30, nextLabel: 'Progress to तपस्वी' },
+silver: { emoji: '🥈', label: 'तपस्वी — Steadfast in Practice!', next: 50, nextLabel: 'Progress to आचार्य' },
+gold: { emoji: '🥇', label: 'आचार्य — Master of the Path!', next: 50, nextLabel: 'Maximum achieved 🙏' }
 };
 
 function getProgressQuizQuestions() {
@@ -3255,9 +3255,9 @@ function triggerCelebration(milestone) {
 var intensity = milestone === 10 ? 'light' : milestone === 30 ? 'medium' : 'full';
 var overlay = document.createElement('div');
 overlay.style.cssText = 'position:fixed;inset:0;z-index:999;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
-var msg = milestone === 10 ? '🥉 Bronze Badge Earned!\nYour Sanskrit journey has begun.' :
-milestone === 30 ? '🥈 Silver Badge Earned!\nचरैवेति चरैवेति 🙏' :
-'🥇 Gold Badge Earned!\nविद्या ददाति विनयम् 🙏';
+var msg = milestone === 10 ? '🥉 अभ्यासी Achieved!\nYour Sanskrit journey has begun.' :
+milestone === 30 ? '🥈 तपस्वी Achieved!\nचरैवेति चरैवेति 🙏' :
+'🥇 आचार्य Achieved!\nविद्या ददाति विनयम् 🙏';
 overlay.innerHTML = '<div style="background:rgba(90,20,0,.92);border:2px solid #c8922a;border-radius:16px;padding:28px 32px;text-align:center;color:white;font-family:\'EB Garamond\',serif;font-size:22px;line-height:1.8;white-space:pre-line;box-shadow:0 8px 32px rgba(0,0,0,.4)">' + msg + '</div>';
 
 // Confetti
