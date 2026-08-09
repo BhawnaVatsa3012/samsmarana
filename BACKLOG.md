@@ -83,9 +83,9 @@
 ### Progress Page
 | # | Status | Item |
 |---|--------|------|
-| UI-P1 | ⬜ Pending | Replace numeric score display with Sanskrit milestone labels at each level (e.g. अभ्यासी at 10, साधक at 30) |
+| UI-P1 | ✅ Done | Sanskrit milestone labels replace the English Bronze/Silver/Gold badge wording — आरम्भक (0), अभ्यासी (10), तपस्वी (30), आचार्य (50). Thresholds and internal badge keys unchanged; साधक/विद्वान् deliberately avoided since those are paid subscription tier names. |
 | UI-P2 | ✅ Done | Daily streak counter — "7 days of practice" displayed next to score |
-| UI-P3 | ⬜ Pending | Rename Learning Log to "शिक्षण पत्र — My Learning Record" and give it more prominence on the page |
+| UI-P3 | ✅ Done | Learning Log renamed to "शिक्षण पत्र — My Learning Record" and wrapped in `.card`, matching the Score/Badge and Daily Quiz cards above it instead of reading visually flat. |
 
 ### Onboarding
 | # | Status | Item |
