@@ -44,7 +44,7 @@
 | B9.1 | ✅ Done | Active tab highlighting fix (background colour, not just text) |
 | B10 | ✅ Done | Stotrams — all 5 stotrams fully migrated to per-line EN/HI object format (Shiv Tandav 68 lines, Rudrashtakam 32, Shiva Panchakshara 20, Mahishasura Mardini 62 + refrain, Maha Mrityunjaya 4). Live in production. |
 | B11 | ⬜ Pending | Full-stotram ambient/mantra audio track — one continuous audio clip (not per-verse) layered underneath the existing per-verse voice recitation during Full Recitation, similar to the ambient track behind Shloka of the Day. Recording not yet sourced. Verse advancement/highlighting will continue to be driven by the existing per-verse files, not this track, since syncing display to a position within this new track would require manually-noted timestamps once it exists. |
-| — | ⬜ Pending | Vidvan tier launch |
+| — | ✅ Done | Vidvan tier launch — real Razorpay payment flow live at ₹499/month · ₹3,999/year. Tier is derived server-side from the Razorpay order's notes (set at order-creation time) rather than trusted from the client or hardcoded, closing a bug where every successful payment — regardless of tier or plan — was setting tier: 'sadhaka'. Buy box now visible to all Sadhaka users, not just the admin account. |
 | — | ⬜ Pending | Razorpay live keys (switch from test to production) |
 | — | ⬜ Pending | Google Play Store via Capacitor |
 
