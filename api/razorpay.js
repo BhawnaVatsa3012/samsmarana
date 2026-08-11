@@ -22,14 +22,19 @@ const action = req.query.action;
 
 // ── CREATE ORDER ──────────────────────────────────────────
 if (req.method === 'POST' && action === 'create-order') {
-const { plan, userId } = req.body;
-const amount = plan === 'yearly' ? 199900 : 29900; // paise
+const { plan, tier, userId } = req.body;
+const PRICES = {
+sadhaka: { monthly: 29900, yearly: 199900 },
+vidvan:  { monthly: 49900, yearly: 399900 }
+};
+const amount = PRICES[tier]?.[plan];
+if (!amount) return res.status(400).json({ error: 'Invalid tier/plan combination' });
 try {
 const order = await razorpay.orders.create({
 amount,
 currency: 'INR',
 receipt: `sam_${Date.now()}`,
-notes: { userId, plan }
+notes: { userId, plan, tier }
 });
 return res.status(200).json({
 orderId: order.id,
@@ -59,9 +64,10 @@ return res.status(400).json({ error: 'Invalid signature' });
 if (req.body.event === 'payment.captured') {
 const notes = req.body.payload?.payment?.entity?.notes;
 const userId = notes?.userId;
+const purchasedTier = notes?.tier || 'sadhaka'; // fallback covers pre-existing orders with no tier in notes
 if (userId) {
 const { error } = await supabase.auth.admin.updateUserById(userId, {
-user_metadata: { tier: 'sadhaka', premium: true }
+user_metadata: { tier: purchasedTier, premium: true }
 });
 if (error) return res.status(500).json({ error: error.message });
 }
@@ -86,8 +92,12 @@ if (signature !== expected) {
 return res.status(400).json({ error: 'Invalid signature' });
 }
 
+const order = await razorpay.orders.fetch(orderId);
+const purchasedTier = order.notes?.tier;
+if (!purchasedTier) return res.status(500).json({ error: 'Could not determine purchased tier' });
+
 const { error } = await supabase.auth.admin.updateUserById(userId, {
-user_metadata: { tier: 'sadhaka', premium: true }
+user_metadata: { tier: purchasedTier, premium: true }
 });
 if (error) return res.status(500).json({ error: error.message });
 

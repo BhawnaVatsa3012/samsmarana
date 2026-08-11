@@ -881,7 +881,7 @@ Share the wisdom. Let it find the one who needs it. 🙏
 <!-- Vidvan -->
 <div data-tier="vidvan" style="background:#fdf8f2;border:1px solid #c8b090;border-radius:10px;padding:14px 8px;text-align:center;position:relative">
 <div class="tier-upgrade-badge" style="display:none;position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#ffd700;color:#5a1000;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap">NEXT</div>
-<div class="tier-label" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Coming Soon</div>
+<div class="tier-label" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a4020;font-weight:700;margin-bottom:6px">Learned</div>
 <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:#7a2800">विद्वान्</div>
 <div style="font-size:12px;color:#5a4020;font-weight:600;margin-top:2px">Vidvan</div>
 <div style="font-size:10px;color:#7a6040;font-style:italic;margin-bottom:10px">The Learned</div>
@@ -894,7 +894,7 @@ Start with Sadhaka. Vidvan is the next step — for those who go deeper.
 ✓ Deep content<br>
 ✓ Priority support
 </div>
-<div style="margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#5a4020;font-style:italic">TBA</div>
+<div style="margin-top:10px;font-family:'EB Garamond',serif;font-size:14px;color:#9a6800;font-weight:600">₹499/month</div>
 </div>
 
 </div>
@@ -928,7 +928,7 @@ Choose your plan and pay securely
 <div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Monthly</div>
 <div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹299</div>
 <div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">per month</div>
-<button onclick="startRazorpay('monthly')"
+<button onclick="startRazorpay('monthly', 'sadhaka')"
 style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
 Pay ₹299
 </button>
@@ -938,7 +938,7 @@ Pay ₹299
 <div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Yearly</div>
 <div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹1,999</div>
 <div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">save ₹1,589</div>
-<button onclick="startRazorpay('yearly')"
+<button onclick="startRazorpay('yearly', 'sadhaka')"
 style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
 Pay ₹1,999
 </button>
@@ -973,7 +973,7 @@ if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05r
 <div style="text-align:center;margin-bottom:14px">
 <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:#7a2800">विद्वान्</div>
 <div style="font-family:'EB Garamond',serif;font-size:20px;font-weight:600;color:#1a0f00;margin-top:4px">Vidvan — The Learned</div>
-<div style="font-size:12px;color:#7a6040;font-style:italic;font-family:'EB Garamond',serif;margin-top:4px">Coming Soon · Early Access Pricing</div>
+<div style="font-size:12px;color:#7a6040;font-style:italic;font-family:'EB Garamond',serif;margin-top:4px">Now Available</div>
 </div>
 <div style="font-family:'EB Garamond',serif;font-size:34px;font-weight:600;color:#7a2800;text-align:center">₹499<span style="font-size:16px;font-weight:400"> / month</span></div>
 <div style="font-size:12px;color:#5a4020;text-align:center;margin-top:4px;margin-bottom:16px">or <strong>₹3,999 / year</strong> — save ₹2,989</div>
@@ -985,11 +985,32 @@ if(el) el.innerHTML = '<p style="text-align:center;color:#7a2800;font-size:1.05r
 ✦ Exclusive Vidvan community<br>
 ✦ Monthly live Q&A with Bhawna
 </div>
-<div class="card-title">Join the Waitlist</div>
-<div style="font-family:'EB Garamond',serif;font-size:14px;color:#3a2a18;line-height:1.8;margin-bottom:12px">Vidvan is launching soon. Register your interest and get early access at a special price.</div>
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;">
+<div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;">
+<div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Monthly</div>
+<div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹499</div>
+<div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">per month</div>
+<button onclick="startRazorpay('monthly', 'vidvan')"
+style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
+Pay ₹499
+</button>
+</div>
+<div style="border:1.5px solid #c8922a;border-radius:12px;padding:1.2rem 1.5rem;text-align:center;min-width:140px;position:relative;">
+<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#c8922a;color:#fff;font-size:0.7rem;padding:2px 10px;border-radius:20px;">Best Value</div>
+<div style="font-size:1rem;color:#2a1a08;margin-bottom:0.3rem;">Yearly</div>
+<div style="font-size:1.5rem;font-weight:700;color:#c8922a;">₹3,999</div>
+<div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">save ₹2,989</div>
+<button onclick="startRazorpay('yearly', 'vidvan')"
+style="background:#7a2800;color:white;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-size:0.95rem;cursor:pointer;width:100%;">
+Pay ₹3,999
+</button>
+</div>
+</div>
+<div class="card-title">Not Ready to Subscribe Yet?</div>
+<div style="font-family:'EB Garamond',serif;font-size:14px;color:#3a2a18;line-height:1.8;margin-bottom:12px">Get updates about Vidvan features and offers — no pressure to buy today.</div>
 <div id="vidvan-success" style="display:none;font-size:13px;color:#1a5c38;padding:10px 12px;background:#f2faf6;border-radius:6px;margin-bottom:8px;font-family:'EB Garamond',serif;line-height:1.7"></div>
 <div id="vidvan-error" style="display:none;font-size:12px;color:#8b0000;margin-bottom:8px"></div>
-<button onclick="submitVidvanInterest()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Notify Me When Vidvan Launches 🙏</button>
+<button onclick="submitVidvanInterest()" style="width:100%;background:#7a2800;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Not ready yet? Stay updated instead</button>
 </div>
 </div>
 <div style="text-align:center;margin-bottom:20px;font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a7a62">
@@ -1199,7 +1220,7 @@ tier==='sadhaka'?'My Plan · साधक':
 if(desc){
 desc.textContent=
 tier==='vidvan'?'You have reached the highest tier. All features are yours.':
-tier==='sadhaka'?'You are a Sadhaka. The next level is विद्वान् (Vidvan) — coming soon.':
+tier==='sadhaka'?'You are a Sadhaka. The next level is विद्वान् (Vidvan) — ready when you are.':
 'The Seeker has begun. Now deepen the practice.';
 }
 
@@ -1218,7 +1239,7 @@ if(label){
 label.style.color='#5a4020';
 if(t==='jigyasu') label.textContent='Free';
 else if(t==='sadhaka') label.textContent='Practitioner';
-else label.textContent='Coming Soon';
+else label.textContent='Learned';
 }
 
 if(t===tier){
@@ -1255,7 +1276,7 @@ if(howToPay) howToPay.style.display=tier==='jigyasu'?'block':'none';
 if(pricingBox) pricingBox.style.display=tier==='jigyasu'?'block':'none';
 if(qrBox&&qrBox.parentElement&&qrBox.parentElement.parentElement) qrBox.parentElement.parentElement.style.display=tier==='jigyasu'?'block':'none';
 var isAdmin=_user && _user.email==='vatsa.bhawna@gmail.com';
-if(vidvanBox) vidvanBox.style.display = (tier === 'sadhaka' && isAdmin) ? 'block' : 'none';
+if(vidvanBox) vidvanBox.style.display = (tier === 'sadhaka') ? 'block' : 'none';
 var vidvanNoteBox = document.getElementById('vidvan-jigyasu-note');
 if(vidvanNoteBox) vidvanNoteBox.style.display = tier === 'jigyasu' ? 'block' : 'none';
 var paySection = document.getElementById('razorpay-payment-section');
@@ -1266,7 +1287,8 @@ if(paySection) paySection.style.display = tier==='jigyasu' ? 'block' : 'none';
 }, 200);
 }
 
-async function startRazorpay(plan) {
+async function startRazorpay(plan, tier) {
+tier = tier || 'sadhaka';
 const statusEl = document.getElementById('payment-status');
 if (!_user) {
 statusEl.style.display = 'block';
@@ -1283,19 +1305,20 @@ try {
 const resp = await fetch('/api/razorpay?action=create-order', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ plan, userId: _user.id })
+body: JSON.stringify({ plan, tier, userId: _user.id })
 });
 const order = await resp.json();
 if (!order.orderId) throw new Error(order.error || 'Order creation failed');
 
 // 2. Open Razorpay checkout
+const tierName = tier === 'vidvan' ? 'Vidvan' : 'Sadhaka';
 const options = {
 key: 'rzp_test_SwjbX5ae9Z12NI', // ← replace with your RAZORPAY_KEY_ID
 amount: order.amount,
 currency: order.currency,
 order_id: order.orderId,
 name: 'Samsmarana',
-description: plan === 'yearly' ? 'Sadhaka — Yearly Plan' : 'Sadhaka — Monthly Plan',
+description: (plan === 'yearly' ? tierName + ' — Yearly Plan' : tierName + ' — Monthly Plan'),
 image: 'https://samsmarana.vercel.app/favicon.ico',
 prefill: {
 email: _user.email || '',
@@ -1306,13 +1329,14 @@ handler: async function (response) {
 statusEl.style.display = 'block';
 statusEl.style.background = '#fff8ee';
 statusEl.style.border = '1px solid var(--gold)';
-statusEl.innerHTML = '⏳ Activating your Sadhaka access...';
+statusEl.innerHTML = '⏳ Activating your ' + tierName + ' access...';
 try {
 const upgradeResp = await fetch('/api/razorpay?action=upgrade-tier', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
 userId: _user.id,
+tier: tier,
 paymentId: response.razorpay_payment_id,
 orderId: response.razorpay_order_id,
 signature: response.razorpay_signature
@@ -1324,7 +1348,7 @@ if (!upgradeData.success) throw new Error(upgradeData.error || 'Upgrade failed')
 // Session refresh handled via /api/auth getuser call instead
 
 
-statusEl.innerHTML = '✅ You are now a Sadhaka! Welcome 🙏';
+statusEl.innerHTML = '✅ You are now a ' + tierName + '! Welcome 🙏';
 statusEl.style.background = '#f0fff4';
 statusEl.style.border = '1px solid #4caf50';
 setTimeout(function () { updateTopbar(); initUpgradePage(); }, 1500);
