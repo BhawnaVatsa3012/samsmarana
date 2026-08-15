@@ -1536,13 +1536,11 @@ function renderLearnPath(){
   var html = '';
   LEARN_PATH.forEach(function(id, i){
     var badge = '';
-    var locked = (id === 'stotrams' && tier === 'jigyasu');
+    var locked = (id === 'stotrams' && tier !== 'vidvan');
     if (locked) {
-      badge = '<div style="font-size:11px;font-weight:600;color:#8a3800;background:#fbe8dc;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔒 Needs Sadhaka</div>';
+      badge = '<div style="font-size:11px;font-weight:600;color:#8a3800;background:#fbe8dc;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔒 Needs Vidvan</div>';
     } else if ((id === 'shabdroop' || id === 'dhaturoop') && tier === 'jigyasu') {
       badge = '<div style="font-size:11px;font-weight:600;color:#8a6000;background:#fdf0d5;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔓 More at Sadhaka</div>';
-    } else if (id === 'stotrams' && tier === 'sadhaka') {
-      badge = '<div style="font-size:11px;font-weight:600;color:#8a6000;background:#fdf0d5;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔓 More at Vidvan</div>';
     }
     html += '<div class="learn-tile" style="display:flex;align-items:center;gap:14px;text-align:left;padding:16px' + (locked ? ';opacity:0.65' : '') + '" onclick="nav(\'' + id + '\',null)">';
     html += '<div style="min-width:28px;height:28px;border-radius:50%;background:#fdf8f2;border:1px solid #e0c9a8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#7a2800;font-weight:600;flex-shrink:0">' + (i+1) + '</div>';
@@ -4105,6 +4103,10 @@ function openStotra(id) {
     openAuth('signin');
     return;
   }
+  if (tier !== 'vidvan') {
+    nav('upgrade', null);
+    return;
+  }
   stopAllStotraAudio();
   _currentStotraId = id;
   _currentVerseIdx = 0;
@@ -4219,6 +4221,7 @@ function resumeStotra(id, verseIdx) {
   if (!stotra) return;
   var tier = getTier();
   if (tier === 'jigyasu') { openAuth('signin'); return; }
+  if (tier !== 'vidvan') { nav('upgrade', null); return; }
   stopAllStotraAudio();
   _currentStotraId = id;
   _currentVerseIdx = (typeof verseIdx === 'number' && verseIdx >= 0 && verseIdx < stotra.verseCount) ? verseIdx : 0;
