@@ -377,55 +377,17 @@ Ask Guru Ji about this Shloka
 <div class="page" id="page-learn">
   <div style="padding:20px 16px 8px">
     <div class="page-heading">पाठ · Learn</div>
-    <div class="page-desc">Choose a topic to continue your Sanskrit journey.</div>
+    <div class="page-desc">Your path from script to scripture. Follow it in order, or jump anywhere — it's yours either way.</div>
   </div>
+  <div id="learn-path-list" style="padding:0 16px;display:flex;flex-direction:column;gap:10px"></div>
+  <div style="padding:24px 16px 8px;font-family:'EB Garamond',serif;font-style:italic;color:#7a6040;font-size:13px">Extra Practice</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 100px">
-    <div class="learn-tile" onclick="nav('shabdroop',null)">
-      <div class="learn-tile-icon">—</div>
-      <div class="learn-tile-title">Shabd Roop</div>
-      <div class="learn-tile-sub">Noun declensions</div>
-    </div>
-    <div class="learn-tile" onclick="nav('dhaturoop',null)">
-      <div class="learn-tile-icon">↻</div>
-      <div class="learn-tile-title">Dhatu Roop</div>
-      <div class="learn-tile-sub">Verb conjugations</div>
-    </div>
-    <div class="learn-tile" onclick="nav('sandhi',null)">
-      <div class="learn-tile-icon">∞</div>
-      <div class="learn-tile-title">Sandhi</div>
-      <div class="learn-tile-sub">Sound combinations</div>
-    </div>
-    <div class="learn-tile" onclick="nav('samas',null)">
-      <div class="learn-tile-icon">⊕</div>
-      <div class="learn-tile-title">Samas</div>
-      <div class="learn-tile-sub">Compound words</div>
-    </div>
-    <div class="learn-tile" onclick="nav('karaka',null)">
-      <div class="learn-tile-icon">△</div>
-      <div class="learn-tile-title">Karaka</div>
-      <div class="learn-tile-sub">Cases & Vibhakti</div>
-    </div>
-    <div class="learn-tile" onclick="nav('script',null)">
-      <div class="learn-tile-icon">अ</div>
-      <div class="learn-tile-title">Devanagari</div>
-      <div class="learn-tile-sub">Script practice</div>
-    </div>
     <div class="learn-tile" onclick="nav('shlokaCards',null)">
       <div class="learn-tile-icon">🪔</div>
       <div class="learn-tile-title">Shloka Cards</div>
       <div class="learn-tile-sub">Read & reflect</div>
     </div>
-    <div class="learn-tile" onclick="nav('flashcards',null)">
-      <div class="learn-tile-icon">◻</div>
-      <div class="learn-tile-title">Vocabulary</div>
-      <div class="learn-tile-sub">Word flashcards</div>
-    </div>
-    <div class="learn-tile" onclick="nav('stotrams',null)">
-      <div class="learn-tile-icon">🕉</div>
-      <div class="learn-tile-title">Stotrams</div>
-      <div class="learn-tile-sub">Sacred Sanskrit verses</div>
-    </div>
-    <div class="learn-tile" onclick="nav('sentences',null)" style="grid-column:1/-1">
+    <div class="learn-tile" onclick="nav('sentences',null)">
       <div class="learn-tile-icon">✎</div>
       <div class="learn-tile-title">Sentence Practice</div>
       <div class="learn-tile-sub">Build & translate sentences</div>
@@ -1556,6 +1518,39 @@ function renderTopicNav(id){
   html += '</div>';
   container.innerHTML = html;
 }
+function renderLearnPath(){
+  var container = document.getElementById('learn-path-list');
+  if (!container) return;
+  var tier = getTier();
+  var ICONS = {script:'अ',sandhi:'∞',samas:'⊕',flashcards:'◻',shabdroop:'—',dhaturoop:'↻',karaka:'△',stotrams:'🕉'};
+  var SUBS = {
+    script:'Script practice',
+    sandhi:'Sound combinations',
+    samas:'Compound words',
+    flashcards:'Word flashcards',
+    shabdroop:'Noun declensions',
+    dhaturoop:'Verb conjugations',
+    karaka:'Cases & Vibhakti',
+    stotrams:'Sacred Sanskrit verses'
+  };
+  var html = '';
+  LEARN_PATH.forEach(function(id, i){
+    var locked = (id === 'stotrams' && tier === 'jigyasu');
+    var partial = ((id === 'shabdroop' || id === 'dhaturoop') && tier === 'jigyasu') || (id === 'stotrams' && tier === 'sadhaka');
+    html += '<div class="learn-tile" style="display:flex;align-items:center;gap:14px;text-align:left;padding:16px' + (locked ? ';opacity:0.65' : '') + '" onclick="nav(\'' + id + '\',null)">';
+    html += '<div style="min-width:28px;height:28px;border-radius:50%;background:#fdf8f2;border:1px solid #e0c9a8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#7a2800;font-weight:600;flex-shrink:0">' + (i+1) + '</div>';
+    html += '<div class="learn-tile-icon" style="margin:0;flex-shrink:0">' + ICONS[id] + '</div>';
+    html += '<div style="flex:1">';
+    html += '<div class="learn-tile-title">' + LEARN_PATH_LABELS[id] + '</div>';
+    html += '<div class="learn-tile-sub">' + SUBS[id] + '</div>';
+    html += '</div>';
+    if (locked) html += '<div style="font-size:11px;color:#9a7850;text-align:right;white-space:nowrap;flex-shrink:0">🔒<br>Sadhaka</div>';
+    else if (partial) html += '<div style="font-size:11px;color:#c8922a;text-align:right;white-space:nowrap;flex-shrink:0">◐<br>Partial</div>';
+    html += '</div>';
+  });
+  html += '<div style="text-align:center;font-family:\'EB Garamond\',serif;font-style:italic;color:#9a7850;padding:14px 0 4px">You have covered the basics 🙏</div>';
+  container.innerHTML = html;
+}
 function nav(id,el){
   const cur=document.querySelector('.page.active');
   if(cur&&cur.id!=='page-'+id){
@@ -1575,6 +1570,7 @@ function nav(id,el){
   if(id==='profile-details')initProfileDetails();
   if(id==='bookmarks')initBookmarksPage();
   if(id==='stotrams')initStotramsList();
+  if(id==='learn')renderLearnPath();
   if(LEARN_PATH.includes(id))renderTopicNav(id);
   if(id==='home'){renderContinueCard();renderCommunityTeaser();}
   document.getElementById('topbar-title').textContent=titles[id]||id;
