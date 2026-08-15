@@ -1313,7 +1313,7 @@ if (!order.orderId) throw new Error(order.error || 'Order creation failed');
 // 2. Open Razorpay checkout
 const tierName = tier === 'vidvan' ? 'Vidvan' : 'Sadhaka';
 const options = {
-key: 'rzp_test_SwjbX5ae9Z12NI', // ← replace with your RAZORPAY_KEY_ID
+key: 'rzp_live_TQA393S7cLJ4Ok',
 amount: order.amount,
 currency: order.currency,
 order_id: order.orderId,
