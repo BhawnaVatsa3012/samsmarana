@@ -417,7 +417,7 @@ Ask Guru Ji about this Shloka
   <div class="pill">व्याकरण</div>
   <div class="page-heading">Dhatu Roop — धातु रूप</div>
   <div class="page-desc">Dhatu is the root of every verb. From one seed, an entire forest of meanings grows — across time, mood, and person.</div>
-  <div class="sub-tabs">
+  <div class="sub-tabs" id="dhatu-sub-tabs">
     <button class="sub-tab active" onclick="showDhatu('lat',this)">लट् Present</button>
     <button class="sub-tab" onclick="showDhatu('lrit',this)">लृट् Future</button>
     <button class="sub-tab" onclick="showDhatu('lang',this)">लङ् Past</button>
@@ -1518,6 +1518,29 @@ function renderTopicNav(id){
   html += '</div>';
   container.innerHTML = html;
 }
+function tierLockHTML(neededTier, topicLabel){
+  var tierNames = {sadhaka:'Sadhaka', vidvan:'Vidvan'};
+  return '<div style="margin:20px 0;background:#fdf8f2;border:1px solid #e0c9a8;border-radius:12px;padding:32px 20px;text-align:center">' +
+    '<div style="font-size:28px;margin-bottom:10px">🔒</div>' +
+    '<div style="font-family:\'EB Garamond\',serif;font-size:18px;font-weight:600;color:#1a0f00;margin-bottom:8px">' + topicLabel + ' is a ' + tierNames[neededTier] + ' feature</div>' +
+    '<div style="font-size:13px;color:#5a4020;margin-bottom:16px">Upgrade to unlock this section fully.</div>' +
+    '<button onclick="nav(\'upgrade\',null)" style="background:#7a2800;color:white;border:none;border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">Become ' + tierNames[neededTier] + '</button>' +
+  '</div>';
+}
+function renderKarakaGate(){
+  var body = document.getElementById('karaka-body');
+  var locked = document.getElementById('karaka-locked');
+  if (!body || !locked) return;
+  if (isPremium()) { body.style.display='block'; locked.innerHTML=''; }
+  else { body.style.display='none'; locked.innerHTML = tierLockHTML('sadhaka','Karaka & Vibhakti'); }
+}
+function renderFlashcardsGate(){
+  var body = document.getElementById('flashcards-body');
+  var locked = document.getElementById('flashcards-locked');
+  if (!body || !locked) return;
+  if (isPremium()) { body.style.display='block'; locked.innerHTML=''; }
+  else { body.style.display='none'; locked.innerHTML = tierLockHTML('sadhaka','Vocabulary'); }
+}
 function renderLearnPath(){
   var container = document.getElementById('learn-path-list');
   if (!container) return;
@@ -1533,14 +1556,17 @@ function renderLearnPath(){
     karaka:'Cases & Vibhakti',
     stotrams:'Sacred Sanskrit verses'
   };
+  var LOCKED_STYLE = 'font-size:11px;font-weight:600;color:#8a3800;background:#fbe8dc;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0';
   var html = '';
   LEARN_PATH.forEach(function(id, i){
     var badge = '';
-    var locked = (id === 'stotrams' && tier !== 'vidvan');
-    if (locked) {
-      badge = '<div style="font-size:11px;font-weight:600;color:#8a3800;background:#fbe8dc;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔒 Needs Vidvan</div>';
-    } else if ((id === 'shabdroop' || id === 'dhaturoop') && tier === 'jigyasu') {
-      badge = '<div style="font-size:11px;font-weight:600;color:#8a6000;background:#fdf0d5;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔓 More at Sadhaka</div>';
+    var locked = false;
+    if ((id === 'karaka' || id === 'flashcards' || id === 'shabdroop') && tier === 'jigyasu') {
+      locked = true;
+      badge = '<div style="' + LOCKED_STYLE + '">🔒 Needs Sadhaka</div>';
+    } else if ((id === 'dhaturoop' || id === 'stotrams') && tier !== 'vidvan') {
+      locked = true;
+      badge = '<div style="' + LOCKED_STYLE + '">🔒 Needs Vidvan</div>';
     }
     html += '<div class="learn-tile" style="display:flex;align-items:center;gap:14px;text-align:left;padding:16px' + (locked ? ';opacity:0.65' : '') + '" onclick="nav(\'' + id + '\',null)">';
     html += '<div style="min-width:28px;height:28px;border-radius:50%;background:#fdf8f2;border:1px solid #e0c9a8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#7a2800;font-weight:600;flex-shrink:0">' + (i+1) + '</div>';
@@ -1567,6 +1593,9 @@ function nav(id,el){
   if(id==='sentences')renderSentences();
   if(id==='shlokaCards')fetchShlokaCards();
   if(id==='shabdroop'||id==='dhaturoop')loadGrammarData();
+  if(id==='learn')renderLearnPath();
+  if(id==='karaka')renderKarakaGate();
+  if(id==='flashcards')renderFlashcardsGate();
   if(id==='community')initCommunity();
   if(id==='tutor')renderTodaysTeaching();
   if(id==='upgrade')initUpgradePage();
@@ -1832,13 +1861,14 @@ function showDhatu(tenseId, btn) {
 async function loadGrammarData() {
   try {
     var premium = isPremium();
+    var vidvanOnly = (getTier() === 'vidvan');
+
     var shabdRes = await fetch('/api/grammar?type=shabd');
     var shabdJson = await shabdRes.json();
     var allShabd = shabdJson.shabd || [];
-    var visibleShabd = premium ? allShabd : allShabd.filter(function(w) { return w.is_free; });
+    var visibleShabd = premium ? allShabd : [];
     window._shabdData = visibleShabd;
 
-    // Build sub-tabs dynamically
     var tabsHtml = '';
     visibleShabd.forEach(function(w, i) {
       var genderLabel = w.gender === 'Masculine' ? 'm' : w.gender === 'Feminine' ? 'f' : 'n';
@@ -1846,7 +1876,9 @@ async function loadGrammarData() {
     });
     document.getElementById('shabd-sub-tabs').innerHTML = tabsHtml;
 
-    // Show first word by default, or resume to a specific word if requested
+    var shabdUpgradeTile = document.getElementById('shabd-upgrade-tile');
+    if (shabdUpgradeTile) shabdUpgradeTile.style.display = 'none';
+
     var shabdToShow = visibleShabd.length ? visibleShabd[0].word_roman : null;
     var shabdIdx = 0;
     if (window._resumeShabdWord) {
@@ -1857,28 +1889,33 @@ async function loadGrammarData() {
     if (shabdToShow) {
       var shabdBtns = document.querySelectorAll('#page-shabdroop .sub-tab');
       showShabd(shabdToShow, shabdBtns[shabdIdx] || null);
+    } else {
+      document.getElementById('shabd-content').innerHTML = tierLockHTML('sadhaka', 'Shabd Roop');
     }
 
-    // Show upgrade tile for Jigyasu only
-    var lockedCount = allShabd.filter(function(w) { return !w.is_free; }).length;
-    var upgradeTile = document.getElementById('shabd-upgrade-tile');
-    if (upgradeTile) upgradeTile.style.display = (!premium && lockedCount > 0) ? 'block' : 'none';
-
-    // Load dhatu
     var dhatuRes = await fetch('/api/grammar?type=dhatu');
     var dhatuJson = await dhatuRes.json();
     var allDhatu = dhatuJson.dhatu || [];
-    window._dhatuData = premium ? allDhatu : allDhatu.filter(function(d) { return d.is_free; });
+    window._dhatuData = vidvanOnly ? allDhatu : [];
 
-    // Show first tense by default, or resume to a specific tense if requested
-    var DHATU_TENSE_ORDER = ['lat', 'lrit', 'lang', 'lot', 'vidhiling'];
-    var dhatuTenseToShow = 'lat';
-    if (window._resumeDhatuTense && DHATU_TENSE_ORDER.indexOf(window._resumeDhatuTense) !== -1) {
-      dhatuTenseToShow = window._resumeDhatuTense;
+    var dhatuUpgradeTile = document.getElementById('dhatu-upgrade-tile');
+    if (dhatuUpgradeTile) dhatuUpgradeTile.style.display = 'none';
+    var dhatuTabsWrap = document.getElementById('dhatu-sub-tabs');
+
+    if (vidvanOnly) {
+      if (dhatuTabsWrap) dhatuTabsWrap.style.display = '';
+      var DHATU_TENSE_ORDER = ['lat', 'lrit', 'lang', 'lot', 'vidhiling'];
+      var dhatuTenseToShow = 'lat';
+      if (window._resumeDhatuTense && DHATU_TENSE_ORDER.indexOf(window._resumeDhatuTense) !== -1) {
+        dhatuTenseToShow = window._resumeDhatuTense;
+      }
+      window._resumeDhatuTense = null;
+      var dhatuBtns = document.querySelectorAll('#page-dhaturoop .sub-tab');
+      showDhatu(dhatuTenseToShow, dhatuBtns[DHATU_TENSE_ORDER.indexOf(dhatuTenseToShow)] || dhatuBtns[0]);
+    } else {
+      if (dhatuTabsWrap) dhatuTabsWrap.style.display = 'none';
+      document.getElementById('dhatu-content').innerHTML = tierLockHTML('vidvan', 'Dhatu Roop');
     }
-    window._resumeDhatuTense = null;
-    var dhatuBtns = document.querySelectorAll('#page-dhaturoop .sub-tab');
-    showDhatu(dhatuTenseToShow, dhatuBtns[DHATU_TENSE_ORDER.indexOf(dhatuTenseToShow)] || dhatuBtns[0]);
 
   } catch(e) {
     console.error('Grammar load error:', e);
