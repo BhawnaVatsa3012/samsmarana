@@ -1535,8 +1535,15 @@ function renderLearnPath(){
   };
   var html = '';
   LEARN_PATH.forEach(function(id, i){
+    var badge = '';
     var locked = (id === 'stotrams' && tier === 'jigyasu');
-    var partial = ((id === 'shabdroop' || id === 'dhaturoop') && tier === 'jigyasu') || (id === 'stotrams' && tier === 'sadhaka');
+    if (locked) {
+      badge = '<div style="font-size:11px;font-weight:600;color:#8a3800;background:#fbe8dc;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔒 Needs Sadhaka</div>';
+    } else if ((id === 'shabdroop' || id === 'dhaturoop') && tier === 'jigyasu') {
+      badge = '<div style="font-size:11px;font-weight:600;color:#8a6000;background:#fdf0d5;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔓 More at Sadhaka</div>';
+    } else if (id === 'stotrams' && tier === 'sadhaka') {
+      badge = '<div style="font-size:11px;font-weight:600;color:#8a6000;background:#fdf0d5;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0">🔓 More at Vidvan</div>';
+    }
     html += '<div class="learn-tile" style="display:flex;align-items:center;gap:14px;text-align:left;padding:16px' + (locked ? ';opacity:0.65' : '') + '" onclick="nav(\'' + id + '\',null)">';
     html += '<div style="min-width:28px;height:28px;border-radius:50%;background:#fdf8f2;border:1px solid #e0c9a8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#7a2800;font-weight:600;flex-shrink:0">' + (i+1) + '</div>';
     html += '<div class="learn-tile-icon" style="margin:0;flex-shrink:0">' + ICONS[id] + '</div>';
@@ -1544,8 +1551,7 @@ function renderLearnPath(){
     html += '<div class="learn-tile-title">' + LEARN_PATH_LABELS[id] + '</div>';
     html += '<div class="learn-tile-sub">' + SUBS[id] + '</div>';
     html += '</div>';
-    if (locked) html += '<div style="font-size:11px;color:#9a7850;text-align:right;white-space:nowrap;flex-shrink:0">🔒<br>Sadhaka</div>';
-    else if (partial) html += '<div style="font-size:11px;color:#c8922a;text-align:right;white-space:nowrap;flex-shrink:0">◐<br>Partial</div>';
+    html += badge;
     html += '</div>';
   });
   html += '<div style="text-align:center;font-family:\'EB Garamond\',serif;font-style:italic;color:#9a7850;padding:14px 0 4px">You have covered the basics 🙏</div>';
