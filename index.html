@@ -447,6 +447,7 @@ Ask Guru Ji about this Shloka
     <button onclick="nav('upgrade',null)" style="background:#7a2800;color:white;border:none;border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">Become Sadhaka</button>
   </div>
   <div class="info-box">The word Karma (कर्म) is itself a neuter noun — a Shabd Roop of the root kar. When the Gita says "Karmanyevadhikaraste" — your right is to karma alone — it uses the 7th Vibhakti. The action is the location you inhabit.</div>
+  <div id="topicnav-shabdroop"></div>
 </div>
 
 <!-- DHATU ROOP -->
@@ -469,6 +470,7 @@ Ask Guru Ji about this Shloka
     <button onclick="nav('upgrade',null)" style="background:#7a2800;color:white;border:none;border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">Become Sadhaka</button>
   </div>
   <div class="info-box">The Gita's most quoted verse uses Lot Lakar — "Arise! Fight!" (उत्तिष्ठ, अर्जुन). Commands in Sanskrit are not harsh — they carry the weight of love and duty combined.</div>
+  <div id="topicnav-dhaturoop"></div>
 </div>
 
 <!-- SANDHI -->
@@ -503,6 +505,7 @@ Ask Guru Ji about this Shloka
     </table>
   </div>
   <div class="info-box">Namaste is itself a Sandhi — namas + te. "I bow to you." Two words, spoken millions of times daily, that most people don't know are grammatically fused. Sandhi is everywhere once you see it.</div>
+  <div id="topicnav-sandhi"></div>
 </div>
 
 <!-- SAMAS -->
@@ -548,6 +551,7 @@ Ask Guru Ji about this Shloka
     </table>
   </div>
   <div class="info-box">Mahābhārata is a Tatpurusha — mahā + bhārata — "the great tale of the Bharatas." Upanishad is also a compound — upa (near) + ni (down) + shad (to sit) — "sitting near the teacher." Every Sanskrit word you use is a compressed universe of meaning.</div>
+  <div id="topicnav-samas"></div>
 </div>
 
 <!-- KARAKA -->
@@ -568,6 +572,7 @@ Ask Guru Ji about this Shloka
     </table>
   </div>
   <div class="info-box">Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.</div>
+  <div id="topicnav-karaka"></div>
 </div>
 
 <!-- SCRIPT -->
@@ -578,6 +583,7 @@ Ask Guru Ji about this Shloka
   <div class="card"><div class="card-title">Vowels — स्वर</div><div class="letter-grid" id="vowel-grid"></div></div>
   <div class="card"><div class="card-title">Consonants — व्यञ्जन (first 10)</div><div class="letter-grid" id="cons-grid"></div></div>
   <div class="info-box">The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.</div>
+  <div id="topicnav-script"></div>
 </div>
 
 <!-- FLASHCARDS -->
@@ -610,6 +616,7 @@ Ask Guru Ji about this Shloka
     <button class="fc-btn btn-wrong" onclick="nextFC(false)">Not yet</button>
     <button class="fc-btn btn-right" onclick="nextFC(true)">Remembered</button>
   </div>
+  <div id="topicnav-flashcards"></div>
 </div>
 
 <!-- TUTOR -->
@@ -1522,6 +1529,33 @@ setTimeout(function(){ showOnboarding(false); }, 600);
 
 var navHistory=[];
 var TAB_IDS=['home','learn','tutor','community','progress'];
+const LEARN_PATH = ['script','sandhi','samas','flashcards','shabdroop','dhaturoop','karaka','stotrams'];
+const LEARN_PATH_LABELS = {
+  script: 'Devanagari',
+  sandhi: 'Sandhi',
+  samas: 'Samas',
+  flashcards: 'Vocabulary',
+  shabdroop: 'Shabd Roop',
+  dhaturoop: 'Dhatu Roop',
+  karaka: 'Karaka',
+  stotrams: 'Stotrams'
+};
+function renderTopicNav(id){
+  var container = document.getElementById('topicnav-' + id);
+  if (!container) return;
+  var idx = LEARN_PATH.indexOf(id);
+  if (idx === -1) return;
+  var prevId = idx > 0 ? LEARN_PATH[idx - 1] : null;
+  var nextIdx = idx + 1;
+  if (LEARN_PATH[nextIdx] === 'stotrams' && getTier() === 'jigyasu') nextIdx++;
+  var nextId = nextIdx < LEARN_PATH.length ? LEARN_PATH[nextIdx] : null;
+  var btnStyle = "flex:1;background:#fff;border:1.5px solid #e0c9a8;border-radius:24px;padding:10px;font-family:'EB Garamond',serif;font-size:15px;cursor:pointer;color:#5a4020";
+  var html = '<div style="display:flex;gap:10px;margin-top:20px">';
+  html += prevId ? '<button onclick="nav(\'' + prevId + '\',null)" style="' + btnStyle + '">← ' + LEARN_PATH_LABELS[prevId] + '</button>' : '';
+  html += nextId ? '<button onclick="nav(\'' + nextId + '\',null)" style="' + btnStyle + '">' + LEARN_PATH_LABELS[nextId] + ' →</button>' : '<div style="flex:1;text-align:center;font-family:\'EB Garamond\',serif;font-style:italic;color:#9a7850;padding:10px">You have covered the basics 🙏</div>';
+  html += '</div>';
+  container.innerHTML = html;
+}
 function nav(id,el){
   const cur=document.querySelector('.page.active');
   if(cur&&cur.id!=='page-'+id){
@@ -1541,6 +1575,7 @@ function nav(id,el){
   if(id==='profile-details')initProfileDetails();
   if(id==='bookmarks')initBookmarksPage();
   if(id==='stotrams')initStotramsList();
+  if(LEARN_PATH.includes(id))renderTopicNav(id);
   if(id==='home'){renderContinueCard();renderCommunityTeaser();}
   document.getElementById('topbar-title').textContent=titles[id]||id;
   var backBtn=document.getElementById('topbar-back');
@@ -4436,6 +4471,7 @@ function toggleFullRecitation() {
   <div class="page-heading">Stotrams</div>
   <div class="page-desc">Sacred Sanskrit hymns for daily recitation and meditation.</div>
   <div id="stotrams-list"></div>
+  <div id="topicnav-stotrams"></div>
 </div>
 
 <!-- STOTRA DETAIL -->
