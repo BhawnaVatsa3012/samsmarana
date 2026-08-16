@@ -1,4 +1,4 @@
-const CACHE = 'samsmarana-v23'
+const CACHE = 'samsmarana-v23';
 const OFFLINE_ASSETS = ['/'];
 
 self.addEventListener('install', function(e) {
