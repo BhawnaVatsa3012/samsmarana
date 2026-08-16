@@ -1581,10 +1581,10 @@ function renderLearnPath(){
   html += '<div style="text-align:center;font-family:\'EB Garamond\',serif;font-style:italic;color:#9a7850;padding:14px 0 4px">You have covered the basics 🙏</div>';
   container.innerHTML = html;
 }
-function nav(id,el){
+function nav(id,el,skipHistory){
   const cur=document.querySelector('.page.active');
   if(cur&&cur.id!=='page-'+id){
-    navHistory.push(cur.id.replace('page-',''));
+    if(!skipHistory) navHistory.push(cur.id.replace('page-',''));
     if(cur.id==='page-home') pauseShlokaAudio();
     if(cur.id==='page-stotra-detail') { stopAllStotraAudio(); hideRecitationFullscreen(); }
   }
@@ -1621,7 +1621,7 @@ function navTab(id){nav(id,null);}
 function getNav(id){return null;}
 function goBack(){
   var prev=navHistory.length>0?navHistory.pop():'home';
-  nav(prev,null);
+  nav(prev,null,true);
 }
 var FONT_SIZES=['16px','18px','20px','22px','24px'];
 function cycleFontSize(){
@@ -2366,7 +2366,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=22');
+  navigator.serviceWorker.register('/sw.js?v=23');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
