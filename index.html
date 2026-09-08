@@ -1864,7 +1864,7 @@ async function loadGrammarData() {
     var premium = isPremium();
     var vidvanOnly = (getTier() === 'vidvan');
 
-    var shabdRes = await fetch('/api/grammar?type=shabd');
+    var shabdRes = await fetch('/api/grammar?type=shabd', { headers: { 'Authorization': 'Bearer ' + (_session ? _session.access_token : '') } });
     var shabdJson = await shabdRes.json();
     var allShabd = shabdJson.shabd || [];
     var visibleShabd = premium ? allShabd : [];
@@ -1894,7 +1894,7 @@ async function loadGrammarData() {
       document.getElementById('shabd-content').innerHTML = tierLockHTML('sadhaka', 'Shabd Roop');
     }
 
-    var dhatuRes = await fetch('/api/grammar?type=dhatu');
+    var dhatuRes = await fetch('/api/grammar?type=dhatu', { headers: { 'Authorization': 'Bearer ' + (_session ? _session.access_token : '') } });
     var dhatuJson = await dhatuRes.json();
     var allDhatu = dhatuJson.dhatu || [];
     window._dhatuData = vidvanOnly ? allDhatu : [];
