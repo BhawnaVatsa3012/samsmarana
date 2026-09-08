@@ -107,6 +107,6 @@
 ### Learn Path Content
 | # | Status | Item |
 |---|--------|------|
-| UI-L1 | ⬜ Pending | Devanagari — Consonants grid only shows the first 10 of the full 33-letter व्यञ्जन set (currently ka–ṭha). Extend the `cons` array in index.html to include the complete set through ह (optionally including क्ष/त्र/ज्ञ as conjuncts), and update the card-title from "(first 10)" once complete. Also: `.letter-card:hover` currently only changes border-color — plan a more visible hover/active highlight (background fill, scale, or accent glow) on both the vowel and consonant grids. |
-| UI-L2 | ⬜ Pending | Sandhi — add a one-line plain-language definition for each named subtype. Swar Sandhi table has names (दीर्घ, गुण, यण्) but no definition text next to rule/example. Vyanjan Sandhi and Visarga Sandhi tables don't have named subtypes at all yet — just raw rules — so those need names added as well as one-liners. |
-| UI-L3 | ⬜ Pending | Samas — Avyayibhava is missing the one-line `card-desc` that Tatpurusha, Dvandva, and Bahuvrihi already have. Add one, and consider whether the existing three one-liners need more explanation per user feedback ("a bit more explanation" was requested generally for this page). |
+| UI-L1 | ✅ Resolved | Devanagari — Consonants grid extended from 10 to the full 33-letter व्यञ्जन set (ka–ha). Added hover/tap highlight (background fill, shadow, slight lift) to letter tiles on both vowel and consonant grids, replacing the previous border-color-only change. |
+| UI-L2 | ✅ Resolved | Sandhi — added one-line definitions: दीर्घ/गुण/यण् under Swar Sandhi's table, plus a one-liner each for Vyanjan Sandhi and Visarga Sandhi under their card titles. |
+| UI-L3 | ✅ Resolved | Samas — added the missing one-line `card-desc` for Avyayibhava, matching the style already used for Tatpurusha, Dvandva, and Bahuvrihi. |
