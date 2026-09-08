@@ -35,6 +35,25 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
+  if (type === 'shabd' || type === 'dhatu') {
+    const token = (req.headers.authorization || '').replace('Bearer ', '');
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !userData?.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const meta = userData.user.user_metadata || {};
+    const appMeta = userData.user.app_metadata || {};
+    const tier = meta.tier || appMeta.tier ||
+      ((meta.premium === true || appMeta.premium === true || meta.premium === 'true') ? 'sadhaka' : 'jigyasu');
+
+    if (type === 'shabd' && tier !== 'sadhaka' && tier !== 'vidvan') {
+      return res.status(403).json({ error: 'Sadhaka or Vidvan tier required' });
+    }
+    if (type === 'dhatu' && tier !== 'vidvan') {
+      return res.status(403).json({ error: 'Vidvan tier required' });
+    }
+  }
+
   try {
     if (type === 'shabd') {
       const { data, error } = await supabase
