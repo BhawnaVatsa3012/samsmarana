@@ -93,8 +93,8 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .sub-tab{padding:7px 16px;border-radius:4px;font-size:12px;border:1px solid #c8b090;color:#3a2a18;cursor:pointer;background:#ffffff;font-family:'DM Sans',sans-serif;transition:all .15s;font-weight:500}
 .sub-tab.active{background:var(--accent);color:white;border-color:var(--accent)}
 .letter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.letter-card{background:#ffffff;border:1.5px solid #c8b090;border-radius:8px;padding:12px 6px;text-align:center;transition:border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.letter-card:hover{border-color:var(--accent)}
+.letter-card{background:#ffffff;border:1.5px solid #c8b090;border-radius:8px;padding:12px 6px;text-align:center;transition:border-color .2s,background .2s,box-shadow .2s,transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.letter-card:hover,.letter-card:active{border-color:var(--accent);background:#fdf8f2;box-shadow:0 2px 8px rgba(122,40,0,.15);transform:translateY(-1px)}
 .lc-deva{font-family:'Tiro Devanagari Sanskrit',serif;font-size:28px;color:var(--accent)}
 .lc-roman{font-size:11px;color:#3a2a18;margin-top:4px;font-style:italic;font-weight:500}
 .fc-wrap{perspective:900px;margin:0 auto 18px;max-width:340px}
@@ -450,9 +450,11 @@ Ask Guru Ji about this Shloka
       <tr><td>गुण</td><td>a+u=o</td><td class="dv">गङ्गा+उदक=गङ्गोदक</td><td>Ganga water</td></tr>
       <tr><td>यण्</td><td>i+a=ya</td><td class="dv">इति+आदि=इत्यादि</td><td>And so on</td></tr>
     </table>
+    <div class="card-desc" style="margin-top:10px;line-height:1.6"><strong>दीर्घ (Dirgha):</strong> two similar vowels merge into one long vowel.<br><strong>गुण (Guna):</strong> a vowel shifts to a stronger "guna" sound (e, o) before a different vowel.<br><strong>यण् (Yan):</strong> a vowel weakens into a semivowel (y, v, r) before a different vowel.</div>
   </div>
   <div class="card">
     <div class="card-title">2. Vyanjan Sandhi — Consonant Union</div>
+    <div class="card-desc">When a consonant meets another sound, it often changes to match — softening, hardening, or shifting where it's pronounced.</div>
     <table class="grammar-table">
       <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
       <tr><td>t+vowel→d</td><td class="dv">जगत्+ईश=जगदीश</td><td>Lord of Universe</td></tr>
@@ -461,6 +463,7 @@ Ask Guru Ji about this Shloka
   </div>
   <div class="card">
     <div class="card-title">3. Visarga Sandhi — The Breath</div>
+    <div class="card-desc">Visarga (ः), the trailing breath-sound at a word's end, softens or transforms depending on what follows it.</div>
     <table class="grammar-table">
       <tr><th>Rule</th><th>Example</th><th>Meaning</th></tr>
       <tr><td>aḥ+vowel→o'</td><td class="dv">रामः+अस्ति=रामोऽस्ति</td><td>Ram exists</td></tr>
@@ -507,6 +510,7 @@ Ask Guru Ji about this Shloka
   </div>
   <div class="card">
     <div class="card-title">4. Avyayibhava — अव्ययीभाव</div>
+    <div class="card-desc">The whole compound behaves like an adverb — built from a fixed indeclinable first word, unchanging in form.</div>
     <table class="grammar-table">
       <tr><th>Compound</th><th>Meaning</th></tr>
       <tr><td class="dv">यथाशक्ति</td><td>According to ability</td></tr>
@@ -544,7 +548,7 @@ Ask Guru Ji about this Shloka
   <div class="page-heading">Devanagari — देवनागरी</div>
   <div class="page-desc">The script of the gods. Every letter has one sound — no ambiguity, no exceptions. Once truly learned, it cannot be unlearned.</div>
   <div class="card"><div class="card-title">Vowels — स्वर</div><div class="letter-grid" id="vowel-grid"></div></div>
-  <div class="card"><div class="card-title">Consonants — व्यञ्जन (first 10)</div><div class="letter-grid" id="cons-grid"></div></div>
+  <div class="card"><div class="card-title">Consonants — व्यञ्जन</div><div class="letter-grid" id="cons-grid"></div></div>
   <div class="info-box">The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.</div>
   <div id="topicnav-script"></div>
 </div>
@@ -1053,7 +1057,7 @@ placeholder="e.g. Sanskrit lover from Mumbai · rediscovering roots"></textarea>
 
 <script>
 const vowels=[{d:'अ',r:'a'},{d:'आ',r:'ā'},{d:'इ',r:'i'},{d:'ई',r:'ī'},{d:'उ',r:'u'},{d:'ऊ',r:'ū'},{d:'ऋ',r:'ṛ'},{d:'ए',r:'e'},{d:'ऐ',r:'ai'},{d:'ओ',r:'o'},{d:'औ',r:'au'},{d:'अं',r:'aṃ'},{d:'अः',r:'aḥ'},{d:'ळ',r:'ḷ'},{d:'ॠ',r:'ṝ'},{d:'ॡ',r:'ḹ'}];
-const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'}];
+const cons=[{d:'क',r:'ka'},{d:'ख',r:'kha'},{d:'ग',r:'ga'},{d:'घ',r:'gha'},{d:'ङ',r:'ṅa'},{d:'च',r:'ca'},{d:'छ',r:'cha'},{d:'ज',r:'ja'},{d:'झ',r:'jha'},{d:'ञ',r:'ña'},{d:'ट',r:'ṭa'},{d:'ठ',r:'ṭha'},{d:'ड',r:'ḍa'},{d:'ढ',r:'ḍha'},{d:'ण',r:'ṇa'},{d:'त',r:'ta'},{d:'थ',r:'tha'},{d:'द',r:'da'},{d:'ध',r:'dha'},{d:'न',r:'na'},{d:'प',r:'pa'},{d:'फ',r:'pha'},{d:'ब',r:'ba'},{d:'भ',r:'bha'},{d:'म',r:'ma'},{d:'य',r:'ya'},{d:'र',r:'ra'},{d:'ल',r:'la'},{d:'व',r:'va'},{d:'श',r:'śa'},{d:'ष',r:'ṣa'},{d:'स',r:'sa'},{d:'ह',r:'ha'}];
 const shlokas=[
   {text:'विद्या ददाति विनयं विनयाद् याति पात्रताम् । पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम् ॥',source:'Hitopadesha',meaning:'Knowledge gives humility. Humility brings worthiness. Worthiness brings wealth. Wealth enables righteousness. And from righteousness comes happiness.',meaningHi:'विद्या विनम्रता देती है। विनम्रता से पात्रता आती है। पात्रता से धन मिलता है। धन से धर्म और धर्म से सुख।',life:'We spent years chasing wealth before wisdom. Sanskrit knew the right order all along.'},
   {text:'अयं निजः परो वेति गणना लघुचेतसाम् । उदारचरितानां तु वसुधैव कुटुम्बकम् ॥',source:'Maha Upanishad',meaning:'Mine or yours — such calculations belong to the small-minded. For those of generous character, the entire world is one family.',meaningHi:'यह मेरा है वह पराया है — यह सोच संकुचित मन की है। उदार हृदय वालों के लिए सारी धरती एक परिवार है।',life:'Vasudhaiva Kutumbakam. Four words from every school assembly. Now you know their true weight.'},
@@ -2367,7 +2371,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=23');
+  navigator.serviceWorker.register('/sw.js?v=24');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
