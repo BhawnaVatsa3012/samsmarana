@@ -7,11 +7,6 @@ key_id: process.env.RAZORPAY_KEY_ID,
 key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-const supabase = createClient(
-process.env.SUPABASE_URL,
-process.env.SUPABASE_SERVICE_KEY
-);
-
 module.exports = async function handler(req, res) {
 res.setHeader('Access-Control-Allow-Origin', '*');
 res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -62,6 +57,7 @@ return res.status(400).json({ error: 'Invalid signature' });
 }
 
 if (req.body.event === 'payment.captured') {
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const notes = req.body.payload?.payment?.entity?.notes;
 const userId = notes?.userId;
 const purchasedTier = notes?.tier || 'sadhaka'; // fallback covers pre-existing orders with no tier in notes
@@ -92,6 +88,7 @@ if (signature !== expected) {
 return res.status(400).json({ error: 'Invalid signature' });
 }
 
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const order = await razorpay.orders.fetch(orderId);
 const purchasedTier = order.notes?.tier;
 if (!purchasedTier) return res.status(500).json({ error: 'Could not determine purchased tier' });
