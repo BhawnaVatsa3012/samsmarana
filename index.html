@@ -522,6 +522,8 @@ Ask Guru Ji about this Shloka
   <div class="pill">व्याकरण</div>
   <div class="page-heading">Karaka & Vibhakti — कारक</div>
   <div class="page-desc">Sanskrit sees every noun as playing a role in the drama of a sentence — and names each role precisely. This is Karaka — the grammar of relationships.</div>
+  <div id="karaka-locked"></div>
+  <div id="karaka-body">
   <div class="card">
     <table class="grammar-table">
       <tr><th>Case</th><th>Karaka</th><th>English</th><th>Example</th></tr>
@@ -535,6 +537,7 @@ Ask Guru Ji about this Shloka
     </table>
   </div>
   <div class="info-box">Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.</div>
+  </div>
   <div id="topicnav-karaka"></div>
 </div>
 
@@ -554,6 +557,8 @@ Ask Guru Ji about this Shloka
   <div class="pill">अभ्यास</div>
   <div class="page-heading">Vocabulary — शब्द</div>
   <div class="page-desc">These are not just words. Each one carries centuries of meaning. Some you use daily without knowing their depth.</div>
+  <div id="flashcards-locked"></div>
+  <div id="flashcards-body">
   <div class="score-row">
     <span class="serif" style="font-style:italic" id="fc-count">Card 1 of 15</span>
     <span>✓ <span id="fc-right">0</span> &nbsp; ✗ <span id="fc-wrong">0</span></span>
@@ -578,6 +583,7 @@ Ask Guru Ji about this Shloka
     <button class="fc-btn" onclick="flipFC()">Reveal</button>
     <button class="fc-btn btn-wrong" onclick="nextFC(false)">Not yet</button>
     <button class="fc-btn btn-right" onclick="nextFC(true)">Remembered</button>
+  </div>
   </div>
   <div id="topicnav-flashcards"></div>
 </div>
@@ -1070,23 +1076,6 @@ const TEACHINGS=[
   'Guruve namah (गुरवे नमः) — the 4th Vibhakti. "I bow to the teacher." Not just any teacher — the one to whom something is given, offered, surrendered. The grammar holds the devotion within it.',
   'The horizontal line connecting letters — the शिरोरेखा (head line) — is unique to Devanagari. Like the thread of a garland, it holds everything together.'
 ];
-const cards=[
-  {d:'विवेक',r:'Viveka',m:'Discernment — the ability to tell the real from the unreal, the eternal from the temporary.',shloka:'नित्यानित्यवस्तुविवेकः',slokaMeaning:'Discrimination between the eternal and the transient — the first qualification for seeking truth.',source:'Vivekachudamani — Adi Shankaracharya'},
-  {d:'वैराग्य',r:'Vairagya',m:'Dispassion — not bitterness toward the world, but freedom from being pulled by it.',shloka:'वि + राग = वैराग्य',slokaMeaning:'Vi means without, raga means passion. Vairagya is being without the colouring of desire — seeing clearly.',source:'Vedanta etymology — Vivekachudamani'},
-  {d:'तितिक्षा',r:'Titiksha',m:'Patient endurance of opposites — bearing heat and cold, praise and insult, with equal steadiness.',shloka:'सहनं सर्वदुःखानामप्रतीकारपूर्वकम् । चिन्ताविलापरहितं सा तितिक्षा निगद्यते ॥',slokaMeaning:'Bearing all suffering without retaliation, without worry, without lament — that is called Titiksha.',source:'Vivekachudamani 24 — Adi Shankaracharya'},
-  {d:'उपेक्षा',r:'Upeksha',m:'Equanimity toward the indifferent — not every situation deserves your emotional energy.',shloka:'मैत्रीकरुणामुदितोपेक्षाणां सुखदुःखपुण्यापुण्यविषयाणाम्',slokaMeaning:'Friendliness toward the happy, compassion for the suffering, joy for the virtuous, equanimity toward the wicked.',source:'Yoga Sutras 1.33 — Patanjali'},
-  {d:'समत्व',r:'Samatva',m:'Evenness of mind — where neither success nor failure disturbs the inner stillness.',shloka:'समत्वं योग उच्यते',slokaMeaning:'Evenness of mind is called Yoga.',source:'Bhagavad Gita 2.48 — Vyasa'},
-  {d:'निर्वेद',r:'Nirveda',m:'The weariness of the world — not despair, but the turning inward that precedes wisdom.',shloka:'शमो दमस्तितिक्षा च निर्वेदः',slokaMeaning:'Calmness, self-restraint, endurance, and nirveda — these travel together on the path.',source:'Bhagavata Purana 11.19'},
-  {d:'मुमुक्षुत्व',r:'Mumukshutva',m:'The burning desire for liberation — not a casual wish, but an urgency that consumes all distraction.',shloka:'मोक्षो मे भूयात् इति इच्छा मुमुक्षुत्वम्',slokaMeaning:'The intense desire May I be liberated — this longing itself is called Mumukshutva.',source:'Tattva Bodha — Adi Shankaracharya'},
-  {d:'अन्तरात्मन्',r:'Antaratman',m:'The inner self — the witness that watches all your thoughts without ever being touched by them.',shloka:'अन्तरात्मा तु सर्वेषां साक्षी',slokaMeaning:'The inner self is the witness of all.',source:'Manusmriti 8.85'},
-  {d:'चित्तवृत्ति',r:'Chittavritti',m:'The modifications of the mind — every thought, memory, judgment that arises and disturbs stillness.',shloka:'योगश्चित्तवृत्तिनिरोधः',slokaMeaning:'Yoga is the cessation of the modifications of the mind.',source:'Yoga Sutras 1.2 — Patanjali'},
-  {d:'उपाधि',r:'Upadhi',m:'A limiting label — the roles we wear that make us forget what we truly are beneath them.',shloka:'देहो देवालयः प्रोक्तः जीवो देवः सनातनः',slokaMeaning:'The body is the temple; the soul within is the eternal deity.',source:'Shiva Purana'},
-  {d:'श्रद्धा',r:'Shraddha',m:'Not blind faith — trust born of direct experience. The willingness to move toward what is true.',shloka:'श्रद्धावाँल्लभते ज्ञानम्',slokaMeaning:'One who has Shraddha attains knowledge.',source:'Bhagavad Gita 4.39'},
-  {d:'विषाद',r:'Vishada',m:'The grief that opens the door — the collapse that made the Gita necessary.',shloka:'सीदन्ति मम गात्राणि मुखं च परिशुष्यति',slokaMeaning:'My limbs fail and my mouth is parched — the beginning of all wisdom.',source:'Bhagavad Gita 1.29 — Arjuna'},
-  {d:'अभिनिवेश',r:'Abhinivesha',m:'The clinging to life — the deepest instinct, present even in the wisest, that binds us to existence.',shloka:'स्वरसवाही विदुषोऽपि तथारूढोऽभिनिवेशः',slokaMeaning:'Flowing by its own force, even in the wise, is the deeply rooted clinging to life.',source:'Yoga Sutras 2.9 — Patanjali'},
-  {d:'तुरीय',r:'Turiya',m:'The fourth state — beyond waking, dreaming, and deep sleep. The pure awareness that witnesses all three.',shloka:'शान्तं शिवमद्वैतं चतुर्थं मन्यन्ते',slokaMeaning:'The fourth is peaceful, auspicious, non-dual — the witness of all phenomena.',source:'Mandukya Upanishad 7'},
-  {d:'प्रज्ञा',r:'Prajna',m:'Wisdom settled into the bones — not what you know, but what you have irreversibly become.',shloka:'प्रजहाति यदा कामान्सर्वान्पार्थ मनोगतान् । आत्मन्येवात्मना तुष्टः स्थितप्रज्ञस्तदोच्यते ॥',slokaMeaning:'When one abandons all desires of the mind and is content in the self alone — they are called Sthitaprajna.',source:'Bhagavad Gita 2.55'},
-];
 
 const titles={home:'Samsmarana',learn:'पाठ · Learn',stotrams:'स्तोत्र · Stotrams','stotra-detail':'',shabdroop:'Shabd Roop',dhaturoop:'Dhatu Roop',sandhi:'Sandhi',samas:'Samas',karaka:'Karaka & Vibhakti',script:'Devanagari',flashcards:'Vocabulary',progress:'My Progress',shlokaCards:'Shloka Cards',sentences:'Sentence Practice',community:'Community',tutor:'Ask Guru Ji',upgrade:'Become Sadhaka','profile-details':'Personal Details',bookmarks:'My Saved Shlokas'};
 const sentences=[
@@ -1468,6 +1457,7 @@ function toggleAnswer(i){
   btn.textContent=visible?'Show Sanskrit →':'Hide ↑';
 }
 let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
+var _vocabCards=[];
 
 (function init(){
   ['vowel-grid','cons-grid'].forEach((id,i)=>{
@@ -1482,7 +1472,6 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
   document.getElementById('shloka-source').textContent=s.source;
   document.getElementById('shloka-meaning').innerHTML='<strong>Meaning:</strong> '+s.meaning;
   document.getElementById('shloka-life').textContent=s.life;
-  loadFC();
 
 })();
 setTimeout(initDailyQuiz,0);
@@ -1598,7 +1587,7 @@ function nav(id,el,skipHistory){
   if(id==='shabdroop'||id==='dhaturoop')loadGrammarData();
   if(id==='learn')renderLearnPath();
   if(id==='karaka')renderKarakaGate();
-  if(id==='flashcards')renderFlashcardsGate();
+  if(id==='flashcards'){renderFlashcardsGate();loadVocabData();}
   if(id==='community')initCommunity();
   if(id==='tutor')renderTodaysTeaching();
   if(id==='upgrade')initUpgradePage();
@@ -1927,7 +1916,8 @@ async function loadGrammarData() {
   }
 }
 function loadFC(){
-  const c=cards[fcIdx];
+  if(!_vocabCards || !_vocabCards.length) return;
+  const c=_vocabCards[fcIdx];
   document.getElementById('fc-deva').textContent=c.d;
   document.getElementById('fc-roman').textContent=c.r;
   document.getElementById('fc-meaning').textContent=c.m;
@@ -1935,15 +1925,31 @@ function loadFC(){
   document.getElementById('fc-shloka-meaning').textContent=c.slokaMeaning;
   document.getElementById('fc-source').textContent='— '+c.source;
   document.getElementById('fc').classList.remove('flipped');
-  document.getElementById('fc-count').textContent='Card '+(fcIdx+1)+' of '+cards.length;
-  document.getElementById('fc-bar').style.width=((fcIdx+1)/cards.length*100)+'%';
+  document.getElementById('fc-count').textContent='Card '+(fcIdx+1)+' of '+_vocabCards.length;
+  document.getElementById('fc-bar').style.width=((fcIdx+1)/_vocabCards.length*100)+'%';
 }
 function flipFC(){document.getElementById('fc').classList.toggle('flipped')}
 function nextFC(got){
+  if(!_vocabCards || !_vocabCards.length) return;
   if(got)fcRight++;else fcWrong++;
   document.getElementById('fc-right').textContent=fcRight;
   document.getElementById('fc-wrong').textContent=fcWrong;
-  fcIdx=(fcIdx+1)%cards.length;loadFC();
+  fcIdx=(fcIdx+1)%_vocabCards.length;loadFC();
+}
+async function loadVocabData(){
+  if(!isPremium()){ _vocabCards=[]; return; }
+  try{
+    var res = await fetch('/api/grammar?type=vocab', { headers: { 'Authorization': 'Bearer ' + (_session ? _session.access_token : '') } });
+    var json = await res.json();
+    _vocabCards = json.vocab || [];
+    fcIdx=0; fcRight=0; fcWrong=0;
+    document.getElementById('fc-right').textContent=0;
+    document.getElementById('fc-wrong').textContent=0;
+    loadFC();
+  }catch(e){
+    console.error('Vocab load error:', e);
+    _vocabCards=[];
+  }
 }
 function askSug(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg()}
 
@@ -2371,7 +2377,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=25');
+  navigator.serviceWorker.register('/sw.js?v=26');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
