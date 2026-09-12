@@ -362,16 +362,12 @@ Ask Guru Ji about this Shloka
 </div>
   <!-- CONTINUE WHERE YOU LEFT OFF -->
   <div id="continue-card-slot" style="margin-bottom:20px;display:none"></div>
+  <!-- PROGRESS SNAPSHOT -->
+  <div id="progress-snapshot-slot" style="margin-bottom:20px;display:none"></div>
+  <!-- UPGRADE NUDGE (Jigyasu only) -->
+  <div id="upgrade-nudge-slot" style="margin-bottom:20px;display:none"></div>
   <!-- COMMUNITY HIGHLIGHT TEASER -->
   <div id="community-teaser-slot" style="margin-bottom:20px;display:none"></div>
-  <div class="quick-grid">
-    <div class="quick-card" onclick="nav('shabdroop',getNav('shabdroop'))"><div class="qc-icon">📋</div><div class="qc-title">Shabd Roop</div><div class="qc-sub">Noun declensions</div></div>
-    <div class="quick-card" onclick="nav('dhaturoop',getNav('dhaturoop'))"><div class="qc-icon">🔄</div><div class="qc-title">Dhatu Roop</div><div class="qc-sub">Verb conjugations</div></div>
-    <div class="quick-card" onclick="nav('sandhi',getNav('sandhi'))"><div class="qc-icon">🔗</div><div class="qc-title">Sandhi</div><div class="qc-sub">Sound unions</div></div>
-    <div class="quick-card" onclick="nav('samas',getNav('samas'))"><div class="qc-icon">🧩</div><div class="qc-title">Samas</div><div class="qc-sub">Compound words</div></div>
-    <div class="quick-card" onclick="nav('flashcards',getNav('flashcards'))"><div class="qc-icon">🃏</div><div class="qc-title">Vocabulary</div><div class="qc-sub">Words with meaning</div></div>
-    <div class="quick-card" onclick="nav('tutor',getNav('tutor'))"><div class="qc-icon">◎</div><div class="qc-title">Ask Guru Ji</div><div class="qc-sub">AI powered</div></div>
-  </div>
 </div>
 
 <!-- LEARN LANDING -->
@@ -1491,6 +1487,8 @@ let chatHistory=[],fcIdx=0,fcRight=0,fcWrong=0;
 })();
 setTimeout(initDailyQuiz,0);
 setTimeout(renderContinueCard,0);
+setTimeout(renderProgressSnapshot,0);
+setTimeout(renderUpgradeNudge,0);
 setTimeout(renderCommunityTeaser,0);
 setTimeout(function(){ showOnboarding(false); }, 600);
 
@@ -1610,7 +1608,7 @@ function nav(id,el,skipHistory){
   if(id==='stotrams')initStotramsList();
   if(id==='learn')renderLearnPath();
   if(LEARN_PATH.includes(id))renderTopicNav(id);
-  if(id==='home'){renderContinueCard();renderCommunityTeaser();}
+  if(id==='home'){renderContinueCard();renderProgressSnapshot();renderUpgradeNudge();renderCommunityTeaser();}
   document.getElementById('topbar-title').textContent=titles[id]||id;
   var backBtn=document.getElementById('topbar-back');
   if(backBtn) backBtn.style.display = TAB_IDS.includes(id) ? 'none' : 'inline';
@@ -1735,6 +1733,8 @@ function enablePullToRefresh(pageId, indicatorId, refreshFn){
 }
 enablePullToRefresh('page-home','home-ptr-indicator', function(){
   renderContinueCard();
+  renderProgressSnapshot();
+  renderUpgradeNudge();
   return renderCommunityTeaser();
 });
 enablePullToRefresh('page-community','community-ptr-indicator', loadReflections);
@@ -2371,7 +2371,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=24');
+  navigator.serviceWorker.register('/sw.js?v=25');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -4311,6 +4311,57 @@ function renderContinueCard() {
       '</div>'+
       '<div style="color:#c8a870;font-size:20px">›</div>'+
     '</div>';
+}
+
+function renderUpgradeNudge() {
+  var slot = document.getElementById('upgrade-nudge-slot');
+  if (!slot) return;
+  if (typeof getTier !== 'function' || getTier() !== 'jigyasu') {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+    return;
+  }
+  slot.style.display = 'block';
+  slot.innerHTML =
+    '<div style="background:#fdf8f2;border:1px solid #e0c9a8;border-radius:12px;padding:20px;text-align:center">'+
+      '<div style="font-size:24px;margin-bottom:8px">✨</div>'+
+      '<div style="font-family:\'EB Garamond\',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-bottom:6px">Unlock the full path</div>'+
+      '<div style="font-size:13px;color:#5a4020;margin-bottom:14px">Shabd Roop, Dhatu Roop, Vocabulary and more — become a Sadhaka to go deeper.</div>'+
+      '<button onclick="nav(\'upgrade\',null)" style="background:#7a2800;color:white;border:none;border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">Become Sadhaka</button>'+
+    '</div>';
+}
+
+async function renderProgressSnapshot() {
+  var slot = document.getElementById('progress-snapshot-slot');
+  if (!slot) return;
+  if (!_user) {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+    return;
+  }
+  try {
+    var token = _session ? _session.access_token : '';
+    var res = await fetch('/api/progress', { headers: { 'Authorization': 'Bearer ' + token } });
+    var data = await res.json();
+    var progress = data.progress || {};
+    var streak = progress.streak_count || 0;
+    var badge = progress.badge_level || 'none';
+    var cfg = BADGE_CONFIG[badge] || BADGE_CONFIG.none;
+    slot.style.display = 'block';
+    slot.innerHTML =
+      '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px" onclick="nav(\'progress\',null)">'+
+        '<div style="font-size:32px;width:44px;text-align:center">'+cfg.emoji+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">Your Progress</div>'+
+          '<div style="font-family:\'EB Garamond\',serif;font-size:16px;font-weight:600;color:#1a0f00;margin-top:2px">'+cfg.label+'</div>'+
+          (streak > 0 ? '<div style="font-size:12px;color:#9a6800;font-style:italic;margin-top:2px">🔥 '+streak+' day'+(streak===1?'':'s')+' streak</div>' : '')+
+        '</div>'+
+        '<div style="color:#c8a870;font-size:20px">›</div>'+
+      '</div>';
+  } catch (e) {
+    slot.style.display = 'none';
+    slot.innerHTML = '';
+  }
 }
 
 async function renderCommunityTeaser() {
