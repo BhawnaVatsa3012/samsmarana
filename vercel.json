@@ -23,6 +23,10 @@
       "dest": "/audio/$1"
     },
     {
+      "src": "/(about|contact|pricing|terms|privacy|refund|shipping)(\\.html)?",
+      "dest": "/$1.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

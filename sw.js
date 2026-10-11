@@ -1,4 +1,5 @@
-const CACHE = 'samsmarana-v26';
+const CACHE = 'samsmarana-v27';
+const LEGAL_PAGES = /^\/(about|contact|pricing|terms|privacy|refund|shipping)(\.html)?$/;
 const OFFLINE_ASSETS = ['/'];
 
 self.addEventListener('install', function(e) {
@@ -24,6 +25,8 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
+  // Legal pages: always straight from the network, never cached
+  if (LEGAL_PAGES.test(new URL(e.request.url).pathname)) return;
   e.respondWith(
     fetch(e.request)
       .then(function(response) {
