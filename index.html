@@ -1992,14 +1992,12 @@ async function sendMsg(){
   const t=document.createElement('div');t.className='msg typing';t.textContent='Guru Ji is reflecting...';
   document.getElementById('chat-box').appendChild(t);scrollChat();
 if (_user && !_userProfile) { await fetchUserProfile(); }
-  var _guruName = (_userProfile && _userProfile.display_name) || ((_user && _user.user_metadata) ? (_user.user_metadata.full_name || _user.user_metadata.name || '') : '');
-var _guroBio = (_userProfile && _userProfile.bio) ? ' My bio: ' + _userProfile.bio + '.' : '';
-var _enrichedText = (chatHistory.length === 0 && _guruName) ? '[My name is ' + _guruName + '.' + _guroBio + '] ' + text : text;
-  chatHistory.push({role:'user',parts:[{text: _enrichedText}]});
+  // Privacy: Gemini free tier may use prompts to improve Google's products,
+  // so no name, bio or other account details are ever sent to Guru Ji.
+  chatHistory.push({role:'user',parts:[{text: text}]});
 const sys=`You are Guru Ji — a wise Sanskrit teacher in the app Samsmarana (Remembrance).
 
 Your students are educated adults 30+ who studied Sanskrit in CBSE Class 8-10 but never understood its depth. They return now with life experience.
-  ${_guruName ? 'IMPORTANT: The student\'s name is ' + _guruName + '. ' + _guroBio + ' You MUST greet them by name in your very first response. Use their name naturally 1-2 times in each response.' : ''}
   Always follow these rules:
   - Give COMPLETE answers — never stop mid-sentence, always finish fully
   - Keep responses to 150-200 words — concise, complete, and meaningful  
@@ -2387,7 +2385,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=27');
+  navigator.serviceWorker.register('/sw.js?v=28');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
