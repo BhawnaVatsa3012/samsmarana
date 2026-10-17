@@ -1,12 +1,8 @@
 export default async function handler(req, res) {
-  console.log('AUTH CALLED - method:', req.method)
-
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const SUPABASE_URL = process.env.SUPABASE_URL
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY
-
-  console.log('ENV CHECK - URL exists:', !!SUPABASE_URL, '| KEY exists:', !!SUPABASE_KEY)
 
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return res.status(500).json({ error: 'Supabase environment variables missing' })
@@ -14,7 +10,6 @@ export default async function handler(req, res) {
 
   try {
     let body = req.body
-    console.log('BODY TYPE:', typeof body, '| BODY:', JSON.stringify(body))
 
     if (typeof body === 'string') {
       body = JSON.parse(body)
@@ -25,24 +20,19 @@ export default async function handler(req, res) {
         req.on('end', () => resolve(data))
         req.on('error', reject)
       })
-      console.log('RAW BODY:', raw)
       body = JSON.parse(raw)
     }
 
     const action = body.action
-    console.log('ACTION:', action)
 
     if (action === 'getuser') {
-      console.log('GETUSER - token exists:', !!body.token)
       const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
         headers: {
           'Authorization': `Bearer ${body.token}`,
           'apikey': SUPABASE_KEY
         }
       })
-      console.log('SUPABASE STATUS:', r.status)
       const user = await r.json()
-      console.log('SUPABASE RESPONSE:', JSON.stringify(user))
       return res.json({ user })
     }
 
@@ -106,7 +96,8 @@ if (action === 'signout') {
     return res.status(400).json({ error: 'Invalid action' })
 
   } catch (error) {
-    console.log('CAUGHT ERROR:', error.message, error.stack)
+    // Log only the error type: a JSON parse error message can contain part of the request body (passwords).
+    console.error('AUTH ERROR:', error.name)
     return res.status(500).json({ error: error.message })
   }
 }

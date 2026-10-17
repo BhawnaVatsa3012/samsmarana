@@ -90,6 +90,10 @@ return res.status(400).json({ error: 'Invalid signature' });
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const order = await razorpay.orders.fetch(orderId);
+// L5: only upgrade the account the order was created for
+if (order.notes?.userId !== userId) {
+return res.status(403).json({ error: 'Payment does not belong to this account' });
+}
 const purchasedTier = order.notes?.tier;
 if (!purchasedTier) return res.status(500).json({ error: 'Could not determine purchased tier' });
 
