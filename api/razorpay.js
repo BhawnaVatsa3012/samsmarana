@@ -7,6 +7,28 @@ key_id: process.env.RAZORPAY_KEY_ID,
 key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// ── ONE-TIME ACCESS PERIODS (no auto-renewal) ─────────────
+// Each payment grants the tier for a fixed period. Paying again for the same
+// tier before it ends extends from the current end date; otherwise it starts now.
+// Idempotent per payment ID, because both the webhook and upgrade-tier fire
+// for the same payment.
+const PERIOD_DAYS = { monthly: 30, yearly: 365 };
+async function grantTier(supabase, userId, tier, plan, paymentId) {
+const days = PERIOD_DAYS[plan] || PERIOD_DAYS.monthly;
+const { data, error: getErr } = await supabase.auth.admin.getUserById(userId);
+if (getErr) return getErr;
+const meta = data?.user?.user_metadata || {};
+if (paymentId && meta.last_payment_id === paymentId) return null;
+const now = Date.now();
+const currentEnd = meta.tier_expires_at ? new Date(meta.tier_expires_at).getTime() : 0;
+const base = (meta.tier === tier && currentEnd > now) ? currentEnd : now;
+const expiresAt = new Date(base + days * 24 * 60 * 60 * 1000).toISOString();
+const { error } = await supabase.auth.admin.updateUserById(userId, {
+user_metadata: { tier, premium: true, tier_plan: plan || 'monthly', tier_expires_at: expiresAt, last_payment_id: paymentId || null }
+});
+return error || null;
+}
+
 module.exports = async function handler(req, res) {
 res.setHeader('Access-Control-Allow-Origin', '*');
 res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -58,13 +80,12 @@ return res.status(400).json({ error: 'Invalid signature' });
 
 if (req.body.event === 'payment.captured') {
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
-const notes = req.body.payload?.payment?.entity?.notes;
+const entity = req.body.payload?.payment?.entity;
+const notes = entity?.notes;
 const userId = notes?.userId;
 const purchasedTier = notes?.tier || 'sadhaka'; // fallback covers pre-existing orders with no tier in notes
 if (userId) {
-const { error } = await supabase.auth.admin.updateUserById(userId, {
-user_metadata: { tier: purchasedTier, premium: true }
-});
+const error = await grantTier(supabase, userId, purchasedTier, notes?.plan, entity?.id);
 if (error) return res.status(500).json({ error: error.message });
 }
 }
@@ -97,9 +118,7 @@ return res.status(403).json({ error: 'Payment does not belong to this account' }
 const purchasedTier = order.notes?.tier;
 if (!purchasedTier) return res.status(500).json({ error: 'Could not determine purchased tier' });
 
-const { error } = await supabase.auth.admin.updateUserById(userId, {
-user_metadata: { tier: purchasedTier, premium: true }
-});
+const error = await grantTier(supabase, userId, purchasedTier, order.notes?.plan, paymentId);
 if (error) return res.status(500).json({ error: error.message });
 
 return res.status(200).json({ success: true });

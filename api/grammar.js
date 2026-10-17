@@ -61,8 +61,11 @@ module.exports = async function handler(req, res) {
     }
     const meta = userData.user.user_metadata || {};
     const appMeta = userData.user.app_metadata || {};
-    const tier = meta.tier || appMeta.tier ||
+    let tier = meta.tier || appMeta.tier ||
       ((meta.premium === true || appMeta.premium === true || meta.premium === 'true') ? 'sadhaka' : 'jigyasu');
+    // One-time access: paid tier lapses after tier_expires_at. Accounts with no
+    // end date (bought before 18 Oct 2026) keep access.
+    if (meta.tier_expires_at && new Date(meta.tier_expires_at).getTime() < Date.now()) tier = 'jigyasu';
 
     if (type === 'shabd' && tier !== 'sadhaka' && tier !== 'vidvan') {
       return res.status(403).json({ error: 'Sadhaka or Vidvan tier required' });
