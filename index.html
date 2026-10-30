@@ -134,6 +134,176 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 .sug{background:#ffffff;border:1px solid #c8b090;border-radius:4px;padding:6px 12px;font-size:12px;color:#2a1a08;cursor:pointer;font-family:'EB Garamond',serif;font-style:italic;transition:all .15s;font-weight:500}
 .sug:hover{border-color:var(--accent);color:var(--accent)}
 .divider{text-align:center;margin:20px 0;color:var(--border);font-size:16px;letter-spacing:8px}
+
+/* ===================================================================
+   REDESIGN v1 — Home pilot (Claude Design handoff, Option B)
+   Tokens + Home components. New classes are prefixed ss- to avoid
+   clashing with existing .card / .pill. Light mode only for now; the
+   dark token set is defined but nothing sets data-theme yet.
+   =================================================================== */
+:root{
+  --color-bg:#fdf8f2; --color-surface:#fffcf7; --color-surface-tint:#f8e9d6;
+  --color-border:#e0c9a8; --color-border-strong:#9a7850; --color-rule-gold:#c9a45c;
+  --color-text:#1a0f00; --color-text-muted:#5a4020; --color-text-subtle:#7d5f38; --color-gold-text:#8a5d00;
+  --color-accent:#7a2800; --color-accent-hover:#5e1f00; --color-on-accent:#fdf8f2;
+  --color-bar-bg:#7a3010; --color-bar-text:#fdf8f2; --color-bar-text-muted:#f2d9a8;
+  --hero-card-bg:var(--color-accent); --hero-card-fg:#fdf8f2; --hero-card-muted:#f2d9a8;
+  --hero-card-cta-bg:#fdf8f2; --hero-card-cta-fg:#7a2800;
+  --color-success:#1a5c38; --color-success-bg:#e3efe6;
+  --color-error:#8b0000; --color-error-bg:#f7e1dc;
+  --color-locked:#5a4020; --color-locked-bg:#efe2cf;
+  --tier-j-bg:#efe2cf; --tier-j-fg:#5a4020; --tier-s-bg:#7a2800; --tier-s-fg:#fdf8f2; --tier-v-bg:#c9a45c; --tier-v-fg:#1a0f00;
+  --focus-ring:0 0 0 2px var(--color-bg),0 0 0 4px var(--color-accent);
+  --shadow-1:0 1px 2px rgba(90,64,32,.06);
+  --shadow-2:0 2px 4px rgba(90,64,32,.06),0 8px 24px rgba(90,64,32,.10);
+  --radius-xs:4px; --radius-sm:8px; --radius-md:12px; --radius-lg:20px; --radius-full:999px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px; --space-12:48px;
+  --tap:44px; --topbar-h:56px; --tabbar-h:64px;
+  --font-deva:"Tiro Devanagari Sanskrit","Noto Serif Devanagari",serif;
+  --font-serif:"EB Garamond",Georgia,serif;
+  --font-sans:"DM Sans",system-ui,sans-serif;
+  /* the existing A+ setting writes --deva-size; derive the shloka size from it */
+  --fs-deva:var(--deva-size);
+  --fs-deva-shloka:calc(var(--deva-size) + 4px);
+  --fs-deva-hero:34px;
+  --fs-label:12px; --fs-sm:14px; --fs-md:15px; --fs-lg:16px; --fs-prose:17px; --fs-h3:22px;
+}
+:root[data-theme="dark"]{
+  --color-bg:#1a130c; --color-surface:#221910; --color-surface-tint:#33261a;
+  --color-border:#4a3826; --color-border-strong:#8a7050; --color-rule-gold:#8a6d3a;
+  --color-text:#f3e6d0; --color-text-muted:#c9b391; --color-text-subtle:#a48a66; --color-gold-text:#d9b25a;
+  --color-accent:#e8a15c; --color-accent-hover:#f0b578; --color-on-accent:#1a0f00;
+  --color-bar-bg:#140e08; --color-bar-text:#f3e6d0; --color-bar-text-muted:#c9b391;
+  --hero-card-fg:#1a0f00; --hero-card-muted:#4a2a0c; --hero-card-cta-bg:#1a130c; --hero-card-cta-fg:#e8a15c;
+  --color-success:#7fc79c; --color-success-bg:#1f3327; --color-error:#f08a7a; --color-error-bg:#3a1d18;
+  --color-locked:#c9b391; --color-locked-bg:#33261a;
+  --tier-j-bg:#33261a; --tier-j-fg:#f3e6d0; --tier-s-bg:#e8a15c; --tier-s-fg:#1a0f00; --tier-v-bg:#d9b25a; --tier-v-fg:#1a0f00;
+  --shadow-1:inset 0 1px 0 rgba(232,161,92,.08); --shadow-2:0 8px 24px rgba(0,0,0,.45);
+}
+
+/* --- Shared --- */
+.ss-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+.ss-icon--sm{width:18px;height:18px}
+.ss-label{font:500 var(--fs-label)/1.3 var(--font-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-subtle)}
+.ss-label--gold{color:var(--color-gold-text)}
+.ss-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-5);box-shadow:var(--shadow-1)}
+.ss-card--tint{background:var(--color-surface-tint);border-color:transparent;box-shadow:none}
+.ss-btn{min-height:48px;padding:0 var(--space-5);border-radius:var(--radius-sm);font:500 var(--fs-lg)/1 var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);border:1.5px solid transparent;cursor:pointer;text-decoration:none}
+.ss-btn--primary{background:var(--color-accent);color:var(--color-on-accent)}
+.ss-btn--primary:hover{background:var(--color-accent-hover)}
+.ss-btn--secondary{background:transparent;color:var(--color-accent);border-color:var(--color-accent)}
+.ss-btn--block{width:100%}
+.ss-tier{width:32px;height:32px;flex:none;border-radius:var(--radius-full);display:inline-grid;place-items:center;font:600 18px/1 var(--font-serif)}
+.ss-tier--s{background:var(--tier-s-bg);color:var(--tier-s-fg)}
+.ss-pill{min-height:28px;padding:0 var(--space-3);border-radius:var(--radius-full);display:inline-flex;align-items:center;gap:4px;font:500 var(--fs-sm)/1 var(--font-sans);background:var(--color-surface-tint);color:var(--color-text-muted);white-space:nowrap}
+#page-home button:focus-visible,#page-home a:focus-visible,#page-home [role="button"]:focus-visible,#bottom-tabbar .btab:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+
+/* --- Top bar (all screens) --- */
+#topbar{background:var(--color-bar-bg);min-height:var(--topbar-h);padding:0 var(--space-2) 0 var(--space-4)}
+#topbar-title{font:500 22px/1 var(--font-serif);letter-spacing:.02em;color:var(--color-bar-text)}
+#topbar-back{min-width:var(--tap);min-height:var(--tap);display:inline-flex;align-items:center;color:var(--color-bar-text)!important}
+#font-toggle-btn,#signin-btn{min-height:36px;padding:0 var(--space-3);border-radius:var(--radius-full);border:1px solid color-mix(in srgb,var(--color-bar-text) 40%,transparent);background:transparent;color:var(--color-bar-text);font:500 var(--fs-sm)/1 var(--font-sans);cursor:pointer}
+#font-toggle-btn{margin-right:var(--space-1)}
+
+/* --- Bottom tab bar (all screens) --- */
+#bottom-tabbar{background:var(--color-surface);border-top:1px solid var(--color-border);box-shadow:none;padding:6px 0 env(safe-area-inset-bottom,6px);min-height:var(--tabbar-h)}
+.btab{color:var(--color-text-muted);gap:2px;padding:0;min-height:var(--tap);justify-content:center;border-radius:0}
+.btab.active{color:var(--color-accent);background:transparent}
+.btab-icon{width:52px;height:28px;border-radius:var(--radius-full);display:grid;place-items:center;font-size:0}
+.btab.active .btab-icon{background:var(--color-surface-tint)}
+.btab-label{font:15px/1.3 var(--font-deva);letter-spacing:0;font-weight:400}
+
+/* --- Home layout --- */
+#page-home{padding:0 var(--space-4) calc(var(--tabbar-h) + var(--space-6) + env(safe-area-inset-bottom,0px));background:var(--color-bg);color:var(--color-text)}
+#page-home>*:not(.ptr-indicator){margin-bottom:var(--space-4)}
+
+/* hero (compact, left-aligned) */
+#page-home .home-hero{text-align:left;background:transparent;border:0;border-radius:0;padding:var(--space-6) var(--space-1) var(--space-1);display:flex;flex-direction:column;gap:var(--space-1)}
+.ss-hero-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#page-home .hero-deva{display:inline;font:400 var(--fs-deva-hero)/1.35 var(--font-deva);color:var(--color-accent);margin:0}
+#page-home .hero-name{font:14px/1 var(--font-serif);letter-spacing:.2em;text-transform:uppercase;color:var(--color-text-muted);margin:0}
+#page-home .hero-tagline{font:italic 18px/1.45 var(--font-serif);color:var(--color-text);margin:0}
+.ss-hero-credit{margin:var(--space-1) 0 0;font-size:13px;color:var(--color-text-subtle)}
+
+/* continue card (accent-filled) */
+.ss-continue{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);border-radius:var(--radius-md);background:var(--hero-card-bg);color:var(--hero-card-fg);box-shadow:var(--shadow-2);cursor:pointer}
+.ss-continue .ss-label{color:var(--hero-card-muted)}
+.ss-continue__title{font:500 24px/1.25 var(--font-serif);overflow-wrap:anywhere}
+.ss-continue__cta{min-height:48px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;gap:6px;font:500 var(--fs-lg)/1 var(--font-sans);background:var(--hero-card-cta-bg);color:var(--hero-card-cta-fg)}
+
+/* progress snapshot */
+.ss-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
+.ss-stat{display:flex;align-items:center;gap:10px;padding:var(--space-3) 14px;border-radius:var(--radius-sm);background:var(--color-surface-tint);min-width:0}
+.ss-stat .ss-icon{color:var(--color-accent)}
+.ss-stat__value{font:500 22px/1.15 var(--font-serif)}
+.ss-stat__value.deva{font:400 17px/1.5 var(--font-deva)}
+.ss-stat__label{font-size:13px;color:var(--color-text-muted)}
+.ss-snapshot__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);color:var(--color-accent)}
+
+/* shloka card */
+#page-home .shloka-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-5);box-shadow:var(--shadow-1);display:flex;flex-direction:column;gap:14px}
+#page-home .shloka-card::before{display:none}
+.ss-shloka-head{display:flex;justify-content:space-between;align-items:center}
+#page-home .shloka-label{margin:0}
+#page-home .shloka-text{font-family:var(--font-deva);font-size:var(--fs-deva-shloka);line-height:1.9;color:var(--color-text);text-align:left;margin:0}
+#page-home .shloka-source{font:italic 16px/1.4 var(--font-serif);color:var(--color-text-muted);text-align:left;margin:-4px 0 0}
+#page-home .shloka-meaning{font:var(--fs-prose)/1.55 var(--font-serif);color:var(--color-text);border-top:1px solid var(--color-border);padding-top:14px;margin:0}
+#page-home .shloka-life{font:var(--fs-prose)/1.55 var(--font-serif);font-style:normal;color:var(--color-text);background:var(--color-surface-tint);border:0;border-radius:var(--radius-sm);padding:14px;margin:0}
+#page-home .shloka-meaning::before,#page-home .shloka-life::before{display:block;font:500 var(--fs-label)/1.3 var(--font-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-subtle);margin-bottom:4px}
+#page-home .shloka-meaning:not(:empty)::before{content:"Meaning"}
+#page-home .shloka-life:not(:empty)::before{content:"In life"}
+#page-home .shloka-meaning:empty,#page-home .shloka-life:empty{display:none}
+#page-home .audio-btn{min-height:48px;border-radius:var(--radius-full);padding:0 var(--space-5) 0 var(--space-4);background:var(--color-accent);color:var(--color-on-accent);font:500 var(--fs-lg)/1 var(--font-sans);box-shadow:none;transform:none;align-self:flex-start}
+#page-home .audio-btn:hover{background:var(--color-accent-hover);box-shadow:none;transform:none}
+#page-home .audio-btn svg{width:18px;height:18px}
+#page-home #sotd-guru-btn{background:transparent;color:var(--color-accent);border:1.5px solid var(--color-accent);border-radius:var(--radius-sm)}
+#page-home #sotd-guru-btn:hover{background:var(--color-surface-tint)}
+#page-home #sotd-guru-btn-wrap{margin:0}
+#page-home .bk-btn{width:var(--tap);height:var(--tap);display:inline-grid;place-items:center;padding:0;margin:-10px -10px -10px 0;border-radius:var(--radius-sm);color:var(--color-text-muted)}
+#page-home .bk-btn:hover{color:var(--color-accent)}
+
+/* quiz card */
+.ss-quiz-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px}
+.ss-quiz-icon{width:var(--tap);height:var(--tap);flex:none;border-radius:var(--radius-full);background:var(--color-surface-tint);color:var(--color-accent);display:grid;place-items:center}
+.ss-quiz-title{margin:0;font:500 var(--fs-h3)/1.2 var(--font-serif);color:var(--color-text)}
+.ss-quiz-sub{font-size:var(--fs-sm);color:var(--color-text-muted)}
+#quiz-score-pill{background:var(--color-success-bg)!important;color:var(--color-success)!important;border:0!important;border-radius:var(--radius-full)!important;font:500 var(--fs-sm)/1 var(--font-sans)!important;padding:7px 12px!important}
+.ss-quiz-opt{width:100%;min-height:var(--tap);text-align:left;padding:11px 14px;border-radius:var(--radius-sm);font:var(--fs-md)/1.4 var(--font-sans);margin-bottom:var(--space-2);border:1.5px solid var(--color-border-strong);background:var(--color-surface);color:var(--color-text);display:block;cursor:pointer}
+.ss-quiz-opt--right{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);font-weight:600}
+.ss-quiz-opt--wrong{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error)}
+.ss-quiz-opt--dim{opacity:.45;cursor:default}
+.ss-quiz-q{font:500 var(--fs-prose)/1.6 var(--font-serif);color:var(--color-text);margin-bottom:var(--space-4)}
+.ss-quiz-dots{display:flex;gap:6px;margin-bottom:var(--space-4)}
+.ss-quiz-dots span{flex:1;height:3px;border-radius:var(--radius-xs);background:var(--color-border)}
+.ss-quiz-dots .done{background:var(--color-accent)}
+.ss-quiz-dots .now{background:var(--color-rule-gold)}
+.ss-quiz-explain{background:var(--color-surface-tint);border-radius:var(--radius-sm);padding:12px 14px;font:var(--fs-md)/1.6 var(--font-serif);color:var(--color-text);margin-top:var(--space-1)}
+.ss-quiz-result{text-align:center;padding:10px 0}
+.ss-quiz-score{font:600 48px/1.1 var(--font-serif);color:var(--color-accent)}
+.ss-quiz-msg{font:italic 18px/1.4 var(--font-serif);color:var(--color-text-muted);margin-top:6px}
+.ss-quiz-later{margin-top:var(--space-4);font-size:var(--fs-sm);color:var(--color-text-muted)}
+
+/* upgrade nudge */
+.ss-upgrade{display:flex;flex-direction:column;gap:var(--space-3)}
+.ss-upgrade__head{display:flex;align-items:center;gap:10px}
+.ss-upgrade__name{margin:0;font:500 var(--fs-h3)/1.2 var(--font-serif);color:var(--color-text)}
+.ss-upgrade__price{margin-left:auto;font:600 24px/1 var(--font-serif);color:var(--color-text);text-align:right}
+.ss-upgrade__price small{display:block;font:400 12px/1.3 var(--font-sans);color:var(--color-text-muted);margin-top:2px}
+.ss-upgrade__copy{margin:0;font-size:var(--fs-md);line-height:1.5;color:var(--color-text-muted)}
+
+/* community row */
+.ss-row{display:flex;align-items:flex-start;gap:14px;cursor:pointer;color:var(--color-text)}
+.ss-row__icon{width:var(--tap);height:var(--tap);flex:none;border-radius:var(--radius-full);background:var(--color-surface-tint);color:var(--color-accent);display:grid;place-items:center}
+.ss-row__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-row__title{font-size:var(--fs-lg);font-weight:500}
+.ss-row__quote{font:italic var(--fs-md)/1.55 var(--font-serif);color:var(--color-text);margin:2px 0}
+.ss-row__sub{font-size:var(--fs-sm);line-height:1.45;color:var(--color-text-muted)}
+.ss-row__link{font-size:var(--fs-sm);font-weight:500;color:var(--color-accent);margin-top:var(--space-1)}
+.ss-row>.ss-icon:last-child{color:var(--color-accent);align-self:center}
+
+/* footer */
+#page-home .legal-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:var(--space-4) 0 var(--space-2);border-top:1px solid var(--color-border);font-size:var(--fs-sm)}
+#page-home .legal-links a{min-height:var(--tap);display:flex;align-items:center;color:var(--color-text-muted)}
 </style>
 </head>
 <body>
@@ -257,10 +427,10 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
   
 
 <div id="topbar">
-  <span id="topbar-back" onclick="goBack()" style="display:none;cursor:pointer;font-size:20px;color:#fff;line-height:1;padding:2px 6px 2px 0;">←</span>
+  <span id="topbar-back" onclick="goBack()" role="button" aria-label="Back" style="display:none;cursor:pointer;font-size:22px;line-height:1">←</span>
   <div id="topbar-title">Samsmarana</div>
-  <button onclick="cycleFontSize()" id="font-toggle-btn" title="Sanskrit text size" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:14px;padding:3px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:8px">A+</button>
-  <button onclick="openAuth('signin')" id="signin-btn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Sign In</button>
+  <button onclick="cycleFontSize()" id="font-toggle-btn" title="Sanskrit text size">A+</button>
+  <button onclick="openAuth('signin')" id="signin-btn">Sign In</button>
 </div>
 
 <!-- Account dropdown — inline below topbar, hidden by default -->
@@ -323,56 +493,58 @@ body{font-family:'DM Sans',sans-serif;background:#fdf8f2;color:#1a0f00;min-heigh
 <div class="page active" id="page-home">
   <div class="ptr-indicator" id="home-ptr-indicator"></div>
   <div class="home-hero">
-    <span class="deva hero-deva">संस्मरण</span>
-    <div class="hero-name">Samsmarana</div>
-    <div class="hero-tagline">You once read these words in school.<br>Now you are ready to understand them.</div>
-    <div style="margin-top:20px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Created by <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.5px;text-transform:none;color:var(--accent)">Bhawna Mishra</span></div>
-  </div>
-  <div class="shloka-card">
-    <div class="shloka-label">☀ Shloka of the Day</div>
-    <div class="shloka-text deva copyable-sanskrit" id="shloka-text"></div>
-    <div class="shloka-source serif" id="shloka-source"></div>
-    <div class="shloka-meaning" id="shloka-meaning"></div>
-   <div class="shloka-life" id="shloka-life"></div>
-<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
-<button class="audio-btn" id="shloka-play-btn" onclick="toggleShlokaAudio()" style="margin-top:0">
-<svg id="shloka-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-<span id="shloka-play-label">🎧 Listen to Shloka</span>
-</button>
-<button class="bk-btn" id="sotd-bk-btn" onclick="toggleBookmarkSOTD()" title="Save shloka">
-<svg id="sotd-bk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-</button>
-</div>
-<div style="margin-top:10px" id="sotd-guru-btn-wrap">
-<button class="audio-btn" style="margin-top:0;width:100%;justify-content:center;opacity:1" onclick="askGuruJiAbout(document.getElementById('shloka-text').textContent, document.getElementById('shloka-meaning').textContent)" id="sotd-guru-btn">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-Ask Guru Ji about this Shloka
-</button>
-<div id="sotd-guru-lock" style="display:none;text-align:center;font-size:12px;color:#9a7850;margin-top:6px;font-family:'EB Garamond',serif;font-style:italic">🔒 Sadhaka feature — <span style="color:#7a2800;cursor:pointer;text-decoration:underline" onclick="nav('upgrade',null)">Upgrade to unlock</span></div>
-</div>
-</div>
-<div class="divider">· · ·</div>
-  <!-- DAILY QUIZ -->
-<div id="daily-quiz-section" style="margin-bottom:20px">
-  <div class="card" style="padding:20px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div>
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">🧠 Daily Quiz</div>
-        <div style="font-family:'EB Garamond',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-top:2px">Test your Sanskrit</div>
-      </div>
-      <div id="quiz-score-pill" style="display:none;background:#faebd7;border:1px solid #c8b090;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;color:#7a2800"></div>
+    <div class="ss-hero-row">
+      <span class="deva hero-deva" lang="sa">संस्मरण</span>
+      <div class="hero-name">Samsmarana</div>
     </div>
-    <div id="quiz-body"></div>
+    <div class="hero-tagline">You once read these words in school. Now you are ready to understand them.</div>
+    <div class="ss-hero-credit">Created by Bhawna Mishra</div>
   </div>
-</div>
   <!-- CONTINUE WHERE YOU LEFT OFF -->
-  <div id="continue-card-slot" style="margin-bottom:20px;display:none"></div>
+  <div id="continue-card-slot" style="display:none"></div>
   <!-- PROGRESS SNAPSHOT -->
-  <div id="progress-snapshot-slot" style="margin-bottom:20px;display:none"></div>
+  <div id="progress-snapshot-slot" style="display:none"></div>
+  <div class="shloka-card">
+    <div class="ss-shloka-head">
+      <div class="shloka-label ss-label ss-label--gold">Shloka of the day</div>
+      <button class="bk-btn" id="sotd-bk-btn" onclick="toggleBookmarkSOTD()" title="Save shloka" aria-label="Bookmark this shloka">
+        <svg id="sotd-bk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+    </div>
+    <div class="shloka-text deva copyable-sanskrit" id="shloka-text" lang="sa"></div>
+    <div class="shloka-source serif" id="shloka-source"></div>
+    <button class="audio-btn" id="shloka-play-btn" onclick="toggleShlokaAudio()">
+      <svg id="shloka-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <span id="shloka-play-label">Listen</span>
+    </button>
+    <div class="shloka-meaning" id="shloka-meaning"></div>
+    <div class="shloka-life" id="shloka-life"></div>
+    <div id="sotd-guru-btn-wrap">
+      <button class="audio-btn ss-btn--block" style="width:100%;justify-content:center" onclick="askGuruJiAbout(document.getElementById('shloka-text').textContent, document.getElementById('shloka-meaning').textContent)" id="sotd-guru-btn">
+        <svg class="ss-icon ss-icon--sm" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        Ask Guru Ji about this shloka
+      </button>
+      <div id="sotd-guru-lock" style="display:none;text-align:center;font-size:13px;color:var(--color-locked);margin-top:6px">Sadhaka feature — <span style="color:var(--color-accent);cursor:pointer;text-decoration:underline" onclick="nav('upgrade',null)">Upgrade to unlock</span></div>
+    </div>
+  </div>
+  <!-- DAILY QUIZ -->
+  <div id="daily-quiz-section">
+    <div class="ss-card">
+      <div class="ss-quiz-head">
+        <span class="ss-quiz-icon"><svg class="ss-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+        <div style="flex:1;min-width:0">
+          <h2 class="ss-quiz-title">Daily Quiz</h2>
+          <div class="ss-quiz-sub">Test your Sanskrit</div>
+        </div>
+        <div id="quiz-score-pill" style="display:none"></div>
+      </div>
+      <div id="quiz-body"></div>
+    </div>
+  </div>
   <!-- UPGRADE NUDGE (Jigyasu only) -->
-  <div id="upgrade-nudge-slot" style="margin-bottom:20px;display:none"></div>
+  <div id="upgrade-nudge-slot" style="display:none"></div>
   <!-- COMMUNITY HIGHLIGHT TEASER -->
-  <div id="community-teaser-slot" style="margin-bottom:20px;display:none"></div>
+  <div id="community-teaser-slot" style="display:none"></div>
   <!-- LEGAL FOOTER -->
   <div class="legal-links"><a href="/about.html">About</a><a href="/pricing.html">Pricing</a><a href="/contact.html">Contact</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a><a href="/refund.html">Refunds</a><a href="/shipping.html">Shipping</a></div>
 </div>
@@ -2387,7 +2559,7 @@ function getTimeAgo(ts){
 
 loadSession();
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js?v=29');
+  navigator.serviceWorker.register('/sw.js?v=30');
   navigator.serviceWorker.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'NAVIGATE') {
       var section = (e.data.url || '/').replace('/?section=', '');
@@ -3165,14 +3337,14 @@ function renderQuizQuestion() {
   if (_quizState.done) {
     var total = _quizQuestions.length;
     var score = _quizState.score;
-    var msg = score === total ? '🌟 Perfect! You remembered well.' :
-              score >= 2 ? '🙏 Well done. Keep going.' :
-              '📖 Keep practicing. It comes with time.';
+    var msg = score === total ? 'Perfect! You remembered well.' :
+              score >= 2 ? 'Well done. Keep going.' :
+              'Keep practising. It comes with time.';
     body.innerHTML =
-      '<div style="text-align:center;padding:10px 0">' +
-      '<div style="font-family:\'EB Garamond\',serif;font-size:48px;font-weight:600;color:#7a2800">' + score + '/' + total + '</div>' +
-      '<div style="font-family:\'EB Garamond\',serif;font-size:18px;color:#3a2a18;margin-top:6px;font-style:italic">' + msg + '</div>' +
-      '<div style="margin-top:16px;font-size:12px;color:var(--muted)">Come back tomorrow for new questions 🙏</div>' +
+      '<div class="ss-quiz-result">' +
+      '<div class="ss-quiz-score">' + score + '/' + total + '</div>' +
+      '<div class="ss-quiz-msg">' + msg + '</div>' +
+      '<div class="ss-quiz-later">Come back tomorrow for new questions.</div>' +
       '</div>';
     if (pill) { pill.textContent = score + '/' + total; pill.style.display = 'block'; }
     return;
@@ -3181,34 +3353,33 @@ function renderQuizQuestion() {
   var q = _quizQuestions[_quizState.idx];
   var html = '';
 
-  html += '<div style="display:flex;gap:6px;margin-bottom:16px">';
+  html += '<div class="ss-quiz-dots">';
   for (var i = 0; i < _quizQuestions.length; i++) {
-    var dotColor = i < _quizState.idx ? '#7a2800' : i === _quizState.idx ? '#c8922a' : '#e0c9a8';
-    html += '<div style="flex:1;height:3px;border-radius:2px;background:' + dotColor + '"></div>';
+    var dotCls = i < _quizState.idx ? 'done' : i === _quizState.idx ? 'now' : '';
+    html += '<span class="' + dotCls + '"></span>';
   }
   html += '</div>';
 
-  html += '<div style="font-family:\'EB Garamond\',serif;font-size:17px;font-weight:500;color:#1a0f00;line-height:1.7;margin-bottom:16px">' + q.q + '</div>';
+  html += '<div class="ss-quiz-q">' + q.q + '</div>';
 
   for (var j = 0; j < q.options.length; j++) {
-    var style = 'width:100%;text-align:left;padding:11px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:\'DM Sans\',sans-serif;margin-bottom:8px;border:1.5px solid #c8b090;background:#ffffff;color:#1a0f00;display:block;';
+    var cls = 'ss-quiz-opt';
     if (_quizState.answered) {
       if (j === q.answer) {
-        style += 'border-color:#2d6a4f;background:#f2faf6;color:#1a5c38;font-weight:600;';
+        cls += ' ss-quiz-opt--right';
       } else if (j === _quizState.chosen && j !== q.answer) {
-        style += 'border-color:#c0392b;background:#fdf2f2;color:#8b0000;';
+        cls += ' ss-quiz-opt--wrong';
       } else {
-        style += 'opacity:0.45;cursor:default;';
+        cls += ' ss-quiz-opt--dim';
       }
     }
     var clickFn = _quizState.answered ? '' : 'onclick="answerQuiz(' + j + ')"';
-    html += '<button ' + clickFn + ' style="' + style + '">' + q.options[j] + '</button>';
+    html += '<button ' + clickFn + ' class="' + cls + '">' + q.options[j] + '</button>';
   }
 
   if (_quizState.answered) {
-    html += '<div style="background:#faebd7;border-radius:6px;padding:12px 14px;font-family:\'EB Garamond\',serif;font-size:14px;color:#2a1a08;line-height:1.8;margin-top:4px;border:1px solid #e0c8a0">' +
-            '💡 ' + q.explain + '</div>';
-    html += '<button onclick="nextQuizQuestion()" style="width:100%;margin-top:12px;background:#7a2800;color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">' +
+    html += '<div class="ss-quiz-explain">' + q.explain + '</div>';
+    html += '<button onclick="nextQuizQuestion()" class="ss-btn ss-btn--primary ss-btn--block" style="margin-top:12px">' +
             (_quizState.idx < _quizQuestions.length - 1 ? 'Next Question →' : 'See Result') + '</button>';
   }
 
@@ -4319,13 +4490,10 @@ function renderContinueCard() {
   }
   slot.style.display = 'block';
   slot.innerHTML =
-    '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px" onclick="continueLastVisited()">'+
-      '<div style="font-size:26px;width:40px;text-align:center">↩</div>'+
-      '<div style="flex:1">'+
-        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">Continue where you left off</div>'+
-        '<div style="font-family:\'EB Garamond\',serif;font-size:16px;font-weight:600;color:#1a0f00;margin-top:2px">'+lv.label+'</div>'+
-      '</div>'+
-      '<div style="color:#c8a870;font-size:20px">›</div>'+
+    '<div class="ss-continue" role="button" tabindex="0" onclick="continueLastVisited()">'+
+      '<div class="ss-label">Continue where you left off</div>'+
+      '<div class="ss-continue__title">'+lv.label+'</div>'+
+      '<div class="ss-continue__cta">Continue <svg class="ss-icon ss-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>'+
     '</div>';
 }
 
@@ -4339,11 +4507,14 @@ function renderUpgradeNudge() {
   }
   slot.style.display = 'block';
   slot.innerHTML =
-    '<div style="background:#fdf8f2;border:1px solid #e0c9a8;border-radius:12px;padding:20px;text-align:center">'+
-      '<div style="font-size:24px;margin-bottom:8px">✨</div>'+
-      '<div style="font-family:\'EB Garamond\',serif;font-size:17px;font-weight:600;color:#1a0f00;margin-bottom:6px">Unlock the full path</div>'+
-      '<div style="font-size:13px;color:#5a4020;margin-bottom:14px">Shabd Roop, Dhatu Roop, Vocabulary and more — become a Sadhaka to go deeper.</div>'+
-      '<button onclick="nav(\'upgrade\',null)" style="background:#7a2800;color:white;border:none;border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer">Become Sadhaka</button>'+
+    '<div class="ss-card ss-card--tint ss-upgrade">'+
+      '<div class="ss-upgrade__head">'+
+        '<span class="ss-tier ss-tier--s">S</span>'+
+        '<h2 class="ss-upgrade__name">Sadhaka</h2>'+
+        '<div class="ss-upgrade__price">₹299<small>for 30 days</small></div>'+
+      '</div>'+
+      '<p class="ss-upgrade__copy">Unlocks Vocabulary, Shabd Roop and Karaka, plus Ask Guru Ji on any shloka. One payment, no auto-renewal.</p>'+
+      '<button class="ss-btn ss-btn--primary ss-btn--block" onclick="nav(\'upgrade\',null)">Become Sadhaka</button>'+
     '</div>';
 }
 
@@ -4365,14 +4536,12 @@ async function renderProgressSnapshot() {
     var cfg = BADGE_CONFIG[badge] || BADGE_CONFIG.none;
     slot.style.display = 'block';
     slot.innerHTML =
-      '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px" onclick="nav(\'progress\',null)">'+
-        '<div style="font-size:32px;width:44px;text-align:center">'+cfg.emoji+'</div>'+
-        '<div style="flex:1">'+
-          '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600">Your Progress</div>'+
-          '<div style="font-family:\'EB Garamond\',serif;font-size:16px;font-weight:600;color:#1a0f00;margin-top:2px">'+cfg.label+'</div>'+
-          (streak > 0 ? '<div style="font-size:12px;color:#9a6800;font-style:italic;margin-top:2px">🔥 '+streak+' day'+(streak===1?'':'s')+' streak</div>' : '')+
+      '<div class="ss-card" role="button" tabindex="0" style="cursor:pointer" onclick="nav(\'progress\',null)">'+
+        '<div class="ss-snapshot__head"><span class="ss-label">Your progress</span><svg class="ss-icon ss-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></div>'+
+        '<div class="ss-stats">'+
+          '<div class="ss-stat"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><div><div class="ss-stat__value">'+streak+' day'+(streak===1?'':'s')+'</div><div class="ss-stat__label">streak</div></div></div>'+
+          '<div class="ss-stat"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg><div style="min-width:0"><div class="ss-stat__value deva">'+cfg.label.split(' — ')[0]+'</div><div class="ss-stat__label">badge</div></div></div>'+
         '</div>'+
-        '<div style="color:#c8a870;font-size:20px">›</div>'+
       '</div>';
   } catch (e) {
     slot.style.display = 'none';
@@ -4401,14 +4570,15 @@ async function renderCommunityTeaser() {
     if (text.length > 120) text = text.slice(0, 120).trim() + '…';
     slot.style.display = 'block';
     slot.innerHTML =
-      '<div class="card" style="padding:16px">'+
-        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:10px">From the Community</div>'+
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
-          '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7a2800,#c8922a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">'+(r.user_initials||'')+'</div>'+
-          '<div style="font-family:\'EB Garamond\',serif;font-size:14px;font-weight:600;color:#1a0f00">'+(r.user_name||'A fellow seeker')+'</div>'+
+      '<div class="ss-card ss-row" role="button" tabindex="0" onclick="document.getElementById(\'guru-upgrade-popup\').style.display=\'flex\'">'+
+        '<span class="ss-row__icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>'+
+        '<div class="ss-row__text">'+
+          '<span class="ss-row__title">From the community</span>'+
+          '<span class="ss-row__sub">'+(r.user_name||'A fellow seeker')+'</span>'+
+          '<span class="ss-row__quote">“'+text+'”</span>'+
+          '<span class="ss-row__link">Join the conversation — upgrade to Sadhaka</span>'+
         '</div>'+
-        '<div style="font-family:\'EB Garamond\',serif;font-size:15px;color:#1a0f00;line-height:1.7;font-style:italic;margin-bottom:12px">"'+text+'"</div>'+
-        '<div onclick="document.getElementById(\'guru-upgrade-popup\').style.display=\'flex\'" style="cursor:pointer;font-size:12px;font-weight:600;color:#7a2800;text-decoration:underline">Join the conversation — upgrade to Sadhaka</div>'+
+        '<svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>'+
       '</div>';
   } catch (e) {
     slot.style.display = 'none';
@@ -4606,23 +4776,23 @@ function toggleFullRecitation() {
 
   <div id="bottom-tabbar">
     <div class="btab active" id="btab-home" onclick="navTab('home')">
-      <span class="btab-icon">🏠</span>
+      <span class="btab-icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
       <span class="btab-label">गृह</span>
     </div>
     <div class="btab" id="btab-learn" onclick="navTab('learn')">
-      <span class="btab-icon">📖</span>
+      <span class="btab-icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
       <span class="btab-label">पाठ</span>
     </div>
     <div class="btab" id="btab-tutor" onclick="navTab('tutor')">
-      <span class="btab-icon">🪔</span>
+      <span class="btab-icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>
       <span class="btab-label">गुरु जी</span>
     </div>
     <div class="btab" id="btab-community" onclick="navTab('community')">
-      <span class="btab-icon">🌸</span>
+      <span class="btab-icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
       <span class="btab-label">समाज</span>
     </div>
     <div class="btab" id="btab-progress" onclick="navTab('progress')">
-      <span class="btab-icon">📊</span>
+      <span class="btab-icon"><svg class="ss-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
       <span class="btab-label">प्रगति</span>
     </div>
   </div>
