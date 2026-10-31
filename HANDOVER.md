@@ -3,10 +3,21 @@
 Last updated: 1 Nov 2026. To resume, say **"continue Samsmarana"** and point Claude to this file. It lives in two places with the same content: the claude.ai project doc `claude/samsmarana-handover.md` and `HANDOVER.md` in the repo (BhawnaVatsa3012/samsmarana). The full item history is in `BACKLOG.md`; this file is the summary.
 
 ## State at handover
-- Production: commit `424d57c` (Home reskin), **READY** on Vercel, live at samsmarana.vercel.app (checked 31 Oct 2026).
-- Service-worker cache: **v30**. The next `index.html` change must bump it to v31.
+- Production: commit `6e73621` (remaining-screens reskin), pushed straight to main at Bhawna's request on 1 Nov 2026. See the Vercel check below.
+- Service-worker cache: **v31**. The next `index.html` change must bump it to v32.
 - Vercel functions: **12/12**, the Hobby-plan limit. Any new feature must go inside an existing `api/*.js` file.
 - Vercel IDs: project `prj_qKiVCb9FkL6sAKFdwJA8HODHb0NP`, team `team_dFd9OFvcTlCnk6UZmf8TTcQK`. Supabase project `wcvjdbmigjgocgwforsr`.
+
+## Done 1 Nov 2026 — Remaining screens reskin
+- Designs: Claude Design canvas "Samsmarana — Remaining Screens" (Learn, Guru Ji, Community ×2, Progress, Upgrade), built from the Home tokens with existing data only.
+- Shipped in `6e73621` directly to production (Bhawna chose to skip the preview branch for this one):
+  - Learn, Guru Ji, Community, Progress and Upgrade restyled with the `ss-` classes and tokens. Pages carry `ss-scr`; legacy `.card`/`.pill` untouched elsewhere.
+  - All IDs and onclick handlers kept (checked by diffing every `id=` and `onclick=` before/after). JS changes: template strings in renderLearnPath, renderTodaysTeaching, renderReflections, renderProgressQuiz(Question), renderIncorrectLog; class toggles instead of inline colours in initUpgradePage; new `renderBadgeSteps()`; BADGE_CONFIG emoji → Devanagari letters.
+  - Copy aligned to `pricing.html`: Community sign-in card now "₹299 for 30 days, no auto-renewal"; Upgrade page tier lists match pricing.html; the Vidvan box no longer promises live Q&A, an exclusive community or a personalised path; pay buttons say "for 30 days" / "for 365 days".
+  - Top-bar title truncates instead of wrapping at 360px.
+- Checked: JS parses; no horizontal scroll at 360px and 390px on all five screens; no console errors; tap targets ≥ 44px (inline Terms/Refund text links excepted); raw GitHub files at the SHA match.
+- **Not yet checked:** signed-in views on each tier (sandbox can't log in), and a real payment from the new Upgrade buttons.
+- Next: Bhawna wants to restructure the pricing concept.
 
 ## Done 31 Oct 2026 — Home redesign (pilot)
 - Claude Design produced the design system and two Home directions; **Option B** was picked. Spec: project doc `claude/design-handoff-spec.md`. Review of what didn't fit the code: `claude/design-handoff-review.md`. Original prompt: `claude/claude-design-prompt.md`.
@@ -41,12 +52,9 @@ Last updated: 1 Nov 2026. To resume, say **"continue Samsmarana"** and point Cla
 
 ## Open items, in priority order
 1. **Signed-in check of the new Home.** Open samsmarana.vercel.app signed out, then as Jigyasu and as Sadhaka. Expect: the streak card appears when signed in; the Sadhaka offer and community card disappear for Sadhaka and Vidvan; Listen and Ask Guru Ji behave as before.
-2. **Upgrade page copy in `index.html`** (still wrong as of `424d57c`; line numbers approximate):
-   - "₹299/month" and "₹499/month" (~lines 1033, 1052) and two "per month" labels (~1085, 1148). Change to "for 30 days, no auto-renewal".
-   - "Questions? Write to vatsa.bhawna@gmail.com" (~line 1174). Replace with a support address. Leave the two admin email checks in the code alone.
-   - The Sadhaka card lists "15 questions/day, Community access…" but not the lessons it unlocks (Vocabulary, Shabd Roop, Karaka). Match `pricing.html`.
+2. **Upgrade page:** pricing copy fixed in `6e73621`. Still open: "Questions? Write to vatsa.bhawna@gmail.com" needs a support address. Leave the two admin email checks in the code alone. Pricing is about to be restructured; update `pricing.html`, Terms/Refund and the Upgrade and Community cards together.
 3. **Razorpay website verification.** Submit the 7 page URLs (About, Contact, Pricing, Terms, Privacy, Refund, Shipping) under Business website detail. Bhawna submits; Claude can fill the form in Chrome for review first. Then send Terms and Privacy for legal review.
-4. **Redesign, remaining screens.** Port one screen at a time with the same approach as Home: Learn, Guru Ji, Community, Progress, Upgrade. About 500 inline `style=""` colours need converting to tokens. Dark mode tokens exist but are not switched on; turn it on only after a screen's inline colours are converted.
+4. **Redesign, remaining screens.** Learn, Guru Ji, Community, Progress and Upgrade done in `6e73621`. Still old style: lesson pages (Shabd Roop, Dhatu Roop, Sandhi, Samas, Karaka, Devanagari, Vocabulary, Sentences), Shloka Cards, Stotrams, Profile, Bookmarks, onboarding. Dark mode stays off until those are converted.
 5. **Tier-lock testing** with the test account across all tiers while logged in. This has never been fully done. It should also confirm a real purchase writes `tier_expires_at`.
 6. **Razorpay live keys** (switch from test to production). Marked pending in `BACKLOG.md`; check the Razorpay dashboard. If live payments already work, mark it done.
 7. **Old Sadhaka accounts:** set end dates once Bhawna decides 30 or 365 days.
