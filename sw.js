@@ -1,4 +1,4 @@
-const CACHE = 'samsmarana-v30';
+const CACHE = 'samsmarana-v31';
 const LEGAL_PAGES = /^\/(about|contact|pricing|terms|privacy|refund|shipping)(\.html)?$/;
 const OFFLINE_ASSETS = ['/'];
 
