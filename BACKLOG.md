@@ -56,6 +56,10 @@
 | L5 | ✅ Done (17 Oct 2026) | `upgrade-tier` trusts client `userId`; should check it matches `order.notes.userId`. |
 | — | ⬜ Pending | Razorpay live keys (switch from test to production) |
 | — | ⬜ Pending | Google Play Store via Capacitor |
+| O1 | ⬜ Pending | Pricing restructure — Bhawna wants to rework the pricing concept. Pricing copy lives in four places that must change together: `pricing.html`, Terms/Refund pages, the Upgrade page (`#page-upgrade`) and the Community sign-in card (`#reflection-signin-prompt`). Any change to amounts or periods also touches `api/razorpay.js` order creation and the 30/365-day `tier_expires_at` logic. |
+| O2 | ⬜ Pending | Support email — the Upgrade page still says "Questions? Write to vatsa.bhawna@gmail.com". Replace with a dedicated support address. Leave the two admin email checks in the code alone. |
+| O3 | ⬜ Pending | Razorpay website verification — submit the 7 legal page URLs (About, Contact, Pricing, Terms, Privacy, Refund, Shipping) under Business website detail. Bhawna submits; Claude can pre-fill the form in Chrome for review. Then send Terms and Privacy for legal review. |
+| O4 | ⬜ Pending | Old Sadhaka accounts — the 2 accounts that paid before 18 Oct 2026 have no `tier_expires_at` and keep access indefinitely. Waiting on Bhawna to choose 30 or 365 days from their payment dates, then set it by hand. |
 
 ---
 
@@ -108,6 +112,21 @@
 | UI-X2 | ✅ Done | Bookmarks empty state now reads "Save a shloka that speaks to you today 🙏" with a 🌸 icon (matching the warm tone already used elsewhere in the app), replacing the generic 🔖 + "No saved shlokas yet" copy. |
 | UI-X3 | ✅ Done | Long-press (~550ms) on any Sanskrit line — Shloka of the Day, Shloka Cards, stotram verse lines — copies the text via a shared `.copyable-sanskrit` class and one document-level event-delegated handler, with a toast confirmation. Falls back to execCommand('copy') when navigator.clipboard is unavailable/rejects. Needs a real iPhone test — iOS Safari can restrict clipboard writes triggered from setTimeout rather than a direct tap; not yet verified on-device. |
 | UI-X4 | ✅ Done | Visible ← Back link at top of sub-pages (Stotra detail, Profile, Bookmarks) for users unfamiliar with gesture navigation |
+
+### Redesign (reskin with existing data only)
+| # | Status | Item |
+|---|--------|------|
+| R1 | ✅ Done (31 Oct 2026) | Home reskin, Claude Design Option B — design tokens added to the stylesheet, `ss-` component classes, Lucide line icons in top bar and tab bar, upgrade-nudge copy fixed. Commit `424d57c`, SW cache v30. |
+| R2 | ✅ Done (1 Nov 2026) | Learn, Guru Ji, Community, Progress and Upgrade reskinned with the same tokens. Lesson locks readable instead of 65% opacity; badge emoji replaced with Devanagari letters; Upgrade and Community copy aligned to `pricing.html` (one-time 30/365 days, unlisted Vidvan promises removed). All IDs and onclick handlers kept. Commit `6e73621`, SW cache v31, pushed straight to production at Bhawna's request. |
+| R3 | ⬜ Pending | Remaining screens still in the old style: lesson pages (Shabd Roop, Dhatu Roop, Sandhi, Samas, Karaka, Devanagari, Vocabulary, Sentences), Shloka Cards, Stotrams, Profile, Bookmarks, onboarding. Same approach: tokens + `ss-` classes, no logic changes, SW cache bump each time. |
+| R4 | ⬜ Pending | Dark mode — dark tokens are in the design spec but switched off. Turn on only after R3, because ~500 inline `style=""` colours on unconverted screens would look patchy. |
+
+### Testing (needs a signed-in session or a real device)
+| # | Status | Item |
+|---|--------|------|
+| Q1 | ⬜ Pending | Signed-in check of the redesigned screens (R1, R2) as Jigyasu, Sadhaka and Vidvan — the sandbox can't log in. Expect: streak card appears when signed in; Sadhaka offer and community teaser hidden for Sadhaka/Vidvan; correct lock chips on Learn; on Upgrade, "Your plan" / "Next step" on the right cards and the right buy box shown. |
+| Q2 | ⬜ Pending | Tier-lock testing across all tiers while logged in, including the server-side checks, plus one real test-mode purchase from the new Upgrade buttons confirming `tier_expires_at` is written. Never fully done before. |
+| Q3 | ⬜ Pending | Real-device checks for items marked done but not yet verified on a device: UI-X1 pull-to-refresh thresholds, UI-X3 long-press copy on iPhone Safari. |
 
 ### Learn Path Content
 | # | Status | Item |
